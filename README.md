@@ -43,7 +43,6 @@ Notes:
  
 ### → Client
  - Easy-to-use interface
- - Full Pronote Implementation
  - New tools
 
 # Contribute
