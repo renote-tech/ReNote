@@ -5,7 +5,7 @@
 </h1>
 
 <p align="center">
-  ReNote brings you an easy-to-use timetable software, it includes all the tools you need to empower your productivity as a teacher or student.
+  ReNote brings you an easy-to-use timetable software, including all the tools you need to empower your productivity as a teacher or student.
   <br><br>
   <img src="Documentation/show.png">
   <br><br>
