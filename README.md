@@ -5,9 +5,9 @@
 </h1>
 
 <p align="center">
-  ReNote offers a kit to interact with <a href="https://www.index-education.com/fr/logiciel-gestion-vie-scolaire.php">Pronote</a> APIs in the easiest way possible as well as a suit of tools to boost your productivity.
+  ReNote brings you an easy-to-use timetable software, it includes all the tools you need to empower your productivity as a teacher or student.
   <br><br>
-  <img src="documentation/show.png">
+  <img src="Documentation/show.png">
   <br><br>
 </p>
 
