@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <RootNamespace>Server</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Server.Modules.Common\Server.Modules.Common.csproj" />
+    <ProjectReference Include="..\Server.Modules.ReNote\Server.Modules.ReNote.csproj" />
+    <ProjectReference Include="..\Server.Modules.Web\Server.Modules.Web.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,8 @@
+## Directories
+**/bin
+**/obj
+**/.vs
+.vs/
+
+## Files
+**/*.bat
