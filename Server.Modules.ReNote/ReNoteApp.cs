@@ -37,6 +37,11 @@ namespace Server.ReNote
 
             SaveDBTimer.Elapsed += (sender, e) =>
             {
+                SchoolDB.AddDocument("app");
+                SchoolDB["app"]["app"] = 10;
+                if (SchoolDB.IsEmpty())
+                    return;
+
                 if (!FileUtil.IsFileBeingUsed(SaveDBLocation))
                     SchoolDB.Save(SaveDBLocation);
             };

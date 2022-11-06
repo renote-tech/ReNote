@@ -1,6 +1,5 @@
 ﻿using ProtoBuf;
-using System.Runtime.CompilerServices;
-using System.Runtime.Serialization;
+using Server.Common.Utilities;
 
 namespace Server.ReNote
 {
@@ -9,6 +8,7 @@ namespace Server.ReNote
     {
         [ProtoMember(1)]
         private List<Document> dbDocuments = new List<Document>();
+ 
         public Document this[string name]
         {
             get
@@ -22,16 +22,58 @@ namespace Server.ReNote
             }
             set
             {
-                bool isFound = false;
                 for(int i = 0; i < dbDocuments.Count; i++)
                 {
-                    if (dbDocuments[i].Name == name)
-                        dbDocuments[i] = value; 
-                }
+                    if (dbDocuments[i].Name != name)
+                        continue;
 
-                if (!isFound)
-                    dbDocuments.Add(value);
+                    if (value is Document)
+                        dbDocuments[i] = value;
+                }
             }
+        }
+
+        public void AddDocument(Document document)
+        {
+            if (document != null)
+                dbDocuments.Add(document);
+        }
+
+        public void AddDocument(string documentName)
+        {
+            if (!string.IsNullOrWhiteSpace(documentName))
+                dbDocuments.Add(new Document(documentName));
+        }
+
+        public void RemoveDocument(Document document)
+        {
+            if (document != null && dbDocuments.Contains(document))
+                dbDocuments.Remove(document);
+        }
+
+        public void RemoveDocument(string name)
+        {
+            for(int i = 0; i < dbDocuments.Count; i++)
+        }
+
+        public bool IsEmpty()
+        {
+            return dbDocuments.Count == 0;
+        }
+
+        public void Load(string location)
+        {
+            if (FileUtil.IsFileBeingUsed(location))
+                return;
+
+            if (!File.Exists(location))
+                return;
+
+            byte[] data = File.ReadAllBytes(location);
+            using MemoryStream stream = new MemoryStream(data);
+            Database db = Serializer.Deserialize<Database>(stream);
+
+            dbDocuments = db.dbDocuments;
         }
 
         public async void Save(string location)
@@ -39,15 +81,6 @@ namespace Server.ReNote
             using MemoryStream stream = new MemoryStream();
             Serializer.Serialize(stream, this);
             await File.WriteAllBytesAsync(location, stream.ToArray());
-        }
-
-        public void Load(string location)
-        {
-            byte[] data = File.ReadAllBytes(location);
-            using MemoryStream stream = new MemoryStream(data);
-            Database db = Serializer.Deserialize<Database>(stream);
-            
-            dbDocuments = db.dbDocuments;
         }
     }
 
@@ -81,11 +114,17 @@ namespace Server.ReNote
             }
             set
             {
+                string dataValue = (string)Convert.ChangeType(value, TypeCode.String);
                 if (dbKeysValues.ContainsKey(key))
-                    dbKeysValues[key] = new DocumentData((string)Convert.ChangeType(value, TypeCode.String), value.GetType());
-                else
-                    dbKeysValues.Add(key, new DocumentData((string)Convert.ChangeType(value, TypeCode.String), value.GetType()));
+                    dbKeysValues[key] = new DocumentData(dataValue, value.GetType());
             }
+        }
+
+        public void Add(string key, object value)
+        {
+            string dataValue = (string)Convert.ChangeType(value, TypeCode.String);
+            if (!dbKeysValues.ContainsKey(key))
+                dbKeysValues.Add(key, new DocumentData(dataValue, value.GetType()));
         }
     }
 

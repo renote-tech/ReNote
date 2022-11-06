@@ -9,9 +9,10 @@
                 FileInfo file = new FileInfo(location);
                 using FileStream stream = file.Open(FileMode.Open, FileAccess.Read, FileShare.None);
                 stream.Close();
-            } catch(IOException)
+            } catch(IOException ex)
             {
-                return true;
+                if(ex is not FileNotFoundException)
+                    return true;
             }
             return false;
         }
