@@ -30,6 +30,7 @@ dotnet build --runtime osx-x64
 ```
 
 Notes:
+   - You need the .NET SDK to run the commands above. Download <a href="https://aka.ms/netcore">here</a>.
    - You can add the `--self-contained` parameter to add necessary dependencies to the output folder.
    - You can also build for 32bit platforms by changing the suffix `-x64` to `-x86` (Windows only).
    - Same apply for arm64 platforms by changing the suffix to `-arm64`. 
