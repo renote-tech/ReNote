@@ -1,6 +1,6 @@
 ﻿using System.Collections.Specialized;
-using System.Data;
 using System.Text;
+using Server.Common.Utilities;
 
 namespace Server.Web.Api
 {
@@ -40,9 +40,19 @@ namespace Server.Web.Api
 
     public class ApiMessages
     {
+        public static string Success()
+        {
+            return "Success";
+        }
+
         public static string MethodNotAllowed()
         {
             return "Method not allowed";
+        }
+
+        public static string InvalidJson()
+        {
+            return "JSON syntax is invalid";
         }
 
         public static string NullOrEmpty(params string[] properties)
@@ -57,13 +67,46 @@ namespace Server.Web.Api
             baseMessage.Append(" may not be empty");
             return baseMessage.ToString();
         }
+
+        public static string UserNotExists()
+        {
+            return "User doesn't exist";
+        }
+
+        public static string InvalidPassword()
+        {
+            return "Password is invalid";
+        }
+
+        public static string SessionNotExists()
+        {
+            return "Session doesn't exist";
+        }
+
+        public static string SessionExpired()
+        {
+            return "Session has expired";
+        }
+
+        public static string InvalidAuthToken()
+        {
+            return "Auth token is invalid";
+        }
+    }
+
+    public enum ApiStatus
+    {
+        SESSION_EXPIRED = 1
     }
 
     public class ApiRegisterer
     {
         public static void Initialize()
         {
-            ApiAtlas.AddEndpoint("Authenticate", "/global/v1/auth");
+            ApiAtlas.AddEndpoint("Root", "/");
+            ApiAtlas.AddEndpoint("Authenticate", $"/global/{ServerEnvironment.ServerApiVersion}/auth");
+            ApiAtlas.AddEndpoint("SchoolInfo", $"/global/{ServerEnvironment.ServerApiVersion}/school/info");
+            ApiAtlas.AddEndpoint("Profile", $"/user/{ServerEnvironment.ServerApiVersion}/profile");
         }
     }
 }

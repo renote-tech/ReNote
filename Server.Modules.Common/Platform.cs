@@ -1,6 +1,5 @@
-﻿using System.Reflection;
-using System.Runtime.CompilerServices;
-using Server.Common.Utilities;
+﻿using Server.Common.Utilities;
+using System.Reflection;
 
 namespace Server
 {
@@ -14,9 +13,15 @@ namespace Server
                 return;
 
             Console.Title = "ReNote \u03a9 2023";
-            Console.WriteLine($"Omega-{ServerEnvironment.ServerVersionName} [Version {ServerEnvironment.ServerVersion}]");
-            Console.WriteLine("(c) ReNote NETW. All rights reserved.");
-            Console.WriteLine();
+            Console.Write("      ____       _   __      __     \r\n     / __ \\___  / | / /___  / /____ \r\n    / /_/ / _ \\/  |/ / __ \\/ __/ _ \\\r\n   / _, _/  __/ /|  / /_/ / /_/  __/\r\n  /_/ |_|\\___/_/ |_/\\____/\\__/\\___/ \r\n                                    \r\n");
+
+            for(int i = 0; i < AppDomain.CurrentDomain.GetAssemblies().Length; i++)
+            {
+                Assembly assembly = AppDomain.CurrentDomain.GetAssemblies()[i];
+                Log($"Loaded {assembly.GetName().Name}");
+            }
+
+            Log("Initializing server components");
 
             initialized = true;
         }

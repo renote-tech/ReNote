@@ -11,6 +11,7 @@
 
         public static void AddEndpoint(string name, string uri)
         {
+            Platform.Log($"Setting endpoint {uri}");
             endpoints.Add(new ApiEndpoint(name, uri));
         }
 

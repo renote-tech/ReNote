@@ -1,13 +1,20 @@
-﻿using System.Diagnostics;
-
-namespace Server.Common.Utilities
+﻿namespace Server.Common.Utilities
 {
     public class ServerEnvironment
     {
-        public static readonly bool IsDebug = Debugger.IsAttached;
+        public static bool IsDebug
+        {
+            get
+            {
+                #if DEBUG
+                    return true;
+                #else
+                    return false;
+                #endif
+            }
+        }
 
         public static readonly string ApplicationDirectory = AppDomain.CurrentDomain.BaseDirectory;
-        public static readonly string ApplicationWebDirectory = ApplicationDirectory + "/web";
 
         public static readonly string ServerVersion = $"{(IsDebug ? "Dev" : "Release")}-0.0.0";
         public static readonly string ServerVersionName = "NightOny";

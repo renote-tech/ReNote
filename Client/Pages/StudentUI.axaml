@@ -13,7 +13,7 @@
 					<ImageBrush Stretch="Fill" Source="/Assets/user.bmp"/>
 				</Border.Background>
 			</Border>
-			<TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="High School&#x0a;Username" TextAlignment="Center"/>
+			<TextBlock x:Name="SessionText" HorizontalAlignment="Center" VerticalAlignment="Center" Text="High School&#x0a;Username" TextAlignment="Center"/>
 			<Border HorizontalAlignment="Right" Margin="10, 10, 10, 10" CornerRadius="32" Width="48" Height="48">
 				<Border.Background>
 					<ImageBrush Stretch="Fill" Source="/Assets/user.bmp"/>

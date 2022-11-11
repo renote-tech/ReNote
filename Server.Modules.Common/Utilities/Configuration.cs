@@ -5,23 +5,23 @@ namespace Server.Common.Utilities
     public class Configuration
     {
         public static bool IsConfigurationsLoaded { get; private set; }
-        public static GlobalConfig? GlobalConfig { get; set; }
-        public static WebConfig? WebConfig { get; set; }
+        public static GlobalConfig GlobalConfig { get; set; }
+        public static WebConfig WebConfig { get; set; }
 
         public static void LoadAllConfigurations()
         {
             if (IsConfigurationsLoaded)
                 return;
 
-            GlobalConfig = LoadConfiguration<GlobalConfig>("global");
-            WebConfig = LoadConfiguration<WebConfig>("web");
+            GlobalConfig = LoadConfiguration<GlobalConfig>("Global");
+            WebConfig = LoadConfiguration<WebConfig>("Web");
 
             IsConfigurationsLoaded = true;
         }
 
         public static T LoadConfiguration<T>(string name) where T : new()
         {
-            T? config;
+            T config;
             string configFileName = $"{name.ToLower()}.config.json";
 
             if (!File.Exists(configFileName))
@@ -29,12 +29,14 @@ namespace Server.Common.Utilities
 
             string configContent = File.ReadAllText(configFileName);
 
-            if (ValiditateJson(configContent))
+            if (JsonUtil.ValiditateJson(configContent))
                 config = JsonSerializer.Deserialize<T>(configContent);
             else
                 config = new T();
 
             config ??= new T();
+
+            Platform.Log($"Loaded {name} configuration", LogLevel.INFO);
 
             return config;
         }
@@ -43,22 +45,6 @@ namespace Server.Common.Utilities
         {
             string data = JsonSerializer.Serialize(configObject);
             File.WriteAllText($"{name.ToLower()}.config.json", data);
-        }
-
-        public static bool ValiditateJson(string content)
-        {
-            if (string.IsNullOrEmpty(content))
-                return false;
-
-            try
-            {
-                JsonDocument.Parse(content);
-                return true;
-            }
-            catch (JsonException)
-            {
-                return false;
-            }
         }
     }
 
@@ -74,7 +60,7 @@ namespace Server.Common.Utilities
 
     public class WebConfig
     {
-        public string? WebRoot { get; set; }
+        public string WebRoot { get; set; }
         public bool WebNoDotHtml { get; set; }
         public bool WebVueSupport { get; set; }
     }

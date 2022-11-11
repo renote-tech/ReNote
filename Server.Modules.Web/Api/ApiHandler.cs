@@ -1,6 +1,6 @@
 ﻿using System.Net;
+using System.Reflection;
 using System.Text;
-
 using Server.Common.Utilities;
 using Server.Web.Utilities;
 
@@ -26,9 +26,9 @@ namespace Server.Web.Api
                 };
 
                 if (apiEndpoint != null)
-                    apiResponse = await ApiData.CallEndpointAsync(apiEndpoint, apiRequest);
+                    apiResponse = await CallEndpointAsync(apiEndpoint, apiRequest);
                 else
-                    apiResponse = ApiUtil.SendBasic(404, "Not found");
+                    apiResponse = await ApiUtil.SendAsync(404, "Not found");
 
                 byte[] body = Encoding.UTF8.GetBytes(apiResponse.Body);
 
@@ -45,6 +45,22 @@ namespace Server.Web.Api
                 apiContext.Response.OutputStream.Close();
                 apiContext.Response.Close();
             }
+        }
+
+        private static async Task<ApiResponse> CallEndpointAsync(ApiEndpoint endpoint, ApiRequest request)
+        {
+            Type endpointClass = Type.GetType($"Server.ReNote.Api.{endpoint.Name}");
+
+            if (endpointClass == null)
+                return await ApiUtil.SendErrorAsync("Endpoint not found");
+
+            MethodInfo endpointMethod = endpointClass.GetMethod("OperateRequest", BindingFlags.Public | BindingFlags.Static);
+
+            if (endpointMethod == null)
+                return await ApiUtil.SendErrorAsync("Endpoint call not found");
+
+            Task<ApiResponse> response = (Task<ApiResponse>)endpointMethod.Invoke(null, new object[] { request });
+            return await response;
         }
     }
 }

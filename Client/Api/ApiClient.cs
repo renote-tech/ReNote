@@ -69,5 +69,10 @@ namespace Client.Api
             obj.password = password;
             return await SendRequest(Endpoints.GLOBAL_AUTH, HttpMethod.Post, JsonUtil.SerializeAsBody(obj), null);
         }
+        
+        public async Task<HttpResponseMessage> SendGetSchoolData()
+        {
+            return await SendRequest(Endpoints.SCHOOL_DATA, HttpMethod.Get, null, null);
+        }
     }
 }

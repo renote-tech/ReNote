@@ -4,6 +4,9 @@
     {
         public static bool IsFileBeingUsed(string location)
         {
+            if (string.IsNullOrWhiteSpace(location))
+                return false;
+
             try
             {
                 FileInfo file = new FileInfo(location);

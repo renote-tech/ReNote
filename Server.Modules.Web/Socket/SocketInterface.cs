@@ -1,8 +1,6 @@
 ﻿using System.Net;
 using System.Net.Sockets;
-
 using Server.Common.Utilities;
-using Server.Web.Api;
 using Server.Web.Interfaces;
 
 namespace Server.Web.Socket
@@ -36,6 +34,8 @@ namespace Server.Web.Socket
 
             Listener = new TcpListener(IPAddress.Any, Configuration.GlobalConfig.SocketPort);
             requestHandler = new Thread(SocketHandler.Handle);
+
+            Platform.Log($"Initialized IListener; PORT={Configuration.GlobalConfig.SocketPort}", LogLevel.INFO);
         }
 
         public void Start()

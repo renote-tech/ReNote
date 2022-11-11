@@ -1,4 +1,5 @@
-﻿using Server.Web.Interfaces;
+﻿using Server.Common.Utilities;
+using Server.Web.Interfaces;
 
 namespace Server.Web.Utilities
 {
@@ -20,6 +21,8 @@ namespace Server.Web.Utilities
                 string realPrefix = $"{prefixes[i]}:{port}/";
                 sInterface.Listener.Prefixes.Add(realPrefix);
             }
+
+            Platform.Log($"Initialized IHttpListener; PORT={port}", LogLevel.INFO);
         }
     }
 }

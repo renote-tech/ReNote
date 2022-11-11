@@ -1,6 +1,4 @@
-﻿using System.Text.RegularExpressions;
-
-namespace Server.Common.Utilities
+﻿namespace Server.Common.Utilities
 {
     public class PathUtil
     {

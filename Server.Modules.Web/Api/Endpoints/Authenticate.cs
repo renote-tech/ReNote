@@ -1,4 +1,10 @@
-﻿using Server.Web.Api;
+﻿using Server.Common.Encryption;
+using Server.Common.Utilities;
+using Server.ReNote.Data;
+using Server.ReNote.Management;
+using Server.Web.Api;
+using Server.Web.Api.Requests;
+using Server.Web.Api.Responses;
 using Server.Web.Utilities;
 
 namespace Server.ReNote.Api
@@ -12,22 +18,40 @@ namespace Server.ReNote.Api
                 case "POST":
                     return await Post(req);
                 default:
-                    return ApiUtil.SendBasic(405, ApiMessages.MethodNotAllowed());
+                    return await ApiUtil.SendAsync(405, ApiMessages.MethodNotAllowed());
             }
         }
 
-
         private static async Task<ApiResponse> Post(ApiRequest req)
         {
-            dynamic body = await StreamUtil.ConvertToDynamic(req.Body);
+            AuthRequest reqBody = await StreamUtil.Convert<AuthRequest>(req.Body);
 
-            if(!DynamicUtil.HasProperty(body, "username") || !DynamicUtil.HasProperty(body, "password"))
-                return ApiUtil.SendBasic(400, ApiMessages.NullOrEmpty("username", "password"));
+            if (reqBody == null)
+                return await ApiUtil.SendAsync(400, ApiMessages.InvalidJson());
 
-            if(string.IsNullOrWhiteSpace(body.username) || string.IsNullOrWhiteSpace(body.password))
-                return ApiUtil.SendBasic(400, ApiMessages.NullOrEmpty("username", "password"));
+            if(string.IsNullOrWhiteSpace(reqBody.Username) || string.IsNullOrWhiteSpace(reqBody.Password))
+                return await ApiUtil.SendAsync(400, ApiMessages.NullOrEmpty("username", "password"));
 
-            return ApiUtil.SendBasic(200, $"Success");
+            if (UserManager.UserExists(reqBody.Username) == -1)
+                return await ApiUtil.SendAsync(400, ApiMessages.UserNotExists());
+
+            User userData = UserManager.GetUser(reqBody.Username);
+            byte[] hashPassword = EncryptionUtil.ComputeSha256(reqBody.Password);
+            AESObject aesObject = new AESObject(userData.SecurePassword, iv: userData.IVPassword, key: hashPassword);
+
+            if (AES.Decrypt(aesObject) == string.Empty)
+                return await ApiUtil.SendAsync(401, ApiMessages.InvalidPassword());
+
+            GlobalSession session = SessionManager.CreateSession(userData.UserId);
+            AuthResponse response = new AuthResponse()
+            {
+                SessionId   = session.SessionId,
+                UserId      = session.UserId,
+                AccountType = session.AccountType,
+                AuthToken   = session.AuthToken
+            };
+
+            return await ApiUtil.SendWithDataAsync(200, ApiMessages.Success(), response);
         }
     }
 }

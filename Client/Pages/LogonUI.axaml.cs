@@ -1,4 +1,3 @@
-using System.Dynamic;
 using System.Net;
 using System.Net.Http;
 
@@ -8,7 +7,11 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 
 using Client.Api;
+using Client.Api.Responses;
+using Client.ReNote;
 using Client.Utilities;
+using Client.Windows;
+using Newtonsoft.Json;
 
 namespace Client.Pages
 {
@@ -55,6 +58,12 @@ namespace Client.Pages
                 UnlockLogin(deserializedBody.message);
                 return;
             }
+            
+            GlobalSession gSession = GlobalSession.Create(JsonConvert.DeserializeObject<AuthenticateData>(deserializedBody.data));
+            StudentUI studentUI = new StudentUI();
+            studentUI.SetSession(gSession);
+
+            MainWindow.Instance.Content = studentUI;
         }
 
         private void LockLogin()
