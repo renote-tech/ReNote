@@ -30,6 +30,7 @@ dotnet build --runtime osx-x64
 ```
 
 Notes:
+   - You need the .NET SDK to run the commands above. Download <a href="https://aka.ms/netcore">here</a>.
    - You can add the `--self-contained` parameter to add necessary dependencies to the output folder.
    - You can also build for 32bit platforms by changing the suffix `-x64` to `-x86` (Windows only).
    - Same apply for arm64 platforms by changing the suffix to `-arm64`. 
@@ -49,6 +50,6 @@ Notes:
 If you have suggestions, bugs or problems with ReNote, you can let us know via the <a href="https://discord.gg/Z2wh3CHusT">Discord server</a> or by creating an issue. You can also donate to our <a href="">patreon</a> (Not available yet).
 
 # License
-ReNote is licensed under the <a href="LICENSE">MIT</a> License.
-Newtonsoft.Json is licensed under the <a href="https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md">MIT</a> License.
-ProtoBuf.NET is licensed under the <a href="https://github.com/protobuf-net/protobuf-net/blob/main/Licence.txt">Apache</a> License.
+- ReNote is licensed under the <a href="LICENSE">MIT</a> License.
+- Newtonsoft.Json is licensed under the <a href="https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md">MIT</a> License.
+- ProtoBuf.NET is licensed under the <a href="https://github.com/protobuf-net/protobuf-net/blob/main/Licence.txt">Apache</a> License.
