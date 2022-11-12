@@ -2,6 +2,11 @@
 {
     public class FileUtil
     {
+        /// <summary>
+        /// Returns whether a file is currently in use or not.
+        /// </summary>
+        /// <param name="location">The location of the file.</param>
+        /// <returns><see cref="bool"/></returns>
         public static bool IsFileBeingUsed(string location)
         {
             if (string.IsNullOrWhiteSpace(location))

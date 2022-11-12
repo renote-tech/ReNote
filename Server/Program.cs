@@ -10,7 +10,11 @@ namespace Server
 {
     internal class Program
     {
-        static void Main(string[] args)
+        /// <summary>
+        /// Entry point of the application; 
+        /// loads main components and configurations.
+        /// </summary>
+        static void Main()
         {
             Platform.Initialize();
             Configuration.LoadAllConfigurations();
@@ -21,6 +25,7 @@ namespace Server
 
             SReNote.Instance.Initialize();
 
+            /* Test Only */
             AESObject aesObject = AES.Encrypt("password");
             User user = new User();
             user.RealName = "Alian DEAD";
@@ -36,6 +41,7 @@ namespace Server
             Database.Instance.AddDocument("users");
             Database.Instance["users"].AddKey("256", new Document(JsonConvert.SerializeObject(user)));
             Database.Instance.Save();
+            /* End Test */
 
             StaticInterface.Instance.Start();
             ApiInterface.Instance.Start();

@@ -5,6 +5,11 @@ namespace Server.ReNote.Api
 {
     public class Profile
     {
+        /// <summary>
+        /// Operates a request.
+        /// </summary>
+        /// <param name="req">The <see cref="ApiRequest"/> to be proceeded.</param>
+        /// <returns><see cref="ApiResponse"/></returns>
         public static async Task<ApiResponse> OperateRequest(ApiRequest req)
         {
             switch (req.Method.ToUpper())
@@ -18,6 +23,11 @@ namespace Server.ReNote.Api
             }
         }
 
+        /// <summary>
+        /// Operates a GET request.
+        /// </summary>
+        /// <param name="req">The <see cref="ApiRequest"/> to be proceeded.</param>
+        /// <returns><see cref="ApiResponse"/></returns>
         private static async Task<ApiResponse> Get(ApiRequest req)
         {
             ApiResponse verificationStatus = await ApiUtil.VerifyAuthorization(req.Headers);
@@ -29,6 +39,11 @@ namespace Server.ReNote.Api
             return await ApiUtil.SendAsync(200, ApiMessages.Success());
         }
 
+        /// <summary>
+        /// Operates a POST request.
+        /// </summary>
+        /// <param name="req">The <see cref="ApiRequest"/> to be proceeded.</param>
+        /// <returns><see cref="ApiResponse"/></returns>
         private static async Task<ApiResponse> Post(ApiRequest req)
         {
             return await ApiUtil.SendAsync(200, ApiMessages.Success());

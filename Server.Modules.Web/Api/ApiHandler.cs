@@ -8,6 +8,9 @@ namespace Server.Web.Api
 {
     internal class ApiHandler
     {
+        /// <summary>
+        /// Handles an incoming API request.
+        /// </summary>
         public static async void Handle()
         {
             while(ApiInterface.Instance.IsRunning)
@@ -47,6 +50,12 @@ namespace Server.Web.Api
             }
         }
 
+        /// <summary>
+        /// Calls an <see cref="ApiEndpoint"/>'s OperateRequest method.
+        /// </summary>
+        /// <param name="endpoint">The targeted <see cref="ApiEndpoint"/>.</param>
+        /// <param name="request">The <see cref="ApiRequest"/> to be proceeded.</param>
+        /// <returns><see cref="ApiResponse"/></returns>
         private static async Task<ApiResponse> CallEndpointAsync(ApiEndpoint endpoint, ApiRequest request)
         {
             Type endpointClass = Type.GetType($"Server.ReNote.Api.{endpoint.Name}");

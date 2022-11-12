@@ -8,6 +8,9 @@ namespace Server.Web.Api
 {
     public class ApiInterface : IHttpListener
     {
+        /// <summary>
+        /// The current existing instance of the <see cref="ApiInterface"/> class; creates a new one if <see cref="instance"/> is null.
+        /// </summary>
         public static ApiInterface Instance
         {
             get
@@ -21,12 +24,30 @@ namespace Server.Web.Api
             }
         }
 
+        /// <summary>
+        /// The <see cref="HttpListener"/>.
+        /// </summary>
         public HttpListener Listener { get; private set; }
+        /// <summary>
+        /// True if the <see cref="ApiInterface"/>'s instance is running; otherwise false.
+        /// </summary>
         public bool IsRunning { get; private set; }
+        /// <summary>
+        /// True if the <see cref="ApiInterface"/>'s instance is disposed; otherwise false.
+        /// </summary>
         public bool IsDisposed { get; private set; }
 
+        /// <summary>
+        /// The private instance of the <see cref="Instance"/> field.
+        /// </summary>
         private static ApiInterface instance;
+        /// <summary>
+        /// True if the <see cref="ApiInterface"/>'s instance is initialized; otherwise false.
+        /// </summary>
         private bool initialized;
+        /// <summary>
+        /// The request handler <see cref="Thread"/>.
+        /// </summary>
         private Thread requestHandler;
 
         public ApiInterface()
@@ -35,6 +56,10 @@ namespace Server.Web.Api
             requestHandler = new Thread(ApiHandler.Handle);
         }
 
+        /// <summary>
+        /// Initializes the <see cref="ApiInterface"/>'s instance.
+        /// </summary>
+        /// <exception cref="ObjectDisposedException">Throws an exception if the <see cref="ApiInterface"/>'s instance is disposed.</exception>
         public void Initialize()
         {
             if (IsDisposed)
@@ -50,6 +75,11 @@ namespace Server.Web.Api
             initialized = true;
         }
 
+        /// <summary>
+        /// Starts the <see cref="Listener"/> and <see cref="requestHandler"/> <see cref="Thread"/>.
+        /// </summary>
+        /// <exception cref="ObjectDisposedException">Throws an exception if the <see cref="ApiInterface"/>'s instance is disposed.</exception>
+        /// <exception cref="UninitializedException">Throws an exception if the <see cref="ApiInterface"/>'s instance is not initialized.</exception>
         public void Start()
         {
             if (IsDisposed)
@@ -67,6 +97,11 @@ namespace Server.Web.Api
             requestHandler.Start();
         }
 
+        /// <summary>
+        /// Stops and disposes the <see cref="ApiInterface"/>'s instance.
+        /// </summary>
+        /// <exception cref="ObjectDisposedException">Throws an exception if the <see cref="ApiInterface"/>'s instance is disposed.</exception>
+        /// <exception cref="UninitializedException">Throws an exception if the <see cref="ApiInterface"/>'s instance is not initialized.</exception>
         public void End()
         {
             if (IsDisposed)

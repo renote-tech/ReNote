@@ -11,6 +11,11 @@ namespace Server.ReNote.Api
 {
     public class Authenticate
     {
+        /// <summary>
+        /// Operates a request.
+        /// </summary>
+        /// <param name="req">The <see cref="ApiRequest"/> to be proceeded.</param>
+        /// <returns><see cref="ApiResponse"/></returns>
         public static async Task<ApiResponse> OperateRequest(ApiRequest req)
         {
             switch(req.Method.ToUpper())
@@ -22,6 +27,11 @@ namespace Server.ReNote.Api
             }
         }
 
+        /// <summary>
+        /// Operates a POST request.
+        /// </summary>
+        /// <param name="req">The <see cref="ApiRequest"/> to be proceeded.</param>
+        /// <returns><see cref="ApiResponse"/></returns>
         private static async Task<ApiResponse> Post(ApiRequest req)
         {
             AuthRequest reqBody = await StreamUtil.Convert<AuthRequest>(req.Body);

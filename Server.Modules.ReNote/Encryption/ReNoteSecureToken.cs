@@ -5,8 +5,16 @@ namespace Server.ReNote.Encryption
 {
     public class ReNoteSecureToken
     {
+        /// <summary>
+        /// The token pattern.
+        /// </summary>
         public const string BASE_PATTERN = "rst";
 
+        /// <summary>
+        /// Returns a ReNote secure token.
+        /// </summary>
+        /// <param name="sessionId">The session id.</param>
+        /// <returns><see cref="string"/></returns>
         public static string Generate(long sessionId)
         {
             string tokenContent = $"{sessionId}-{DateTimeOffset.Now.ToUnixTimeMilliseconds()}-{EncryptionUtil.RandomTokenSalt()}";

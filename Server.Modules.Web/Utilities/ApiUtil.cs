@@ -9,6 +9,12 @@ namespace Server.Web.Utilities
 {
     public class ApiUtil
     {
+        /// <summary>
+        /// Returns an <see cref="ApiResponse"/>.
+        /// </summary>
+        /// <param name="status">The status of the <see cref="ApiResponse"/>.</param>
+        /// <param name="message">The message of the <see cref="ApiResponse"/>.</param>
+        /// <returns><see cref="ApiResponse"/></returns>
         public static async Task<ApiResponse> SendAsync(int status, string message)
         {
             return await Task.Run(() =>
@@ -21,6 +27,13 @@ namespace Server.Web.Utilities
             });
         }
 
+        /// <summary>
+        /// Returns an <see cref="ApiResponse"/>.
+        /// </summary>
+        /// <param name="httpStatus">The HTTP status of the <see cref="ApiResponse"/>.</param>
+        /// <param name="status">The status of the <see cref="ApiResponse"/>.</param>
+        /// <param name="message">The message of the <see cref="ApiResponse"/>.</param>
+        /// <returns><see cref="ApiResponse"/></returns>
         public static async Task<ApiResponse> SendAsync(int httpStatus, int status, string message)
         {
             return await Task.Run(() =>
@@ -33,6 +46,13 @@ namespace Server.Web.Utilities
             });
         }
 
+        /// <summary>
+        /// Returns an <see cref="ApiResponse"/>.
+        /// </summary>
+        /// <param name="status">The status of the <see cref="ApiResponse"/>.</param>
+        /// <param name="message">The mesage of the <see cref="ApiResponse"/>.</param>
+        /// <param name="data">The data of the <see cref="ApiResponse"/>.</param>
+        /// <returns><see cref="ApiResponse"/></returns>
         public static async Task<ApiResponse> SendWithDataAsync(int status, string message, object data)
         {
             return await Task.Run(() =>
@@ -46,11 +66,21 @@ namespace Server.Web.Utilities
             });
         }
 
+        /// <summary>
+        /// Returns an <see cref="ApiResponse"/>.
+        /// </summary>
+        /// <param name="message">The error message of the <see cref="ApiResponse"/>.</param>
+        /// <returns><see cref="ApiResponse"/></returns>
         public static async Task<ApiResponse> SendErrorAsync(string message)
         {
             return await Task.Run(() => SendAsync(500, message));
         }
 
+        /// <summary>
+        /// Returns an <see cref="ApiResponse"/> to check whether the authorization credentials are correct or not.
+        /// </summary>
+        /// <param name="headers">The headers of an <see cref="ApiResponse"/>.</param>
+        /// <returns><see cref="ApiResponse"/></returns>
         public static async Task<ApiResponse> VerifyAuthorization(NameValueCollection headers)
         {
             string sessionId = GetHeaderFirstValue(headers["sessionId"]);
@@ -75,6 +105,11 @@ namespace Server.Web.Utilities
             return await SendAsync(200, ApiMessages.Success());
         }
 
+        /// <summary>
+        /// Returns the first value of an header value field.
+        /// </summary>
+        /// <param name="headerValue">The header to be proceeded.</param>
+        /// <returns><see cref="string"/></returns>
         private static string GetHeaderFirstValue(string headerValue)
         {
             if (string.IsNullOrWhiteSpace(headerValue))

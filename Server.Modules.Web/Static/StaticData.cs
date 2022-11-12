@@ -4,7 +4,12 @@ namespace Server.Web.Static
 {
     internal class StaticData
     {
-        public static async Task<byte[]> GetResource(string uri)
+        /// <summary>
+        /// Returns a resource from the specified uri.
+        /// </summary>
+        /// <param name="uri">The resource uri.</param>
+        /// <returns><see cref="byte"/>[]</returns>
+        public static async Task<byte[]> GetResourceAsync(string uri)
         {
             string resourcePath;
             if (uri == "/" || string.IsNullOrWhiteSpace(uri))
@@ -22,9 +27,14 @@ namespace Server.Web.Static
             return await File.ReadAllBytesAsync(resourcePath);
         }
 
-        public static async Task<bool> ResourceExists(string uri)
+        /// <summary>
+        /// Returns whether the resource exists or not.
+        /// </summary>
+        /// <param name="uri">The resource uri.</param>
+        /// <returns><see cref="bool"/></returns>
+        public static async Task<bool> ResourceExistsAsync(string uri)
         {
-            return await GetResource(uri) == WebResources.InternalError;
+            return await GetResourceAsync(uri) == WebResources.InternalError;
         }
     }
 }

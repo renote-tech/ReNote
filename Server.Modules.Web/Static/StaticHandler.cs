@@ -4,6 +4,9 @@ namespace Server.Web.Static
 {
     internal class StaticHandler
     {
+        /// <summary>
+        /// Handles an incoming web request.
+        /// </summary>
         public static async void Handle()
         {
             while (StaticInterface.Instance.IsRunning)
@@ -17,7 +20,7 @@ namespace Server.Web.Static
                 if (webContext.Request.RawUrl == null)
                     return;
 
-                byte[] webResponse = await StaticData.GetResource(webContext.Request.RawUrl);
+                byte[] webResponse = await StaticData.GetResourceAsync(webContext.Request.RawUrl);
 
                 webContext.Request.InputStream.Close();
                 webContext.Response.OutputStream.Write(webResponse, 0, webResponse.Length);

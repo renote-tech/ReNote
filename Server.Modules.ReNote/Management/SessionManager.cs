@@ -7,8 +7,16 @@ namespace Server.ReNote.Management
 {
     public class SessionManager
     {
+        /// <summary>
+        /// The length of the session id.
+        /// </summary>
         public const int SID_LENGTH = 9;
         
+        /// <summary>
+        /// Returns a new <see cref="GlobalSession"/> instance.
+        /// </summary>
+        /// <param name="userId">The user id of the <see cref="User"/>.</param>
+        /// <returns><see cref="GlobalSession"/></returns>
         public static GlobalSession CreateSession(long userId)
         {
             long sId = CreateSessionId();
@@ -41,6 +49,10 @@ namespace Server.ReNote.Management
             return session;
         }
 
+        /// <summary>
+        /// Updates the session timestamp.
+        /// </summary>
+        /// <param name="sessionId">The session id.</param>
         public static void UpdateSessionTimestamp(string sessionId)
         {
             GlobalSession session = GetSession(sessionId);
@@ -49,6 +61,11 @@ namespace Server.ReNote.Management
             Database.Instance["sessions"][sessionId] = JsonConvert.SerializeObject(session);
         }
 
+        /// <summary>
+        /// Returns an existing session.
+        /// </summary>
+        /// <param name="sessionId">The session id.</param>
+        /// <returns><see cref="GlobalSession"/></returns>
         public static GlobalSession GetSession(string sessionId)
         {
             if (!SessionExists(sessionId))
@@ -61,16 +78,29 @@ namespace Server.ReNote.Management
             return JsonConvert.DeserializeObject<GlobalSession>(rawSession);
         }
 
+        /// <summary>
+        /// Deletes a session.
+        /// </summary>
+        /// <param name="sId">The session id.</param>
         public static void DeleteSession(string sId)
         {
             Database.Instance["sessions"].RemoveKey(sId);
         }
 
+        /// <summary>
+        /// Returns whether the session exists.
+        /// </summary>
+        /// <param name="sId">The session id.</param>
+        /// <returns><see cref="bool"/></returns>
         public static bool SessionExists(string sId)
         {
             return Database.Instance["sessions"][sId] != null;
         }
 
+        /// <summary>
+        /// Returns a session id.
+        /// </summary>
+        /// <returns><see cref="long"/></returns>
         private static long CreateSessionId()
         {
             long minSid = (long)Math.Pow(10, SID_LENGTH - 1);
@@ -87,21 +117,39 @@ namespace Server.ReNote.Management
 
     public class GlobalSession
     {
+        /// <summary>
+        /// The session id of the <see cref="GlobalSession"/>.
+        /// </summary>
         [JsonProperty("sessionId")]
         public long SessionId { get; set; }
 
+        /// <summary>
+        /// The user id of the <see cref="GlobalSession"/>.
+        /// </summary>
         [JsonProperty("userId")]
         public long UserId { get; set; }
 
+        /// <summary>
+        /// The account type of the <see cref="GlobalSession"/>.
+        /// </summary>
         [JsonProperty("accountType")]
         public int AccountType { get; set; }
-        
+
+        /// <summary>
+        /// The auth token of the <see cref="GlobalSession"/>.
+        /// </summary>
         [JsonProperty("authToken")]
         public string AuthToken { get; set; }
 
+        /// <summary>
+        /// The request timestamp of the <see cref="GlobalSession"/>.
+        /// </summary>
         [JsonProperty("requestTimestamp")]
         public long RequestTimestamp { get; set; }
 
+        /// <summary>
+        /// The connection timestamp of the <see cref="GlobalSession"/>.
+        /// </summary>
         [JsonProperty("connection")]
         public long Connection { get; set; }
 
@@ -118,6 +166,10 @@ namespace Server.ReNote.Management
             AuthToken = authToken;
         }
 
+        /// <summary>
+        /// Returns whether the session has expired or not.
+        /// </summary>
+        /// <returns><see cref="bool"/></returns>
         public bool HasExpired()
         {
             bool isExpiredSession = false;

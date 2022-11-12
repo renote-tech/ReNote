@@ -5,6 +5,12 @@ namespace Server.Common.Encryption
 {
     public class AES
     {
+
+        /// <summary>
+        /// Encrypts a <see cref="string"/>.
+        /// </summary>
+        /// <param name="data">The <see cref="string"/> to be encrypted.</param>
+        /// <returns><see cref="AESObject"/></returns>
         public static AESObject Encrypt(string data)
         {
             Aes AES = Aes.Create();
@@ -23,6 +29,11 @@ namespace Server.Common.Encryption
             return new AESObject(Convert.ToBase64String(encryptedBytes), iv:iv, key:key);
         }
 
+        /// <summary>
+        /// Decrypts an <see cref="AESObject"/>.
+        /// </summary>
+        /// <param name="aesObject">The <see cref="AESObject"/> to be decrypted.</param>
+        /// <returns><see cref="string"/></returns>
         public static string Decrypt(AESObject aesObject)
         {
             Aes AES = Aes.Create();
@@ -48,8 +59,17 @@ namespace Server.Common.Encryption
 
     public class AESObject
     {
+        /// <summary>
+        /// The cipher <see cref="string"/>.
+        /// </summary>
         public string Data { get; set; }
+        /// <summary>
+        /// The initialization vector.
+        /// </summary>
         public byte[] IV { get; set; }
+        /// <summary>
+        /// The decryption key; it shall not be stored in a database or file.
+        /// </summary>
         public byte[] Key { get; set; }
 
         public AESObject()

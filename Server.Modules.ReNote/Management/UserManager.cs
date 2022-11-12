@@ -6,6 +6,11 @@ namespace Server.ReNote.Management
 {
     public class UserManager
     {
+        /// <summary>
+        /// Returns an user instance.
+        /// </summary>
+        /// <param name="username">The username of the <see cref="User"/>.</param>
+        /// <returns><see cref="User"/></returns>
         public static User GetUser(string username)
         {
             long userId = UserExists(username);
@@ -15,6 +20,11 @@ namespace Server.ReNote.Management
             return GetUser(userId);
         }
 
+        /// <summary>
+        /// Returns an user instance.
+        /// </summary>
+        /// <param name="userId">The user id of the <see cref="User"/>.</param>
+        /// <returns><see cref="User"/></returns>
         public static User GetUser(long userId)
         {
             Document userDocument = (Document)Database.Instance["users"][userId.ToString()];
@@ -24,6 +34,11 @@ namespace Server.ReNote.Management
             return JsonConvert.DeserializeObject<User>(userDocument.GetRaw());
         }
 
+        /// <summary>
+        /// Returns whether the user exists.
+        /// </summary>
+        /// <param name="userId">The user id of the <see cref="User"/>.</param>
+        /// <returns><see cref="long"/></returns>
         public static long UserExists(long userId)
         {
             if (Database.Instance["users"][userId.ToString()] != null)
@@ -32,6 +47,11 @@ namespace Server.ReNote.Management
             return -1;
         }
 
+        /// <summary>
+        /// Returns whether the user exists.
+        /// </summary>
+        /// <param name="username">The username of the <see cref="User"/>.</param>
+        /// <returns><see cref="long"/>/returns>
         public static long UserExists(string username)
         {
             if (StringUtil.ContainsDigitsOnly(username) && NumberUtil.IsSafeLong(username))
