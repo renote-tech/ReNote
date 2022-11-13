@@ -52,4 +52,5 @@ If you have suggestions, bugs or problems with ReNote, you can let us know via t
 # License
 - ReNote is licensed under the <a href="LICENSE">MIT</a> License.
 - Newtonsoft.Json is licensed under the <a href="https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md">MIT</a> License.
+- ProtoBuf is licensed under the <a href="https://github.com/protocolbuffers/protobuf/blob/main/LICENSE">BSD</a> License.
 - ProtoBuf.NET is licensed under the <a href="https://github.com/protobuf-net/protobuf-net/blob/main/Licence.txt">Apache</a> License.
