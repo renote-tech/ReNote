@@ -49,7 +49,7 @@ namespace Server.Common.Encryption
                 decryptedBytes = cryptor.TransformFinalBlock(content, 0, content.Length);
             } catch(CryptographicException)
             {
-                return string.Empty; 
+                return string.Empty;
             }
 
             cryptor.Dispose();

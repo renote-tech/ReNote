@@ -1,5 +1,4 @@
 using Avalonia.Controls;
-
 using Client.Pages;
 
 namespace Client.Windows
@@ -12,7 +11,7 @@ namespace Client.Windows
             Instance = this;
 
             InitializeComponent();
-            this.Content = new SplashUI();
+            Content = new SplashUI();
         }
     }
 }

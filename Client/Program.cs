@@ -1,5 +1,3 @@
-using System;
-
 using Avalonia;
 
 namespace Client

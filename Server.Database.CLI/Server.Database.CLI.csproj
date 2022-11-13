@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <Copyright>© ReNote NETW. All rights reserved.</Copyright>
+    <Company>ReNote NETW.</Company>
+    <Product>ReNote Database CLI</Product>
+    <Authors>Alian Dead</Authors>
+    <ApplicationIcon>renote-512-16x.ico</ApplicationIcon>
+    <SignAssembly>False</SignAssembly>
+    <PackageId>Server.Database.CLI</PackageId>
+    <Description>ReNote Database CLI</Description>
+    <Title>ReNote Database CLI</Title>
+    <AssemblyName>RDBC</AssemblyName>
+    <RootNamespace>Server.Database</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="renote-512-16x.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Server.Modules.Common\Server.Modules.Common.csproj" />
+    <ProjectReference Include="..\Server.Modules.ReNote\Server.Modules.ReNote.csproj" />
+  </ItemGroup>
+
+</Project>

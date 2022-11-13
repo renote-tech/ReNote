@@ -25,15 +25,15 @@
         /// <summary>
         /// The server version.
         /// </summary>
-        public static readonly string ServerVersion = $"{(IsDebug ? "Dev" : "Release")}-0.0.0";
+        public static readonly string ServerVersion = $"{(IsDebug ? "Dev" : "Release")}-0.7.16";
         /// <summary>
         /// The server version name.
         /// </summary>
-        public static readonly string ServerVersionName = "NightOny";
+        public const string ServerVersionName = "NightOny";
         /// <summary>
         /// The server API version.
         /// </summary>
-        public static readonly string ServerApiVersion = "v1";
+        public const string ServerApiVersion = "v1";
 
         /// <summary>
         /// Detects whether the environment is running Windows or Unix.

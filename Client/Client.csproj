@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<OutputType>Exe</OutputType>
+		<OutputType>WinExe</OutputType>
 		<TargetFramework>net6.0</TargetFramework>
 		<Nullable>disable</Nullable>
 		<!--Avalonia doesen't support TrimMode=link currently,but we are working on that https://github.com/AvaloniaUI/Avalonia/issues/6892 -->
@@ -11,6 +11,7 @@
 		<Deterministic>false</Deterministic>
 		<RuntimeIdentifiers>win-x64;osx-x64;linux-x64</RuntimeIdentifiers>
 		<EnforceCodeStyleInBuild>False</EnforceCodeStyleInBuild>
+		<ImplicitUsings>enable</ImplicitUsings>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 	  <DebugType>full</DebugType>
@@ -20,6 +21,9 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<None Remove=".gitignore" />
+		<None Remove="Assets\home_button.png" />
+		<None Remove="Assets\logout_button.png" />
+		<None Remove="Assets\more_button.png" />
 		<None Remove="Assets\renote-no-bg.png" />
 		<None Remove="Assets\ReNote_big_italic.png" />
 		<None Remove="Assets\user.bmp" />
@@ -43,7 +47,12 @@
 		<AvaloniaResource Include="Assets\**" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Folder Include="Configuration\" />
+	  <Folder Include="ReNote\Student\" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Compile Update="Pages\UserUI.axaml.cs">
+	    <DependentUpon>UserUI.axaml</DependentUpon>
+	  </Compile>
 	</ItemGroup>
 	
 </Project>

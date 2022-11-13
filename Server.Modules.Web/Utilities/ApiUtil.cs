@@ -81,7 +81,7 @@ namespace Server.Web.Utilities
         /// </summary>
         /// <param name="headers">The headers of an <see cref="ApiResponse"/>.</param>
         /// <returns><see cref="ApiResponse"/></returns>
-        public static async Task<ApiResponse> VerifyAuthorization(NameValueCollection headers)
+        public static async Task<ApiResponse> VerifyAuthorizationAsync(NameValueCollection headers)
         {
             string sessionId = GetHeaderFirstValue(headers["sessionId"]);
             string authToken = GetHeaderFirstValue(headers["authToken"]);
@@ -89,7 +89,12 @@ namespace Server.Web.Utilities
             if (string.IsNullOrWhiteSpace(sessionId) || string.IsNullOrWhiteSpace(authToken))
                 return await SendAsync(400, ApiMessages.NullOrEmpty("userId", "authToken"));
 
-            GlobalSession session = SessionManager.GetSession(sessionId);
+            if (!NumberUtil.IsSafeLong(sessionId))
+                return await SendAsync(400, ApiMessages.InvalidSessionId());
+
+            long realSessionId = long.Parse(sessionId);
+
+            GlobalSession session = SessionManager.GetSession(realSessionId);
 
             if (session == null)
                 return await SendAsync(400, ApiMessages.SessionNotExists());
@@ -100,9 +105,9 @@ namespace Server.Web.Utilities
             if (EncryptionUtil.ComputeStringSha256(authToken) != session.AuthToken)
                 return await SendAsync(401, ApiMessages.InvalidAuthToken());
 
-            SessionManager.UpdateSessionTimestamp(sessionId);
+            SessionManager.UpdateSessionTimestamp(session.SessionId);
 
-            return await SendAsync(200, ApiMessages.Success());
+            return await SendWithDataAsync(200, ApiMessages.Success(), session.UserId);
         }
 
         /// <summary>

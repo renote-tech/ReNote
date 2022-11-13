@@ -1,5 +1,10 @@
-﻿using Server.Web.Api;
+﻿using Newtonsoft.Json;
+using Server.ReNote.Data;
+using Server.ReNote.Management;
+using Server.Web.Api;
+using Server.Web.Api.Responses;
 using Server.Web.Utilities;
+using System.ComponentModel.DataAnnotations;
 
 namespace Server.ReNote.Api
 {
@@ -16,8 +21,6 @@ namespace Server.ReNote.Api
             {
                 case "GET":
                     return await Get(req);
-                case "POST":
-                    return await Post(req);
                 default:
                     return await ApiUtil.SendAsync(405, ApiMessages.MethodNotAllowed());
             }
@@ -30,23 +33,25 @@ namespace Server.ReNote.Api
         /// <returns><see cref="ApiResponse"/></returns>
         private static async Task<ApiResponse> Get(ApiRequest req)
         {
-            ApiResponse verificationStatus = await ApiUtil.VerifyAuthorization(req.Headers);
-            if (verificationStatus.Status != 200)
-                return verificationStatus;
+            ApiResponse verification = await ApiUtil.VerifyAuthorizationAsync(req.Headers);
+            if (verification.Status != 200)
+                return verification;
 
+            DataResponse verificationResponse = JsonConvert.DeserializeObject<DataResponse>(verification.Body);
+            long userId = (long)verificationResponse.Data;
 
+            User userData = UserManager.GetUser(userId);
+            ProfileResponse response = new ProfileResponse()
+            {
+                RealName       = userData.RealName,
+                ProfilePicture = userData.ProfilePicture,
+                Birthday       = userData.Birthday,
+                Email          = userData.Email,
+                LastConnection = userData.LastConnection,
+                Phone          = userData.Phone
+            };
 
-            return await ApiUtil.SendAsync(200, ApiMessages.Success());
-        }
-
-        /// <summary>
-        /// Operates a POST request.
-        /// </summary>
-        /// <param name="req">The <see cref="ApiRequest"/> to be proceeded.</param>
-        /// <returns><see cref="ApiResponse"/></returns>
-        private static async Task<ApiResponse> Post(ApiRequest req)
-        {
-            return await ApiUtil.SendAsync(200, ApiMessages.Success());
+            return await ApiUtil.SendWithDataAsync(200, ApiMessages.Success(), response);
         }
     }
 }

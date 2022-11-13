@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
 using Server.Common.Encryption;
 using Server.Common.Utilities;
-using Server.ReNote;
 using Server.ReNote.Data;
+using Server.ReNote.Utilities;
 using Server.Web.Api;
 using Server.Web.Static;
 
@@ -23,7 +23,7 @@ namespace Server
             ApiInterface.Instance.Initialize();
             ApiRegisterer.Initialize();
 
-            SReNote.Instance.Initialize();
+            ReNote.Server.Instance.Initialize();
 
             /* Test Only */
             AESObject aesObject = AES.Encrypt("password");
@@ -37,10 +37,7 @@ namespace Server
             user.IVPassword = aesObject.IV;
 
             Database.Instance.Clear();
-            Database.Instance.AddDocument("sessions");
-            Database.Instance.AddDocument("users");
-            Database.Instance["users"].AddKey("256", new Document(JsonConvert.SerializeObject(user)));
-            Database.Instance.Save();
+            DatabaseUtil.Set("users", "256", JsonConvert.SerializeObject(user));
             /* End Test */
 
             StaticInterface.Instance.Start();

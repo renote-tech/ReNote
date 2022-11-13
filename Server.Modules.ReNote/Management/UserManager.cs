@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Server.Common.Utilities;
 using Server.ReNote.Data;
+using Server.ReNote.Utilities;
 
 namespace Server.ReNote.Management
 {
@@ -27,7 +28,7 @@ namespace Server.ReNote.Management
         /// <returns><see cref="User"/></returns>
         public static User GetUser(long userId)
         {
-            Document userDocument = (Document)Database.Instance["users"][userId.ToString()];
+            Document userDocument = DatabaseUtil.Get("users", userId.ToString());
             if (userDocument == null)
                 return null;
 
@@ -41,7 +42,7 @@ namespace Server.ReNote.Management
         /// <returns><see cref="long"/></returns>
         public static long UserExists(long userId)
         {
-            if (Database.Instance["users"][userId.ToString()] != null)
+            if (DatabaseUtil.DocumentExists("users", userId.ToString()))
                 return userId;
 
             return -1;
@@ -57,17 +58,18 @@ namespace Server.ReNote.Management
             if (StringUtil.ContainsDigitsOnly(username) && NumberUtil.IsSafeLong(username))
                 return UserExists(long.Parse(username));
 
-            Document[] documents = Database.Instance["users"].GetValues();
-            if (documents.Length == 0)
+            Dictionary<string, Document> documents = DatabaseUtil.GetDictionary("users");
+            if (documents.Count == 0)
                 return -1;
 
-            for(int i = 0; i < documents.Length; i++)
+            for(int i = 0; i < documents.Count; i++)
             {
-                if (documents[i] == null)
+                if (documents.ElementAt(i).Value == null)
                     continue;
 
-                if (documents[i].Data.username == username)
-                    return documents[i].Data.userId;
+                User user = GetUser(documents.ElementAt(i).Key);
+                if (user.Username == username)
+                    return user.UserId;
             }
 
             return -1;

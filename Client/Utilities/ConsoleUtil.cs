@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Client.Utilities
+﻿namespace Client.Utilities
 {
     public class ConsoleUtil
     {

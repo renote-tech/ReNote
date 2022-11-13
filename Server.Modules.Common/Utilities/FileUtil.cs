@@ -12,6 +12,9 @@
             if (string.IsNullOrWhiteSpace(location))
                 return false;
 
+            if (!File.Exists(location))
+                return false;
+
             try
             {
                 FileInfo file = new FileInfo(location);

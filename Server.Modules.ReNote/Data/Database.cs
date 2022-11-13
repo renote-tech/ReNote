@@ -67,32 +67,6 @@ namespace Server.ReNote.Data
         }
 
         /// <summary>
-        /// Returns a <see cref="RootDocument"/> class.
-        /// </summary>
-        /// <param name="index">The index of the <see cref="RootDocument"/> within the <see cref="rootDocuments"/> list.</param>
-        /// <returns><see cref="RootDocument"/></returns>
-        public RootDocument this[int index]
-        {
-            get
-            {
-                if (rootDocuments.Count - 1 <= index)
-                    return rootDocuments[index];
-
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Adds a <see cref="RootDocument"/> to the <see cref="rootDocuments"/> list.
-        /// </summary>
-        /// <param name="document">The <see cref="RootDocument"/> to be added.</param>
-        public void AddDocument(RootDocument document)
-        {
-            if (document != null)
-                rootDocuments.Add(document);
-        }
-
-        /// <summary>
         /// Adds a <see cref="RootDocument"/> to the <see cref="rootDocuments"/> list.
         /// </summary>
         /// <param name="documentName">The <see cref="RootDocument"/> name.</param>
@@ -102,29 +76,6 @@ namespace Server.ReNote.Data
                 rootDocuments.Add(new RootDocument(documentName));
         }
 
-        /// <summary>
-        /// Removes a <see cref="RootDocument"/> from the <see cref="rootDocuments"/> class.
-        /// </summary>
-        /// <param name="document">The <see cref="RootDocument"/> to be removed.</param>
-        public void RemoveDocument(RootDocument document)
-        {
-            if (document != null && rootDocuments.Contains(document))
-                rootDocuments.Remove(document);
-        }
-
-        /// <summary>
-        /// Removes a <see cref="RootDocument"/> from the <see cref="rootDocuments"/> class.
-        /// </summary>
-        /// <param name="name">The <see cref="RootDocument"/> name.</param>
-        public void RemoveDocument(string name)
-        {
-            for (int i = 0; i < rootDocuments.Count; i++)
-            {
-                if (rootDocuments[i].Name == name)
-                    rootDocuments.RemoveAt(i);
-            }
-        }
-        
         /// <summary>
         /// Returns whether the <see cref="rootDocuments"/> list is empty;
         /// </summary>
@@ -137,22 +88,23 @@ namespace Server.ReNote.Data
         /// <summary>
         /// Loads the <see cref="rootDocuments"/> list from a database file.
         /// </summary>
-        public void Load()
+        public bool Load()
         {
             if (string.IsNullOrWhiteSpace(SaveLocation))
-                return;
+                return false;
 
             if (FileUtil.IsFileBeingUsed(SaveLocation))
-                return;
+                return false;
 
             if (!File.Exists(SaveLocation))
-                return;
+                return false;
 
             byte[] data = File.ReadAllBytes(SaveLocation);
             using MemoryStream stream = new MemoryStream(data);
             Database db = Serializer.Deserialize<Database>(stream);
 
             rootDocuments = db.rootDocuments;
+            return true;
         }
 
         /// <summary>
@@ -166,39 +118,43 @@ namespace Server.ReNote.Data
         /// <summary>
         /// Saves the <see cref="Database"/> to a database file.
         /// </summary>
-        public void Save()
+        /// <param name="doBackup">If true; do a backup of the <see cref="Database"/>.</param>
+        public async Task<bool> SaveAsync(bool doBackup = true)
         {
-            Backup();
-            Save(SaveLocation);
+            if(doBackup)
+                await BackupAsync();
+
+            return await SaveAsync(SaveLocation);
         }
 
         /// <summary>
         /// Back up the <see cref="Database"/>'s instance to a different file (backups/db_school_XXXX_XX_XX_XX_XX_XX_XXX.dat)
         /// </summary>
-        public void Backup()
+        public async Task<bool> BackupAsync()
         {
             DateTime curTime = DateTime.Now;
             string saveLocation = $"backups/db_school_{curTime.Year}_{curTime.Month}_{curTime.Day}_{curTime.Hour}_{curTime.Minute}_{curTime.Second}_{curTime.Millisecond}.dat";
 
-            Save(saveLocation);
+            return await SaveAsync(saveLocation);
         }
 
         /// <summary>
         /// Saves the <see cref="Database"/> to a database file.
         /// </summary>
         /// <param name="saveLocation">The file location to save the <see cref="Database"/>.</param>
-        private async void Save(string saveLocation)
+        private async Task<bool> SaveAsync(string saveLocation)
         {
             if (IsEmpty())
-                return;
+                return false;
 
             if (FileUtil.IsFileBeingUsed(saveLocation))
-                return;
+                return false;
 
             using MemoryStream stream = new MemoryStream();
             Serializer.Serialize(stream, this);
 
             await File.WriteAllBytesAsync(saveLocation, stream.ToArray());
+            return true;
         }
     }
 
@@ -215,7 +171,7 @@ namespace Server.ReNote.Data
         /// The <see cref="RootDocument"/>'s instance <see cref="Document"/> list.
         /// </summary>
         [ProtoMember(2)]
-        private Dictionary<string, Document> documents = new Dictionary<string, Document>();
+        private readonly Dictionary<string, Document> documents = new Dictionary<string, Document>();
 
         public RootDocument()
         {
@@ -252,33 +208,6 @@ namespace Server.ReNote.Data
         }
 
         /// <summary>
-        /// Returns a <see cref="Document"/>
-        /// </summary>
-        /// <param name="index">The index of the <see cref="Document"/> within the <see cref="documents"/> list.</param>
-        /// <returns><see cref="object"/></returns>
-        public object this[int index]
-        {
-            get
-            {
-                if (documents.Count - 1 <= index)
-                    return documents.ElementAt(index).Value.Data;
-
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Adds a <see cref="Document"/> to the <see cref="documents"/> list.
-        /// </summary>
-        /// <param name="key">The key of the <see cref="Document"/> to be added.</param>
-        /// <param name="value">The <see cref="Document"/>.</param>
-        public void AddKey(string key, string value)
-        {
-            if (!documents.ContainsKey(key))
-                documents.Add(key, new Document(value));
-        }
-
-        /// <summary>
         /// Adds a <see cref="Document"/> to the <see cref="documents"/> list.
         /// </summary>
         /// <param name="key">The key of the <see cref="Document"/> to be added.</param>
@@ -290,40 +219,39 @@ namespace Server.ReNote.Data
         }
 
         /// <summary>
-        /// Removes a <see cref="Document"/> from the <see cref="documents"/> list.
+        /// Removes a <see cref="Document"/> from the <see cref="documents"/> list. Returns whether the key has actually been removed.
         /// </summary>
         /// <param name="key">The key of the <see cref="Document"/> to be removed.</param>
-        public void RemoveKey(string key)
+        /// <returns><see cref="bool"/></returns>
+        public bool RemoveKey(string key)
         {
-            if (documents.ContainsKey(key))
-                documents.Remove(key);
+            if (!documents.ContainsKey(key))
+                return false;
+
+            documents.Remove(key);
+            return true;
         }
 
         /// <summary>
-        /// Removes a <see cref="Document"/> from the <see cref="documents"/> list.
+        /// Returns a dictionary with all the <see cref="Document"/>s.
         /// </summary>
-        /// <param name="document">The <see cref="Document"/> to be removed.</param>
-        public void RemoveKey(Document document)
+        /// <returns>Dictionary[<see cref="string"/>, <see cref="Document"/>]</returns>
+        public Dictionary<string, Document> GetDictionary()
         {
-            for (int i = 0; i < documents.Count; i++)
-            {
-                KeyValuePair<string, Document> keyValue = documents.ElementAt(i);
-                if (keyValue.Value == document)
-                    documents.Remove(keyValue.Key);
-            }
+            return documents;
         }
 
         /// <summary>
-        /// Gets all the <see cref="Document"/>s from the <see cref="documents"/> list.
+        /// Returns all the <see cref="Document"/>s from the <see cref="documents"/> list.
         /// </summary>
-        /// <returns><see cref="Document"/>[]</returns>
+        /// <returns></returns>
         public Document[] GetValues()
         {
-            Document[] docs = new Document[documents.Count];
-            for(int i = 0; i < docs.Length; i++)
-                docs[i] = documents.ElementAt(i).Value;
+            Document[] docsValues = new Document[documents.Count];
+            for(int i = 0; i < docsValues.Length; i++)
+                docsValues[i] = documents.ElementAt(i).Value;
 
-            return docs;
+            return docsValues;
         }
 
         /// <summary>

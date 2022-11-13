@@ -26,7 +26,7 @@ namespace Server.Common.Utilities
         }
 
         /// <summary>
-        /// Returns a salt.
+        /// Returns a randomized salt.
         /// </summary>
         /// <param name="size">The size of the salt.</param>
         /// <returns><see cref="string"/></returns>

@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+﻿using Newtonsoft.Json;
 
 namespace Server.Common.Utilities
 {
@@ -16,9 +16,13 @@ namespace Server.Common.Utilities
         /// The <see cref="WebConfig"/> object.
         /// </summary>
         public static WebConfig WebConfig { get; set; }
+        /// <summary>
+        /// The <see cref="ReNoteConfig"/> object.
+        /// </summary>
+        public static ReNoteConfig ReNoteConfig { get; set; }
 
         /// <summary>
-        /// Loads all configurations including <see cref="GlobalConfig"/> and <see cref="WebConfig"/>.
+        /// Loads all of the configurations including <see cref="GlobalConfig"/>, <see cref="WebConfig"/> and <see cref="ReNoteConfig"/>.
         /// </summary>
         public static void LoadAllConfigurations()
         {
@@ -27,7 +31,8 @@ namespace Server.Common.Utilities
 
             GlobalConfig = LoadConfiguration<GlobalConfig>("Global");
             WebConfig = LoadConfiguration<WebConfig>("Web");
-
+            ReNoteConfig = LoadConfiguration<ReNoteConfig>("ReNote");
+            
             IsConfigurationsLoaded = true;
         }
 
@@ -47,16 +52,25 @@ namespace Server.Common.Utilities
 
             string configContent = File.ReadAllText(configFileName);
 
+            if (string.IsNullOrWhiteSpace(configContent))
+                return new T();
+
             if (JsonUtil.ValiditateJson(configContent))
-                config = JsonSerializer.Deserialize<T>(configContent);
+                config = JsonConvert.DeserializeObject<T>(configContent);
             else
                 config = new T();
 
-            config ??= new T();
-
-            Platform.Log($"Loaded {name} configuration", LogLevel.INFO);
-
             return config;
+        }
+
+        /// <summary>
+        /// Saves all of the configurations including <see cref="GlobalConfig"/>, <see cref="WebConfig"/> and <see cref="ReNoteConfig"/>.
+        /// </summary>
+        public static void SaveAllConfigurations()
+        {
+            SaveConfigurationAsync("Global", GlobalConfig);
+            SaveConfigurationAsync("Web", WebConfig);
+            SaveConfigurationAsync("ReNote", ReNoteConfig);
         }
 
         /// <summary>
@@ -65,10 +79,10 @@ namespace Server.Common.Utilities
         /// <typeparam name="T">The configuration type.</typeparam>
         /// <param name="name">The configuration name.</param>
         /// <param name="configObject">The configuration object.</param>
-        public static void SaveConfiguration<T>(string name, T configObject)
+        public static async void SaveConfigurationAsync<T>(string name, T configObject)
         {
-            string data = JsonSerializer.Serialize(configObject);
-            File.WriteAllText($"{name.ToLower()}.config.json", data);
+            string data = JsonConvert.SerializeObject(configObject);
+            await File.WriteAllTextAsync($"{name.ToLower()}.config.json", data);
         }
     }
 
@@ -77,18 +91,22 @@ namespace Server.Common.Utilities
         /// <summary>
         /// The HTTP urls prefixes.
         /// </summary>
+        [JsonProperty("prefixes")]
         public string[] Prefixes { get; set; }
         /// <summary>
         /// The web interface port.
         /// </summary>
+        [JsonProperty("webPort")]
         public ushort WebPort { get; set; }
         /// <summary>
         /// The API interface port.
         /// </summary>
+        [JsonProperty("apiPort")]
         public ushort ApiPort { get; set; }
         /// <summary>
         /// The socket interface port.
         /// </summary>
+        [JsonProperty("socketPort")]
         public ushort SocketPort { get; set; }
 
         public GlobalConfig() => Prefixes = Array.Empty<string>();
@@ -99,14 +117,46 @@ namespace Server.Common.Utilities
         /// <summary>
         /// The relative root path of the web interface.
         /// </summary>
+        [JsonProperty("webRoot")]
         public string WebRoot { get; set; }
+
         /// <summary>
         /// The web interface parameter to modify the behavior of the urls.
         /// </summary>
+        [JsonProperty("webNoDotHtml")]
         public bool WebNoDotHtml { get; set; }
+        
         /// <summary>
         /// The web interface parameter to run Vue.js application.
         /// </summary>
+        [JsonProperty("webVueSupport")]
         public bool WebVueSupport { get; set; }
+    }
+
+    public class ReNoteConfig
+    {
+        /// <summary>
+        /// The location of the database file.
+        /// </summary>
+        [JsonProperty("dbSaveLocation")]
+        public string DBSaveLocation { get; set; }
+
+        /// <summary>
+        /// The name of the school.
+        /// </summary>
+        [JsonProperty("schoolName")]
+        public string SchoolName { get; set; }
+
+        /// <summary>
+        /// The type of school.
+        /// </summary>
+        [JsonProperty("schoolType")]
+        public int SchoolType { get; set; }
+        
+        /// <summary>
+        /// The location of the school.
+        /// </summary>
+        [JsonProperty("schoolLocation")]
+        public string SchoolLocation { get; set; }
     }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using Client.Utilities;
+﻿using Client.Utilities;
 
 namespace Client
 {
@@ -16,8 +15,8 @@ namespace Client
 #endif
             }
         }
-        public static readonly string ClientVersion = $"{(IsDebug ? "Dev" : "Release")}-0.0.207";
-        public static readonly string ClientVersionName = "IronAssembly";
+        public static readonly string ClientVersion = $"{(IsDebug ? "Dev" : "Release")}-0.0.0";
+        public const string ClientVersionName = "IronAssembly";
 
         public static void Log(string message, LogLevel level = LogLevel.DEBUG)
         {

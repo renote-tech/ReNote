@@ -1,8 +1,9 @@
-﻿using Server.ReNote.Data;
+﻿using Server.Common.Utilities;
+using Server.ReNote.Data;
 
 namespace Server.ReNote
 {
-    public class SReNote
+    public class Server
     {
         /// <summary>
         /// The saving database interval.
@@ -10,13 +11,13 @@ namespace Server.ReNote
         public const int SAVE_DB_INTERVAL = 120000;
 
         /// <summary>
-        /// The current instance of the <see cref="SReNote"/> class; creates a new one if <see cref="instance"/> is null.
+        /// The current instance of the <see cref="Server"/> class; creates a new one if <see cref="instance"/> is null.
         /// </summary>
-        public static SReNote Instance
+        public static Server Instance
         {
             get
             {
-                instance ??= new SReNote();
+                instance ??= new Server();
                 return instance;
             }
             private set
@@ -36,29 +37,36 @@ namespace Server.ReNote
         /// <summary>
         /// The private instance of the <see cref="Instance"/> field.
         /// </summary>
-        private static SReNote instance;
+        private static Server instance;
         /// <summary>
-        /// True if the <see cref="SReNote"/>'s instance is initialized; otherwise false.
+        /// True if the <see cref="Server"/>'s instance is initialized; otherwise false.
         /// </summary>
         private bool initialized;
 
-        public SReNote()
+        public Server()
         {
             DatabaseTimer = new System.Timers.Timer(SAVE_DB_INTERVAL);
         }
 
         /// <summary>
-        /// Initializes the <see cref="SReNote"/>'s instance.
+        /// Initializes the <see cref="Server"/>'s instance.
         /// </summary>
         public void Initialize()
         {
             if (initialized)
                 return;
 
-            Database.Instance.SaveLocation = "school.dat";
+            SchoolInformation = new School()
+            {
+                SchoolLocation = Configuration.ReNoteConfig.SchoolLocation,
+                SchoolName     = Configuration.ReNoteConfig.SchoolName,
+                SchoolType     = (SchoolType)Configuration.ReNoteConfig.SchoolType
+            };
+
+            Database.Instance.SaveLocation = Configuration.ReNoteConfig.DBSaveLocation;
             Database.Instance.Load();
 
-            DatabaseTimer.Elapsed += (sender, e) => Database.Instance.Save();
+            DatabaseTimer.Elapsed += async (sender, e) => await Database.Instance.SaveAsync();
             DatabaseTimer.AutoReset = true;
             DatabaseTimer.Enabled = true;
 

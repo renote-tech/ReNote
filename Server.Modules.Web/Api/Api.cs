@@ -156,6 +156,15 @@ namespace Server.Web.Api
         {
             return "Auth token is invalid";
         }
+
+        /// <summary>
+        /// Returns an invalid session id message.
+        /// </summary>
+        /// <returns><see cref="string"/></returns>
+        public static string InvalidSessionId()
+        {
+            return "Session Id is invalid";
+        }
     }
 
     public enum ApiStatus
@@ -174,6 +183,7 @@ namespace Server.Web.Api
             ApiAtlas.AddEndpoint("Authenticate", $"/global/{ServerEnvironment.ServerApiVersion}/auth");
             ApiAtlas.AddEndpoint("SchoolInfo", $"/global/{ServerEnvironment.ServerApiVersion}/school/info");
             ApiAtlas.AddEndpoint("Profile", $"/user/{ServerEnvironment.ServerApiVersion}/profile");
+            ApiAtlas.AddEndpoint("Preferences", $"/user/{ServerEnvironment.ServerApiVersion}/preferences");
         }
     }
 }

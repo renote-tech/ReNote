@@ -18,8 +18,8 @@ namespace Server.ReNote.Encryption
         public static string Generate(long sessionId)
         {
             string tokenContent = $"{sessionId}-{DateTimeOffset.Now.ToUnixTimeMilliseconds()}-{EncryptionUtil.RandomTokenSalt()}";
-            byte[] tokenHash = EncryptionUtil.ComputeSha256(tokenContent);
-            string tokenBas64 = Base64Url.Encode(tokenHash);
+            byte[] tokenHash    = EncryptionUtil.ComputeSha256(tokenContent);
+            string tokenBas64   = Base64Url.Encode(tokenHash);
 
             return $"{BASE_PATTERN}.{tokenBas64}";
         }

@@ -2,6 +2,7 @@
 using Server.Common.Utilities;
 using Server.ReNote.Data;
 using Server.ReNote.Encryption;
+using Server.ReNote.Utilities;
 
 namespace Server.ReNote.Management
 {
@@ -17,16 +18,16 @@ namespace Server.ReNote.Management
         /// </summary>
         /// <param name="userId">The user id of the <see cref="User"/>.</param>
         /// <returns><see cref="GlobalSession"/></returns>
-        public static GlobalSession CreateSession(long userId)
+        public static async Task<GlobalSession> CreateSessionAsync(long userId)
         {
-            long sId = CreateSessionId();
-            string authToken = ReNoteSecureToken.Generate(sId);
+            long sessionId = CreateSessionId();
+            string authToken = ReNoteSecureToken.Generate(sessionId);
             string sha256AuthToken = EncryptionUtil.ComputeStringSha256(authToken);
 
             User userData = UserManager.GetUser(userId);
 
-            GlobalSession session = new GlobalSession(sId, userId, authToken, userData.AccountType);
-            Document[] sessions = Database.Instance["sessions"].GetValues();
+            GlobalSession session = new GlobalSession(sessionId, userId, authToken, userData.AccountType);
+            Document[] sessions = DatabaseUtil.GetDocuments("sessions");
 
             for(int i = 0; i < sessions.Length; i++)
             {
@@ -34,17 +35,17 @@ namespace Server.ReNote.Management
                 if (!JsonUtil.ValiditateJson(rawSession))
                     continue;
 
-                GlobalSession user = JsonConvert.DeserializeObject<GlobalSession>(rawSession);
-                if (user.UserId == userId)
-                    Database.Instance["sessions"].RemoveKey(sessions[i]);
+                GlobalSession cSession = JsonConvert.DeserializeObject<GlobalSession>(rawSession);
+                if (cSession.UserId == userId)
+                    DeleteSession(cSession.SessionId);
             }
 
-            GlobalSession internalSession = new GlobalSession(sId, userId, sha256AuthToken, userData.AccountType);
+            GlobalSession internalSession = new GlobalSession(sessionId, userId, sha256AuthToken, userData.AccountType);
             internalSession.RequestTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             internalSession.Connection = internalSession.RequestTimestamp;
 
-            Database.Instance["sessions"].AddKey(session.SessionId.ToString(), JsonConvert.SerializeObject(internalSession));
-            Database.Instance.Save();
+            DatabaseUtil.Set("sessions", session.SessionId.ToString(), JsonConvert.SerializeObject(internalSession));
+            await Database.Instance.SaveAsync();
             
             return session;
         }
@@ -53,12 +54,12 @@ namespace Server.ReNote.Management
         /// Updates the session timestamp.
         /// </summary>
         /// <param name="sessionId">The session id.</param>
-        public static void UpdateSessionTimestamp(string sessionId)
+        public static void UpdateSessionTimestamp(long sessionId)
         {
             GlobalSession session = GetSession(sessionId);
             session.RequestTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
-            Database.Instance["sessions"][sessionId] = JsonConvert.SerializeObject(session);
+            DatabaseUtil.Set("sessions", session.SessionId.ToString(), JsonConvert.SerializeObject(session));
         }
 
         /// <summary>
@@ -66,12 +67,12 @@ namespace Server.ReNote.Management
         /// </summary>
         /// <param name="sessionId">The session id.</param>
         /// <returns><see cref="GlobalSession"/></returns>
-        public static GlobalSession GetSession(string sessionId)
+        public static GlobalSession GetSession(long sessionId)
         {
             if (!SessionExists(sessionId))
                 return null;
 
-            string rawSession = ((Document)Database.Instance["sessions"][sessionId]).GetRaw();
+            string rawSession = DatabaseUtil.Get("sessions", sessionId.ToString()).GetRaw();
             if (!JsonUtil.ValiditateJson(rawSession))
                 return null;
 
@@ -81,20 +82,25 @@ namespace Server.ReNote.Management
         /// <summary>
         /// Deletes a session.
         /// </summary>
-        /// <param name="sId">The session id.</param>
-        public static void DeleteSession(string sId)
+        /// <param name="sessionId">The session id.</param>
+        public static void DeleteSession(long sessionId)
         {
-            Database.Instance["sessions"].RemoveKey(sId);
+            GlobalSession session = GetSession(sessionId);
+            User user = UserManager.GetUser(session.UserId);
+            user.LastConnection = session.Connection;
+
+            DatabaseUtil.Set("users", user.UserId.ToString(), JsonConvert.SerializeObject(user));
+            DatabaseUtil.Remove("sessions", sessionId.ToString());
         }
 
         /// <summary>
         /// Returns whether the session exists.
         /// </summary>
-        /// <param name="sId">The session id.</param>
+        /// <param name="sessionId">The session id.</param>
         /// <returns><see cref="bool"/></returns>
-        public static bool SessionExists(string sId)
+        public static bool SessionExists(long sessionId)
         {
-            return Database.Instance["sessions"][sId] != null;
+            return DatabaseUtil.DocumentExists("sessions", sessionId.ToString());
         }
 
         /// <summary>
@@ -107,7 +113,7 @@ namespace Server.ReNote.Management
             long maxSid = (long)Math.Pow(10, SID_LENGTH) - 1;
             long sId    = new Random().NextInt64(minSid, maxSid);
 
-            if (SessionExists(sId.ToString()))
+            if (SessionExists(sId))
                 return CreateSessionId();
 
             return sId;
@@ -177,7 +183,7 @@ namespace Server.ReNote.Management
                 isExpiredSession = true;
 
             if (isExpiredSession)
-                SessionManager.DeleteSession(SessionId.ToString());
+                SessionManager.DeleteSession(SessionId);
 
             return isExpiredSession;
         }

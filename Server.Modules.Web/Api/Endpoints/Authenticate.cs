@@ -52,7 +52,7 @@ namespace Server.ReNote.Api
             if (AES.Decrypt(aesObject) == string.Empty)
                 return await ApiUtil.SendAsync(401, ApiMessages.InvalidPassword());
 
-            GlobalSession session = SessionManager.CreateSession(userData.UserId);
+            GlobalSession session = await SessionManager.CreateSessionAsync(userData.UserId);
             AuthResponse response = new AuthResponse()
             {
                 SessionId   = session.SessionId,
