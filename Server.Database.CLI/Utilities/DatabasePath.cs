@@ -16,7 +16,7 @@ namespace Server.Database.Utilities
                 return null;
 
             string[] arguments = path.Split("->");
-            if(arguments.Length != 2 || arguments.Length > 2)
+            if(arguments.Length != 2)
                 return null;
 
             if (string.IsNullOrWhiteSpace(arguments[0]) | string.IsNullOrWhiteSpace(arguments[1]))
