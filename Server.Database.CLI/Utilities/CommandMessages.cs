@@ -39,12 +39,12 @@
 
         public static string DatabaseLoadFailed()
         {
-            return "Failed to load database data from a file.";
+            return "Failed to load database data from specified file.";
         }
 
         public static string DatabaseSaveFailed()
         {
-            return "Failed to save database date to a file.";
+            return "Failed to save database data to specified file.";
         }
 
         public static string FileNotFound()
@@ -67,9 +67,9 @@
             return "The specified document couldn't be found.";
         }
 
-        public static string StackOverflowDetected(string cmd)
+        public static string StackOverflowDetected(string command)
         {
-            return $"The system found that a StackOverflow Exception will happen if the command '{cmd}' is executed.";
+            return $"The system found that a StackOverflow Exception will happen if the command '{command}' is executed.";
         }
 
         public static string InvalidFilePath()
