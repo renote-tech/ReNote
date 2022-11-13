@@ -40,9 +40,9 @@ Notes:
 ### → Server
  - Full support for static websites & Vue.js
  - Integrated API server
- - Integrated Socket server
- - Database System
- - Database Editor
+ - Integrated socket server
+ - Database system
+ - Database editor
  
 ### → Client
  - Easy-to-use interface
