@@ -4,7 +4,6 @@ namespace Server.Database.Utilities
 {
     internal class CommandUtil
     {
-        public static bool IsEmptyParams(string[] arguments) => arguments.Length == 0;
         public static bool HasNumberParams(string[] arguments, int amount) => arguments.Length >= amount;
         public static string[] NormalizeParams(string parameters)
         {
@@ -17,7 +16,7 @@ namespace Server.Database.Utilities
                                                                                                      .ToArray();
             return args;
         }
-        public static string FormatCommandName(string command)
+        public static string NormalizeName(string command)
         {
             command = command.ToLower();
             char[] commandChars = command.ToCharArray();

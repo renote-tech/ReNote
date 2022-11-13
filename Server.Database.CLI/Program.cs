@@ -48,7 +48,7 @@ namespace Server.Database.CLI
                 return CommandMessages.NoCommand();
             }
 
-            string commandName = CommandUtil.FormatCommandName(command);
+            string commandName = CommandUtil.NormalizeName(command);
             Type commandType = Type.GetType($"Server.Database.Commands.{commandName}");
 
             if (commandType == null)
