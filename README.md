@@ -41,6 +41,8 @@ Notes:
  - Full support for static websites & Vue.js
  - Integrated API server
  - Integrated Socket server
+ - Database System
+ - Database Editor
  
 ### → Client
  - Easy-to-use interface
