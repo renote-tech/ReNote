@@ -24,7 +24,7 @@
         /// <summary>
         /// The server version.
         /// </summary>
-        public static readonly string Version = $"{(IsDebug ? "Dev" : "Release")}-0.7.25";
+        public static readonly string Version = $"{(IsDebug ? "Dev" : "Release")}-0.7.26";
         /// <summary>
         /// The server version name.
         /// </summary>
