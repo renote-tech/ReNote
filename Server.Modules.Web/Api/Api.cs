@@ -1,6 +1,6 @@
 ﻿using System.Collections.Specialized;
 using System.Text;
-using Server.Common.Utilities;
+using Server.Common;
 
 namespace Server.Web.Api
 {
@@ -180,10 +180,13 @@ namespace Server.Web.Api
         public static void Initialize()
         {
             ApiAtlas.AddEndpoint("Root", "/");
-            ApiAtlas.AddEndpoint("Authenticate", $"/global/{ServerEnvironment.ServerApiVersion}/auth");
-            ApiAtlas.AddEndpoint("SchoolInfo", $"/global/{ServerEnvironment.ServerApiVersion}/school/info");
-            ApiAtlas.AddEndpoint("Profile", $"/user/{ServerEnvironment.ServerApiVersion}/profile");
-            ApiAtlas.AddEndpoint("Preferences", $"/user/{ServerEnvironment.ServerApiVersion}/preferences");
+
+            ApiAtlas.AddEndpoint("Authenticate", $"/global/{ServerEnv.ApiVersion}/auth");
+            ApiAtlas.AddEndpoint("SchoolInfo",   $"/global/{ServerEnv.ApiVersion}/school/info");
+
+            ApiAtlas.AddEndpoint("Profile",      $"/user/{ServerEnv.ApiVersion}/profile");
+            ApiAtlas.AddEndpoint("Preferences",  $"/user/{ServerEnv.ApiVersion}/preferences");
+            ApiAtlas.AddEndpoint("Timetable",    $"/user/{ServerEnv.ApiVersion}/timetable");
         }
     }
 }

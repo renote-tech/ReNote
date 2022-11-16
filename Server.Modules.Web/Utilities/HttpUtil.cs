@@ -1,4 +1,4 @@
-﻿using Server.Common.Utilities;
+﻿using Server.Common;
 using Server.Web.Interfaces;
 
 namespace Server.Web.Utilities

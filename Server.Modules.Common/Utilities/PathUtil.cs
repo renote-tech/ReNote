@@ -9,7 +9,7 @@
         /// <returns><see cref="string"/></returns>
         public static string NormalizeToOS(string path)
         {
-            if (ServerEnvironment.DetectOS() == ServerOS.UNIX)
+            if (ServerEnv.DetectOS() == ServerOS.UNIX)
                 return path.Replace(@"\\",  "/")
                            .Replace(@"\",   "/")
                            .Replace(@"\\\", "/")

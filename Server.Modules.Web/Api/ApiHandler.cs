@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Reflection;
 using System.Text;
-using Server.Common.Utilities;
+using Server.Common;
 using Server.Web.Utilities;
 
 namespace Server.Web.Api
@@ -41,7 +41,7 @@ namespace Server.Web.Api
                 apiContext.Response.ContentType = "application/json";
 
                 apiContext.Response.Headers.Add("Server", string.Empty);
-                apiContext.Response.Headers.Add("Server-Agent", ServerEnvironment.Agent());
+                apiContext.Response.Headers.Add("Server-Agent", ServerEnv.Agent());
 
                 await apiContext.Response.OutputStream.WriteAsync(body);
                 apiContext.Response.KeepAlive = false;

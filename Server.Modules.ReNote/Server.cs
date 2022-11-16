@@ -1,15 +1,10 @@
-﻿using Server.Common.Utilities;
+﻿using Server.Common;
 using Server.ReNote.Data;
 
 namespace Server.ReNote
 {
     public class Server
     {
-        /// <summary>
-        /// The saving database interval.
-        /// </summary>
-        public const int SAVE_DB_INTERVAL = 120000;
-
         /// <summary>
         /// The current instance of the <see cref="Server"/> class; creates a new one if <see cref="instance"/> is null.
         /// </summary>
@@ -45,7 +40,7 @@ namespace Server.ReNote
 
         public Server()
         {
-            DatabaseTimer = new System.Timers.Timer(SAVE_DB_INTERVAL);
+            DatabaseTimer = new System.Timers.Timer(Constants.DB_SAVE_INTERVAL);
         }
 
         /// <summary>
@@ -66,9 +61,9 @@ namespace Server.ReNote
             Database.Instance.SaveLocation = Configuration.ReNoteConfig.DBSaveLocation;
             Database.Instance.Load();
 
-            DatabaseTimer.Elapsed += async (sender, e) => await Database.Instance.SaveAsync();
+            DatabaseTimer.Elapsed  += async (sender, e) => await Database.Instance.SaveAsync();
             DatabaseTimer.AutoReset = true;
-            DatabaseTimer.Enabled = true;
+            DatabaseTimer.Enabled   = true;
 
             initialized = true;
         }

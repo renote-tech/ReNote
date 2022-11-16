@@ -1,4 +1,4 @@
-﻿using Server.Common.Utilities;
+﻿using Server.Common;
 
 namespace Server
 {
@@ -18,7 +18,7 @@ namespace Server
                 return;
 
             Console.Title = "ReNote \u03a9 2023";
-            Console.Write($"      ____       _   __      __     \r\n     / __ \\___  / | / /___  / /____ \r\n    / /_/ / _ \\/  |/ / __ \\/ __/ _ \\\r\n   / _, _/  __/ /|  / /_/ / /_/  __/\r\n  /_/ |_|\\___/_/ |_/\\____/\\__/\\___/   Version {ServerEnvironment.ServerVersion}\r\n                                    \r\n");
+            Console.Write($"      ____       _   __      __     \r\n     / __ \\___  / | / /___  / /____ \r\n    / /_/ / _ \\/  |/ / __ \\/ __/ _ \\\r\n   / _, _/  __/ /|  / /_/ / /_/  __/\r\n  /_/ |_|\\___/_/ |_/\\____/\\__/\\___/   Version {ServerEnv.Version}\r\n                                    \r\n");
 
             Log($"Thanks for choosing ReNote!", LogLevel.INFO);
 
@@ -37,7 +37,7 @@ namespace Server
         /// <param name="level">The <see cref="LogLevel"/> of the message.</param>
         public static void Log(string message, LogLevel level = LogLevel.DEBUG)
         {
-            if (!ServerEnvironment.IsDebug && level == LogLevel.DEBUG)
+            if (!ServerEnv.IsDebug && level == LogLevel.DEBUG)
                 return;
 
             switch (level)

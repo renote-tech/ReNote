@@ -1,6 +1,6 @@
-﻿namespace Server.Common.Utilities
+﻿namespace Server.Common
 {
-    public class ServerEnvironment
+    public class ServerEnv
     {
         /// <summary>
         /// True if the build configuration is debug; otherwise false for release.
@@ -21,19 +21,18 @@
         /// The root directory of the application.
         /// </summary>
         public static readonly string ApplicationDirectory = AppDomain.CurrentDomain.BaseDirectory;
-
         /// <summary>
         /// The server version.
         /// </summary>
-        public static readonly string ServerVersion = $"{(IsDebug ? "Dev" : "Release")}-0.7.16";
+        public static readonly string Version = $"{(IsDebug ? "Dev" : "Release")}-0.7.25";
         /// <summary>
         /// The server version name.
         /// </summary>
-        public const string ServerVersionName = "NightOny";
+        public const string VersionName = "ProtoServer";
         /// <summary>
         /// The server API version.
         /// </summary>
-        public const string ServerApiVersion = "v1";
+        public const string ApiVersion = "v1";
 
         /// <summary>
         /// Detects whether the environment is running Windows or Unix.
@@ -56,7 +55,7 @@
         /// <returns><see cref="string"/></returns>
         public static string Agent()
         {
-            return $"Omega-{ServerVersionName}/{(IsDebug ? "Dev" : "Release")}";
+            return $"{VersionName}/{(IsDebug ? "Dev" : "Release")}";
         }
     }
 

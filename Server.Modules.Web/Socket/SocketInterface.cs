@@ -1,6 +1,6 @@
 ﻿using System.Net;
 using System.Net.Sockets;
-using Server.Common.Utilities;
+using Server.Common;
 using Server.Web.Interfaces;
 
 namespace Server.Web.Socket

@@ -15,8 +15,8 @@ namespace Client
 #endif
             }
         }
-        public static readonly string ClientVersion = $"{(IsDebug ? "Dev" : "Release")}-0.0.0";
-        public const string ClientVersionName = "IronAssembly";
+        public static readonly string Version = $"{(IsDebug ? "Dev" : "Release")}-0.2.32";
+        public const string VersionName = "ProtoClient";
 
         public static void Log(string message, LogLevel level = LogLevel.DEBUG)
         {

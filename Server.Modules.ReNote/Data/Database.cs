@@ -1,6 +1,7 @@
 ﻿using System.Dynamic;
 using Newtonsoft.Json;
 using ProtoBuf;
+using Server.Common;
 using Server.Common.Utilities;
 
 namespace Server.ReNote.Data
@@ -132,10 +133,12 @@ namespace Server.ReNote.Data
         /// </summary>
         public async Task<bool> BackupAsync()
         {
-            DateTime curTime = DateTime.Now;
-            string saveLocation = $"backups/db_school_{curTime.Year}_{curTime.Month}_{curTime.Day}_{curTime.Hour}_{curTime.Minute}_{curTime.Second}_{curTime.Millisecond}.dat";
+            string dirName   = Configuration.ReNoteConfig.DBBackupLocation ?? "backups";
+            string fileName  = $"db_school_{DateTime.Now.ToString("yyyy-dd-M--HH-mm-ss")}-{DateTime.Now.Millisecond}.dat";
 
-            return await SaveAsync(saveLocation);
+            string path      = PathUtil.NormalizeToOS(Path.Combine(dirName, fileName));
+
+            return await SaveAsync(path);
         }
 
         /// <summary>

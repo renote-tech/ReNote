@@ -1,4 +1,4 @@
-﻿namespace Server.Common.Utilities
+﻿namespace Server.Common
 {
     public class ServerConsole
     {
@@ -44,7 +44,7 @@
         /// <param name="addLine">If true; adds a line.</param>
         public static void Write(string message, bool addLine = true)
         {
-            string[] arguments = message.Split('<', '>'); 
+            string[] arguments = message.Split('<', '>');
             for (int i = 0; i < arguments.Length; i++)
             {
                 if (arguments[i].StartsWith("/"))

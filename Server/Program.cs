@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
+using Server.Common;
 using Server.Common.Encryption;
-using Server.Common.Utilities;
 using Server.ReNote.Data;
 using Server.ReNote.Utilities;
 using Server.Web.Api;
@@ -27,14 +27,16 @@ namespace Server
 
             /* Test Only */
             AESObject aesObject = AES.Encrypt("password");
-            User user = new User();
-            user.RealName = "Alian DEAD";
-            user.Username = "adead99";
-            user.Email = "";
-            user.AccountType = 1;
-            user.UserId = 256;
-            user.SecurePassword = aesObject.Data;
-            user.IVPassword = aesObject.IV;
+            User user = new User()
+            {
+                RealName       = "Alian DEAD",
+                Username       = "adead99",
+                Email          = "",
+                AccountType    = 1,
+                UserId         = 256,
+                SecurePassword = aesObject.Data,
+                IVPassword     = aesObject.IV
+            };
 
             Database.Instance.Clear();
             DatabaseUtil.Set("users", "256", JsonConvert.SerializeObject(user));

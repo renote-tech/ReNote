@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
+using Server.Common.Utilities;
 
-namespace Server.Common.Utilities
+namespace Server.Common
 {
     public class Configuration
     {
@@ -32,7 +33,7 @@ namespace Server.Common.Utilities
             GlobalConfig = LoadConfiguration<GlobalConfig>("Global");
             WebConfig = LoadConfiguration<WebConfig>("Web");
             ReNoteConfig = LoadConfiguration<ReNoteConfig>("ReNote");
-            
+
             IsConfigurationsLoaded = true;
         }
 
@@ -125,7 +126,7 @@ namespace Server.Common.Utilities
         /// </summary>
         [JsonProperty("webNoDotHtml")]
         public bool WebNoDotHtml { get; set; }
-        
+
         /// <summary>
         /// The web interface parameter to run Vue.js application.
         /// </summary>
@@ -142,6 +143,12 @@ namespace Server.Common.Utilities
         public string DBSaveLocation { get; set; }
 
         /// <summary>
+        /// The location of the database's backup files.
+        /// </summary>
+        [JsonProperty("dbBackupLocation")]
+        public string DBBackupLocation { get; set; }
+
+        /// <summary>
         /// The name of the school.
         /// </summary>
         [JsonProperty("schoolName")]
@@ -152,7 +159,7 @@ namespace Server.Common.Utilities
         /// </summary>
         [JsonProperty("schoolType")]
         public int SchoolType { get; set; }
-        
+
         /// <summary>
         /// The location of the school.
         /// </summary>

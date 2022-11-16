@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 using Server.Database.Utilities;
-using Server.Common.Utilities;
+using Server.Common;
 
 namespace Server.Database.CLI
 {
@@ -8,7 +8,7 @@ namespace Server.Database.CLI
     {
         static void Main()
         {
-            Console.WriteLine($"ReNote Database CLI [Version {ServerEnvironment.ServerVersion}]");
+            Console.WriteLine($"ReNote Database CLI [Version {ServerEnv.Version}]");
             Console.WriteLine("(c) ReNote NETW. All rights reserved.");
             Console.WriteLine();
             while(true)

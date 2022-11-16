@@ -28,7 +28,7 @@ namespace Server.ReNote.Management
         /// <returns><see cref="User"/></returns>
         public static User GetUser(long userId)
         {
-            Document userDocument = DatabaseUtil.Get("users", userId.ToString());
+            Document userDocument = DatabaseUtil.Get(Constants.DB_ROOT_USERS, userId.ToString());
             if (userDocument == null)
                 return null;
 
@@ -42,7 +42,7 @@ namespace Server.ReNote.Management
         /// <returns><see cref="long"/></returns>
         public static long UserExists(long userId)
         {
-            if (DatabaseUtil.DocumentExists("users", userId.ToString()))
+            if (DatabaseUtil.DocumentExists(Constants.DB_ROOT_USERS, userId.ToString()))
                 return userId;
 
             return -1;
@@ -58,7 +58,7 @@ namespace Server.ReNote.Management
             if (StringUtil.ContainsDigitsOnly(username) && NumberUtil.IsSafeLong(username))
                 return UserExists(long.Parse(username));
 
-            Dictionary<string, Document> documents = DatabaseUtil.GetDictionary("users");
+            Dictionary<string, Document> documents = DatabaseUtil.GetDictionary(Constants.DB_ROOT_USERS);
             if (documents.Count == 0)
                 return -1;
 

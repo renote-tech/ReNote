@@ -9,11 +9,6 @@ namespace Server.ReNote.Management
     public class SessionManager
     {
         /// <summary>
-        /// The length of the session id.
-        /// </summary>
-        public const int SID_LENGTH = 9;
-        
-        /// <summary>
         /// Returns a new <see cref="GlobalSession"/> instance.
         /// </summary>
         /// <param name="userId">The user id of the <see cref="User"/>.</param>
@@ -27,7 +22,8 @@ namespace Server.ReNote.Management
             User userData = UserManager.GetUser(userId);
 
             GlobalSession session = new GlobalSession(sessionId, userId, authToken, userData.AccountType);
-            Document[] sessions = DatabaseUtil.GetDocuments("sessions");
+            Document[] sessions = DatabaseUtil.GetDocuments(Constants.DB_ROOT_SESSIONS);
+            
 
             for(int i = 0; i < sessions.Length; i++)
             {
@@ -44,7 +40,7 @@ namespace Server.ReNote.Management
             internalSession.RequestTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             internalSession.Connection = internalSession.RequestTimestamp;
 
-            DatabaseUtil.Set("sessions", session.SessionId.ToString(), JsonConvert.SerializeObject(internalSession));
+            DatabaseUtil.Set(Constants.DB_ROOT_SESSIONS, session.SessionId.ToString(), JsonConvert.SerializeObject(internalSession));
             await Database.Instance.SaveAsync();
             
             return session;
@@ -59,7 +55,7 @@ namespace Server.ReNote.Management
             GlobalSession session = GetSession(sessionId);
             session.RequestTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
-            DatabaseUtil.Set("sessions", session.SessionId.ToString(), JsonConvert.SerializeObject(session));
+            DatabaseUtil.Set(Constants.DB_ROOT_SESSIONS, session.SessionId.ToString(), JsonConvert.SerializeObject(session));
         }
 
         /// <summary>
@@ -72,7 +68,7 @@ namespace Server.ReNote.Management
             if (!SessionExists(sessionId))
                 return null;
 
-            string rawSession = DatabaseUtil.Get("sessions", sessionId.ToString()).GetRaw();
+            string rawSession = DatabaseUtil.Get(Constants.DB_ROOT_SESSIONS, sessionId.ToString()).GetRaw();
             if (!JsonUtil.ValiditateJson(rawSession))
                 return null;
 
@@ -89,8 +85,8 @@ namespace Server.ReNote.Management
             User user = UserManager.GetUser(session.UserId);
             user.LastConnection = session.Connection;
 
-            DatabaseUtil.Set("users", user.UserId.ToString(), JsonConvert.SerializeObject(user));
-            DatabaseUtil.Remove("sessions", sessionId.ToString());
+            DatabaseUtil.Set(Constants.DB_ROOT_USERS, user.UserId.ToString(), JsonConvert.SerializeObject(user));
+            DatabaseUtil.Remove(Constants.DB_ROOT_SESSIONS, sessionId.ToString());
         }
 
         /// <summary>
@@ -100,7 +96,7 @@ namespace Server.ReNote.Management
         /// <returns><see cref="bool"/></returns>
         public static bool SessionExists(long sessionId)
         {
-            return DatabaseUtil.DocumentExists("sessions", sessionId.ToString());
+            return DatabaseUtil.DocumentExists(Constants.DB_ROOT_SESSIONS, sessionId.ToString());
         }
 
         /// <summary>
@@ -109,8 +105,8 @@ namespace Server.ReNote.Management
         /// <returns><see cref="long"/></returns>
         private static long CreateSessionId()
         {
-            long minSid = (long)Math.Pow(10, SID_LENGTH - 1);
-            long maxSid = (long)Math.Pow(10, SID_LENGTH) - 1;
+            long minSid = (long)Math.Pow(10, Constants.SID_LENGTH - 1);
+            long maxSid = (long)Math.Pow(10, Constants.SID_LENGTH) - 1;
             long sId    = new Random().NextInt64(minSid, maxSid);
 
             if (SessionExists(sId))

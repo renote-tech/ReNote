@@ -6,11 +6,6 @@ namespace Server.ReNote.Encryption
     public class ReNoteSecureToken
     {
         /// <summary>
-        /// The token pattern.
-        /// </summary>
-        public const string BASE_PATTERN = "rst";
-
-        /// <summary>
         /// Returns a ReNote secure token.
         /// </summary>
         /// <param name="sessionId">The session id.</param>
@@ -21,7 +16,7 @@ namespace Server.ReNote.Encryption
             byte[] tokenHash    = EncryptionUtil.ComputeSha256(tokenContent);
             string tokenBas64   = Base64Url.Encode(tokenHash);
 
-            return $"{BASE_PATTERN}.{tokenBas64}";
+            return $"{Constants.TOKEN_BASE_PATTERN}.{tokenBas64}";
         }
     }
 }
