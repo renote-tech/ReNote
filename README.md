@@ -49,7 +49,7 @@ Notes:
  
 ### → Client
  - Easy-to-use interface
- - New tools
+ - Useful tools for productivity.
 
 # Contribute
 If you have suggestions, bugs or problems with ReNote, you can let us know via the <a href="https://discord.gg/Z2wh3CHusT">Discord server</a> or by creating an issue. You can also donate to our <a href="">patreon</a> (Not available yet).
