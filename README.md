@@ -30,7 +30,7 @@ dotnet build --runtime linux-x64
 dotnet build --runtime osx-x64
 ```
 
-Important: macOS is not supported officialy supported for the `Server`, you may want to use Linux Server or Windows Server.
+Important: macOS is not officialy supported for the `Server`, you may want to use Linux Server or Windows Server.
 
 Notes:
    - You need the .NET SDK to run the commands above. Download <a href="https://aka.ms/netcore">here</a>.
