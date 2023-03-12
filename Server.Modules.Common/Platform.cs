@@ -1,4 +1,5 @@
 ﻿using Server.Common;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Server
 {
@@ -21,11 +22,6 @@ namespace Server
             Console.Write($"      ____       _   __      __     \r\n     / __ \\___  / | / /___  / /____ \r\n    / /_/ / _ \\/  |/ / __ \\/ __/ _ \\\r\n   / _, _/  __/ /|  / /_/ / /_/  __/\r\n  /_/ |_|\\___/_/ |_/\\____/\\__/\\___/   Version {ServerEnv.Version}\r\n                                    \r\n");
 
             Log($"Thanks for choosing ReNote!", LogLevel.INFO);
-
-            AppDomain.CurrentDomain.FirstChanceException += (sender, e) =>
-            {
-                Log($"{e.Exception.Message}\n{e.Exception.StackTrace}\n", LogLevel.ERROR);
-            };
 
             initialized = true;
         }

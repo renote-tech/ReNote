@@ -61,6 +61,8 @@ namespace Server.Common
             else
                 config = new T();
 
+            Platform.Log($"Loaded {name} configuration", LogLevel.INFO);
+
             return config;
         }
 

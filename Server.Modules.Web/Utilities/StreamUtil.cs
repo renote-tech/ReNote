@@ -13,8 +13,8 @@ namespace Server.Web.Utilities
         /// <returns><typeparamref name="T"/></returns>
         public static async Task<T> Convert<T>(Stream stream) where T : class
         {
-            using StreamReader sr = new StreamReader(stream);
-            string content = await sr.ReadToEndAsync();
+            using StreamReader strreamReader = new StreamReader(stream);
+            string content = await strreamReader.ReadToEndAsync();
             if (!JsonUtil.ValiditateJson(content))
                 return null;
             return JsonConvert.DeserializeObject<T>(content);

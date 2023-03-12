@@ -9,7 +9,7 @@ using Server.Web.Utilities;
 
 namespace Server.ReNote.Api
 {
-    public class Authenticate
+    public class AuthenticateEndpoint
     {
         /// <summary>
         /// Operates a request.
@@ -42,7 +42,7 @@ namespace Server.ReNote.Api
             if(string.IsNullOrWhiteSpace(reqBody.Username) || string.IsNullOrWhiteSpace(reqBody.Password))
                 return await ApiUtil.SendAsync(400, ApiMessages.NullOrEmpty("username", "password"));
 
-            if (UserManager.UserExists(reqBody.Username) == -1)
+            if (UserManager.GetUserId(reqBody.Username) == -1)
                 return await ApiUtil.SendAsync(400, ApiMessages.UserNotExists());
 
             User userData = UserManager.GetUser(reqBody.Username);

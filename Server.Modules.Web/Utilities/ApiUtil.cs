@@ -14,35 +14,19 @@ namespace Server.Web.Utilities
         /// </summary>
         /// <param name="status">The status of the <see cref="ApiResponse"/>.</param>
         /// <param name="message">The message of the <see cref="ApiResponse"/>.</param>
-        /// <returns><see cref="ApiResponse"/></returns>
-        public static async Task<ApiResponse> SendAsync(int status, string message)
-        {
-            return await Task.Run(() =>
-            {
-                BasicResponse response = new BasicResponse();
-                response.Status = status;
-                response.Message = message;
-
-                return new ApiResponse(status, "application/json", JsonConvert.SerializeObject(response));
-            });
-        }
-
-        /// <summary>
-        /// Returns an <see cref="ApiResponse"/>.
-        /// </summary>
         /// <param name="httpStatus">The HTTP status of the <see cref="ApiResponse"/>.</param>
-        /// <param name="status">The status of the <see cref="ApiResponse"/>.</param>
-        /// <param name="message">The message of the <see cref="ApiResponse"/>.</param>
         /// <returns><see cref="ApiResponse"/></returns>
-        public static async Task<ApiResponse> SendAsync(int httpStatus, int status, string message)
+        public static async Task<ApiResponse> SendAsync(int status, string message, int httpStatus = default)
         {
             return await Task.Run(() =>
             {
-                BasicResponse response = new BasicResponse();
-                response.Status = status;
-                response.Message = message;
+                BasicResponse response = new BasicResponse() 
+                { 
+                    Status  = status,
+                    Message = message
+                };
 
-                return new ApiResponse(httpStatus, "application/json", JsonConvert.SerializeObject(response));
+                return new ApiResponse((httpStatus == default ? status : httpStatus), "application/json", JsonConvert.SerializeObject(response));
             });
         }
 
@@ -57,13 +41,24 @@ namespace Server.Web.Utilities
         {
             return await Task.Run(() =>
             {
-                DataResponse response = new DataResponse();
-                response.Status = status;
-                response.Message = message;
-                response.Data = data;
+                DataResponse response = new DataResponse()
+                {
+                    Status  = status,
+                    Message = message,
+                    Data    = data
+                };
 
                 return new ApiResponse(status, "application/json", JsonConvert.SerializeObject(response));
             });
+        }
+
+        /// <summary>
+        /// Returns an <see cref="ApiResponse"/>.
+        /// </summary>
+        /// <returns><see cref="ApiResponse"/></returns>
+        public static ApiResponse SendNoData(int httpStatus)
+        {
+            return new ApiResponse() { Status = httpStatus };
         }
 
         /// <summary>
@@ -73,7 +68,7 @@ namespace Server.Web.Utilities
         /// <returns><see cref="ApiResponse"/></returns>
         public static async Task<ApiResponse> SendErrorAsync(string message)
         {
-            return await Task.Run(() => SendAsync(500, message));
+            return await SendAsync(500, message);
         }
 
         /// <summary>
@@ -87,7 +82,7 @@ namespace Server.Web.Utilities
             string authToken = GetHeaderFirstValue(headers["authToken"]);
 
             if (string.IsNullOrWhiteSpace(sessionId) || string.IsNullOrWhiteSpace(authToken))
-                return await SendAsync(400, ApiMessages.NullOrEmpty("userId", "authToken"));
+                return await SendAsync(400, ApiMessages.NullOrEmpty("sessionId", "authToken"));
 
             if (!NumberUtil.IsSafeLong(sessionId))
                 return await SendAsync(400, ApiMessages.InvalidSessionId());
@@ -100,7 +95,7 @@ namespace Server.Web.Utilities
                 return await SendAsync(400, ApiMessages.SessionNotExists());
 
             if (session.HasExpired())
-                return await SendAsync(401, (int)ApiStatus.SESSION_EXPIRED, ApiMessages.SessionExpired());
+                return await SendAsync(ApiStatus.SESSION_EXPIRED, ApiMessages.SessionExpired(), 401);
 
             if (EncryptionUtil.ComputeStringSha256(authToken) != session.AuthToken)
                 return await SendAsync(401, ApiMessages.InvalidAuthToken());
@@ -115,7 +110,7 @@ namespace Server.Web.Utilities
         /// </summary>
         /// <param name="headerValue">The header to be proceeded.</param>
         /// <returns><see cref="string"/></returns>
-        private static string GetHeaderFirstValue(string headerValue)
+        public static string GetHeaderFirstValue(string headerValue)
         {
             if (string.IsNullOrWhiteSpace(headerValue))
                 return string.Empty;

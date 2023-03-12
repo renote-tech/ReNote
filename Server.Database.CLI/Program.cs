@@ -48,6 +48,12 @@ namespace Server.Database.CLI
                 return CommandMessages.NoCommand();
             }
 
+            if (command.ToLower().Equals("help"))
+            {
+                EnumerateCommands();
+                return CommandMessages.NoCommand();
+            }
+
             string commandName = CommandUtil.NormalizeName(command);
             Type commandType = Type.GetType($"Server.Database.Commands.{commandName}");
 
@@ -57,6 +63,21 @@ namespace Server.Database.CLI
             MethodInfo method = commandType.GetMethod("Execute", BindingFlags.Public | BindingFlags.Static);
             
             return (string)method.Invoke(null, new object[] { arguments });
+        }
+
+        private static void EnumerateCommands()
+        {
+            string message = "COP Copies the content of a document to another\n" +
+                   "DEL Deletes a document\n" +
+                   "GEN Generates a DB script\n" +
+                   "GET Gets the value of a document\n" +
+                   "LOD Loads a database from file\n" +
+                   "MOV Moves the content of a document to another\n" +
+                   "RUN Runs a DB script\n" +
+                   "SAV Writes the database data to a file\n" +
+                   "SET Creates a document and sets its value\n";
+
+            Console.WriteLine(message);
         }
     }
 }

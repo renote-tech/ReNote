@@ -29,8 +29,8 @@
                 return null;
 
             content = content.PadRight(content.Length + (4 - content.Length % 4) % 4, '=')
-                       .Replace("_", "/")
-                       .Replace("-", "+");
+                             .Replace("_", "/")
+                             .Replace("-", "+");
 
             return Convert.FromBase64String(content);
         }

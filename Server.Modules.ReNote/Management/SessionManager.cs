@@ -156,9 +156,7 @@ namespace Server.ReNote.Management
         public long Connection { get; set; }
 
         public GlobalSession()
-        {
-
-        }
+        { }
 
         public GlobalSession(long sessionId, long userId, string authToken, int accountType)
         {

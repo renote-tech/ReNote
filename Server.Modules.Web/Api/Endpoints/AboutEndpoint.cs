@@ -1,14 +1,10 @@
-﻿using Newtonsoft.Json;
-using Server.ReNote.Data;
-using Server.ReNote.Management;
-using Server.Web.Api;
+﻿using Server.Web.Api;
 using Server.Web.Api.Responses;
 using Server.Web.Utilities;
-using System.ComponentModel.DataAnnotations;
 
 namespace Server.ReNote.Api
 {
-    public class Profile
+    public class AboutEndpoint
     {
         /// <summary>
         /// Operates a request.
@@ -33,22 +29,11 @@ namespace Server.ReNote.Api
         /// <returns><see cref="ApiResponse"/></returns>
         private static async Task<ApiResponse> Get(ApiRequest req)
         {
-            ApiResponse verification = await ApiUtil.VerifyAuthorizationAsync(req.Headers);
-            if (verification.Status != 200)
-                return verification;
-
-            DataResponse verificationResponse = JsonConvert.DeserializeObject<DataResponse>(verification.Body);
-            long userId = (long)verificationResponse.Data;
-
-            User userData = UserManager.GetUser(userId);
-            ProfileResponse response = new ProfileResponse()
+            AboutResponse response = new AboutResponse()
             {
-                RealName       = userData.RealName,
-                ProfilePicture = userData.ProfilePicture,
-                Birthday       = userData.Birthday,
-                Email          = userData.Email,
-                LastConnection = userData.LastConnection,
-                Phone          = userData.Phone
+                SoftwareName      = "ReNote Σ/Ω",
+                SoftwareVersion   = "ReNote 2022.11",
+                SoftwareCopyright = "© ReNote NETW. All rights reserved."
             };
 
             return await ApiUtil.SendWithDataAsync(200, ApiMessages.Success(), response);

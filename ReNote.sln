@@ -11,8 +11,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server.Modules.ReNote", "Se
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server.Modules.Common", "Server.Modules.Common\Server.Modules.Common.csproj", "{521F33F1-A705-4B52-B2D1-C658ED3C2603}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client", "Client\Client.csproj", "{753A841D-4FFC-4435-B5FC-C785FC5E94B5}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server.Database.CLI", "Server.Database.CLI\Server.Database.CLI.csproj", "{701AAFEC-6A4B-4C82-9943-330B077748E2}"
 EndProject
 Global
@@ -37,10 +35,6 @@ Global
 		{521F33F1-A705-4B52-B2D1-C658ED3C2603}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{521F33F1-A705-4B52-B2D1-C658ED3C2603}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{521F33F1-A705-4B52-B2D1-C658ED3C2603}.Release|Any CPU.Build.0 = Release|Any CPU
-		{753A841D-4FFC-4435-B5FC-C785FC5E94B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{753A841D-4FFC-4435-B5FC-C785FC5E94B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{753A841D-4FFC-4435-B5FC-C785FC5E94B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{753A841D-4FFC-4435-B5FC-C785FC5E94B5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{701AAFEC-6A4B-4C82-9943-330B077748E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{701AAFEC-6A4B-4C82-9943-330B077748E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{701AAFEC-6A4B-4C82-9943-330B077748E2}.Release|Any CPU.ActiveCfg = Release|Any CPU

@@ -57,6 +57,11 @@ namespace Server.Web.Api
         /// </summary>
         public string Body { get; set; }
 
+        public ApiResponse()
+        {
+
+        }
+
         public ApiResponse(int status, string contentType, string body)
         {
             Status = status;
@@ -67,6 +72,24 @@ namespace Server.Web.Api
 
     public class ApiMessages
     {
+        /// <summary>
+        /// Returns an endpoint not found message.
+        /// </summary>
+        /// <returns><see cref="string"/></returns>
+        public static string EndpointNotFound()
+        {
+            return "Endpoint not found";
+        }
+
+        /// <summary>
+        /// Returns an endpoint method not found message.
+        /// </summary>
+        /// <returns><see cref="string"/></returns>
+        public static string EndpointMethodNotFound()
+        {
+            return "Endpoint method not found";
+        }
+
         /// <summary>
         /// Returns a success message.
         /// </summary>
@@ -163,13 +186,13 @@ namespace Server.Web.Api
         /// <returns><see cref="string"/></returns>
         public static string InvalidSessionId()
         {
-            return "Session Id is invalid";
+            return "Session ID is invalid";
         }
     }
 
-    public enum ApiStatus
+    public class ApiStatus
     {
-        SESSION_EXPIRED = 1
+        public const int SESSION_EXPIRED = 1;
     }
 
     public class ApiRegisterer
@@ -183,10 +206,14 @@ namespace Server.Web.Api
 
             ApiAtlas.AddEndpoint("Authenticate", $"/global/{ServerEnv.ApiVersion}/auth");
             ApiAtlas.AddEndpoint("SchoolInfo",   $"/global/{ServerEnv.ApiVersion}/school/info");
+            ApiAtlas.AddEndpoint("About",        $"/global/{ServerEnv.ApiVersion}/about");
 
             ApiAtlas.AddEndpoint("Profile",      $"/user/{ServerEnv.ApiVersion}/profile");
             ApiAtlas.AddEndpoint("Preferences",  $"/user/{ServerEnv.ApiVersion}/preferences");
             ApiAtlas.AddEndpoint("Timetable",    $"/user/{ServerEnv.ApiVersion}/timetable");
+
+            ApiAtlas.Clean();
+            Platform.Log($"Registered {ApiAtlas.GetEndpointsCount()} endpoints", LogLevel.INFO);
         }
     }
 }

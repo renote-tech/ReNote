@@ -7,7 +7,7 @@ namespace Server.Database.Commands
     {
         public static string Execute(string[] args)
         {
-            if (!CommandUtil.HasNumberParams(args, 1))
+            if (!CommandUtil.IsExpectedLength(args, 1))
                 return CommandMessages.InvalidParamsLength(1);
 
             if (!File.Exists(args[0]))

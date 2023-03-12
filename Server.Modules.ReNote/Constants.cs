@@ -14,13 +14,21 @@ namespace Server.ReNote
         /// The interval between each <see cref="Database.SaveAsync(bool)"/> call.
         /// </summary>
         public const int DB_SAVE_INTERVAL = 120000;
+        /// <summary>
+        /// The shared ID for static file authorization.
+        /// </summary>
+        public const int SHARED_AUTH_ID = 128;
+        /// <summary>
+        /// The public ID for static file authorization.
+        /// </summary>
+        public const int PUBLIC_AUTH_ID = 0;
 
         /// <summary>
-        /// The name of a <see cref="RootDocument"/> for storing <see cref="User"/>s' data.
+        /// The name of a <see cref="RootDocument"/> for storing the <see cref="User"/>s' data.
         /// </summary>
         public const string DB_ROOT_USERS = "users";
         /// <summary>
-        /// The name of a <see cref="RootDocument"/> for storing <see cref="GlobalSession"/>s' data.
+        /// The name of a <see cref="RootDocument"/> for storing the <see cref="GlobalSession"/>s' data.
         /// </summary>
         public const string DB_ROOT_SESSIONS = "sessions";
         /// <summary>

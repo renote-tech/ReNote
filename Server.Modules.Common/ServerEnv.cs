@@ -22,9 +22,13 @@
         /// </summary>
         public static readonly string ApplicationDirectory = AppDomain.CurrentDomain.BaseDirectory;
         /// <summary>
+        /// The server agent.
+        /// </summary>
+        public static readonly string Agent = $"{VersionName}/{(IsDebug ? "Dev" : "Release")}";
+        /// <summary>
         /// The server version.
         /// </summary>
-        public static readonly string Version = $"{(IsDebug ? "Dev" : "Release")}-0.7.26";
+        public static readonly string Version = $"{(IsDebug ? "Dev" : "Release")}-0.7.57";
         /// <summary>
         /// The server version name.
         /// </summary>
@@ -43,26 +47,13 @@
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
                 return ServerOS.WINDOWS;
 
-            if (Environment.OSVersion.Platform == PlatformID.Other)
-                return ServerOS.OSX;
-
             return ServerOS.UNIX;
-        }
-
-        /// <summary>
-        /// Returns the server agent.
-        /// </summary>
-        /// <returns><see cref="string"/></returns>
-        public static string Agent()
-        {
-            return $"{VersionName}/{(IsDebug ? "Dev" : "Release")}";
         }
     }
 
     public enum ServerOS
     {
         UNIX    = 0,
-        WINDOWS = 1,
-        OSX     = 2
+        WINDOWS = 1
     }
 }

@@ -59,11 +59,15 @@ namespace Server.ReNote
             };
 
             Database.Instance.SaveLocation = Configuration.ReNoteConfig.DBSaveLocation;
-            Database.Instance.Load();
+            bool isLoaded = Database.Instance.Load();
+            if (!isLoaded)
+                Platform.Log("Coudln't load the database", LogLevel.WARN);
 
             DatabaseTimer.Elapsed  += async (sender, e) => await Database.Instance.SaveAsync();
             DatabaseTimer.AutoReset = true;
             DatabaseTimer.Enabled   = true;
+
+            Platform.Log("Initialized ReNote Server", LogLevel.INFO);
 
             initialized = true;
         }

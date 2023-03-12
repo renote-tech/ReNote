@@ -53,7 +53,7 @@ namespace Server.Web.Static
         public StaticInterface()
         {
             Listener = new HttpListener();
-            requestHandler = new Thread(StaticHandler.Handle);
+            requestHandler = new Thread(() => StaticHandler.Handle().Wait());
         }
 
         /// <summary>

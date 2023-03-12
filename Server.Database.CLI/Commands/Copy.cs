@@ -7,7 +7,7 @@ namespace Server.Database.Commands
     {
         public static string Execute(string[] args)
         {
-            if (!CommandUtil.HasNumberParams(args, 3))
+            if (!CommandUtil.IsExpectedLength(args, 3))
                 return CommandMessages.InvalidParamsLength(3);
 
             DatabasePath inPath = DatabasePath.Parse(args[0]);

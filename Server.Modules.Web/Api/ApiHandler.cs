@@ -28,12 +28,17 @@ namespace Server.Web.Api
                     Body    = apiContext.Request.InputStream
                 };
 
-                if (apiEndpoint != null)
+                if (apiRequest.Method == "OPTIONS")
+                    apiResponse = ApiUtil.SendNoData(200);
+                else if (apiEndpoint != null)
                     apiResponse = await CallEndpointAsync(apiEndpoint, apiRequest);
                 else
                     apiResponse = await ApiUtil.SendAsync(404, "Not found");
 
-                byte[] body = Encoding.UTF8.GetBytes(apiResponse.Body);
+                byte[] body = Array.Empty<byte>();
+
+                if(!string.IsNullOrWhiteSpace(apiResponse.Body))
+                    body = Encoding.UTF8.GetBytes(apiResponse.Body);
 
                 apiContext.Request.InputStream.Close();
 
@@ -41,7 +46,14 @@ namespace Server.Web.Api
                 apiContext.Response.ContentType = "application/json";
 
                 apiContext.Response.Headers.Add("Server", string.Empty);
-                apiContext.Response.Headers.Add("Server-Agent", ServerEnv.Agent());
+                apiContext.Response.Headers.Add("Server-Agent", ServerEnv.Agent);
+                apiContext.Response.Headers.Add("Access-Control-Allow-Origin", "*");
+
+                if (apiRequest.Method == "OPTIONS")
+                {
+                    apiContext.Response.Headers.Add("Access-Control-Allow-Headers", "*");
+                    apiContext.Response.Headers.Add("Access-Control-Allow-Methods", "*");
+                }
 
                 await apiContext.Response.OutputStream.WriteAsync(body);
                 apiContext.Response.KeepAlive = false;
@@ -61,12 +73,12 @@ namespace Server.Web.Api
             Type endpointClass = Type.GetType($"Server.ReNote.Api.{endpoint.Name}");
 
             if (endpointClass == null)
-                return await ApiUtil.SendErrorAsync("Endpoint not found");
+                return await ApiUtil.SendErrorAsync(ApiMessages.EndpointNotFound());
 
             MethodInfo endpointMethod = endpointClass.GetMethod("OperateRequest", BindingFlags.Public | BindingFlags.Static);
 
             if (endpointMethod == null)
-                return await ApiUtil.SendErrorAsync("Endpoint call not found");
+                return await ApiUtil.SendErrorAsync(ApiMessages.EndpointMethodNotFound());
 
             Task<ApiResponse> response = (Task<ApiResponse>)endpointMethod.Invoke(null, new object[] { request });
             return await response;

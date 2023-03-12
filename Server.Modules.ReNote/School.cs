@@ -23,7 +23,8 @@ namespace Server.ReNote
 
     public enum SchoolType
     {
-        HIGH_SCHOOL   = 0,
-        MIDDLE_SCHOOL = 1
+        HIGH_SCHOOL    = 0,
+        MIDDLE_SCHOOL  = 1,
+        PRIMARY_SCHOOL = 2
     }
 }

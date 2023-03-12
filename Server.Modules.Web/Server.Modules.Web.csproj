@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>disable</Nullable>
     <RootNamespace>Server.Web</RootNamespace>
@@ -22,12 +22,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Server.Modules.Common\Server.Modules.Common.csproj" />
     <ProjectReference Include="..\Server.Modules.ReNote\Server.Modules.ReNote.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Server.Modules.ReNote">
-      <HintPath>..\Server.Modules.ReNote\bin\Debug\net6.0\Server.Modules.ReNote.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>

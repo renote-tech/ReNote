@@ -4,7 +4,7 @@ namespace Server.Database.Utilities
 {
     internal class CommandUtil
     {
-        public static bool HasNumberParams(string[] arguments, int amount) => arguments.Length >= amount;
+        public static bool IsExpectedLength(string[] arguments, int amount) => arguments.Length >= amount;
         public static string[] NormalizeParams(string parameters)
         {
             if (string.IsNullOrWhiteSpace(parameters))

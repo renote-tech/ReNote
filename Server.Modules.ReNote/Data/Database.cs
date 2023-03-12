@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using ProtoBuf;
 using Server.Common;
+using Server.Common.Proto;
 using Server.Common.Utilities;
 
 namespace Server.ReNote.Data
@@ -87,8 +88,9 @@ namespace Server.ReNote.Data
         }
 
         /// <summary>
-        /// Loads the <see cref="rootDocuments"/> list from a database file.
+        /// Loads the <see cref="rootDocuments"/> list from a database file. Returns whether the file was actually loaded.
         /// </summary>
+        /// <returns><see cref="bool"/></returns>
         public bool Load()
         {
             if (string.IsNullOrWhiteSpace(SaveLocation))
@@ -100,11 +102,28 @@ namespace Server.ReNote.Data
             if (!File.Exists(SaveLocation))
                 return false;
 
-            byte[] data = File.ReadAllBytes(SaveLocation);
-            using MemoryStream stream = new MemoryStream(data);
-            Database db = Serializer.Deserialize<Database>(stream);
+            try
+            {
+#if !DEBUG
+                byte[] encryptedData = File.ReadAllBytes(SaveLocation);
+                byte[] decryptedData = ByteShifting.Decrypt(encryptedData);
+                using MemoryStream stream = new MemoryStream(decryptedData);
+                Database database = Serializer.Deserialize<Database>(stream);
 
-            rootDocuments = db.rootDocuments;
+                rootDocuments = database.rootDocuments;
+#else
+                byte[] data = File.ReadAllBytes(SaveLocation);
+                using MemoryStream stream = new MemoryStream(data);
+                Database database = Serializer.Deserialize<Database>(stream);
+
+                rootDocuments = database.rootDocuments;
+#endif
+            }
+            catch (ProtoException)
+            {
+                return false;
+            }
+
             return true;
         }
 
@@ -129,14 +148,16 @@ namespace Server.ReNote.Data
         }
 
         /// <summary>
-        /// Back up the <see cref="Database"/>'s instance to a different file (backups/db_school_XXXX_XX_XX_XX_XX_XX_XXX.dat)
+        /// Back up the <see cref="Database"/>'s instance to a different file (backups/db_school_YYYY_DD_MM_HH_mm_ss_MIM.dat)
         /// </summary>
         public async Task<bool> BackupAsync()
         {
-            string dirName   = Configuration.ReNoteConfig.DBBackupLocation ?? "backups";
-            string fileName  = $"db_school_{DateTime.Now.ToString("yyyy-dd-M--HH-mm-ss")}-{DateTime.Now.Millisecond}.dat";
+            string dirName = Configuration.ReNoteConfig.DBBackupLocation ?? "backups";
+            if (!Directory.Exists(dirName))
+                Directory.CreateDirectory(dirName);
 
-            string path      = PathUtil.NormalizeToOS(Path.Combine(dirName, fileName));
+            string fileName = $"db_school_{DateTime.Now.ToString("yyyy-dd-M--HH-mm-ss")}-{DateTime.Now.Millisecond}.dat";
+            string path = PathUtil.NormalizeToOS(Path.Combine(dirName, fileName));
 
             return await SaveAsync(path);
         }
@@ -155,8 +176,11 @@ namespace Server.ReNote.Data
 
             using MemoryStream stream = new MemoryStream();
             Serializer.Serialize(stream, this);
-
+#if !DEBUG
+            await ByteShifting.EncryptAsync(stream.ToArray(), saveLocation);
+#else
             await File.WriteAllBytesAsync(saveLocation, stream.ToArray());
+#endif
             return true;
         }
     }
@@ -177,9 +201,7 @@ namespace Server.ReNote.Data
         private readonly Dictionary<string, Document> documents = new Dictionary<string, Document>();
 
         public RootDocument()
-        {
-
-        }
+        { }
 
         public RootDocument(string name)
         {
@@ -291,9 +313,7 @@ namespace Server.ReNote.Data
         private string jsonData;
 
         public Document()
-        {
-
-        }
+        { }
 
         public Document(string data)
         {
