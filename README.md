@@ -7,7 +7,7 @@
 <p align="center">
   ReNote brings you an easy-to-use timetable software, including all the tools you need to empower your productivity as a teacher or student.
   <br><br>
-  <img src="Documentation/show.png">
+  <img src="Documentation/show_new.png">
   <br><br>
 </p>
 
