@@ -36,8 +36,11 @@ Notes:
    - You need the .NET SDK (7.0+) to run the commands above. Download <a href="https://aka.ms/netcore">here</a>.
    - You can add the `--self-contained` parameter to add necessary dependencies to the output folder.
    - You can also build for 32bit platforms by changing the suffix `-x64` to `-x86` (Windows only).
-   - Same apply for arm64 platforms by changing the suffix to `-arm64`. 
+   - Same apply for arm64 platforms by changing the suffix to `-arm64`.
 
+# Run ReNote
+If there is a pre-built version of ReNote available in the Releases <a href="https://github.com/renote-tech/ReNote/releases">section</a>, you'll need .NET Runtime 7.0+ to run it.
+Download <a href="https://dotnet.microsoft.com/en-us/download/dotnet/7.0">here</a>.
 
 # Features
 ### → Server
