@@ -40,7 +40,7 @@ Notes:
 
 # Run ReNote
 If there is a pre-built version of ReNote available in the Releases <a href="https://github.com/renote-tech/ReNote/releases">section</a>, you'll need .NET Runtime 7.0+ to run it.
-Download <a href="https://dotnet.microsoft.com/en-us/download/dotnet/7.0">here</a>.
+Download <a href="https://dotnet.microsoft.com/en-us/download/dotnet/7.0#runtime-7.0.4">here</a>.
 
 # Features
 ### → Server
