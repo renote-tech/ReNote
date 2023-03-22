@@ -1,0 +1,47 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="clr-namespace:Client.Controls;assembly=Client"
+			 mc:Ignorable="d" d:DesignWidth="960" d:DesignHeight="540"
+			 x:Class="Client.Layout.LogonUI" Background="#111111">
+	<UserControl.Styles>
+		<Style Selector="TextBox.loginBox /template/ Border#PART_BorderElement">
+			<Setter Property="Background" Value="#1f1f1f"/>
+			<Setter Property="BorderBrush" Value="#9370db"/>
+			<Setter Property="CornerRadius" Value="5"/>
+		</Style>
+		<Style Selector="Button.loginBtn">
+			<Setter Property="Background" Value="#9370db" />
+		</Style>
+		<Style Selector="Button.loginBtn:pointerover /template/ ContentPresenter">
+			<Setter	Property="Background" Value="#895be9"/>
+		</Style>
+		<Style Selector="Button.loginBtn:pressed /template/ ContentPresenter">
+			<Setter	Property="Background" Value="#7a46e7"/>
+		</Style>
+	</UserControl.Styles>
+	<Panel>
+		<Panel Background="#1f1f1f" HorizontalAlignment="Left">
+			<StackPanel VerticalAlignment="Top">
+				<Border Background="Black" CornerRadius="64" BorderThickness="10" Margin="0, 50, 0, 0" Width="128" Height="128" BorderBrush="Black" PointerReleased="OnLogoClicked">
+					<Image Source="/Assets/renote-no-bg.png" Width="150" Height="150"/>
+				</Border>
+				<TextBlock Text="Sign in" Foreground="White" FontSize="22" Margin="0, 20, 0, 0" HorizontalAlignment="Center"/>
+				<TextBox x:Name="usernameBox" Classes="loginBox" TabIndex="-1" Foreground="White" Watermark="Username" Margin="10, 20, 10, 20" CaretBrush="White" Width="225"/>
+				<TextBox x:Name="passwordBox" Classes="loginBox revealPasswordButton" TabIndex="-1" Foreground="White" Watermark="Password" Margin="10, 0, 10, 20" CaretBrush="White" PasswordChar="•" KeyUp="OnPasswordBoxKeyUp" Width="225"/>
+				<Button x:Name="loginButton" Classes="loginBtn" TabIndex="-1" Content="Sign in" Click="OnLoginButtonClicked" Width="225" Margin="10, 0" HorizontalContentAlignment="Center"/>
+				<TextBlock x:Name="loginErrorText" Classes="loginError" Foreground="Transparent" Text="An error occurred" FontSize="12" FontStyle="Italic" Margin="0, 10" Width="220" TextWrapping="Wrap" TextAlignment="Center" />
+				<controls:ProgressRing x:Name="loginRing" Width="25" Height="25" IsActive="True" VerticalAlignment="Center" Foreground="Transparent" Margin="-10"/>
+			</StackPanel>
+			<StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Center">
+				<TextBlock Text="© ReNote NETW.&#x0a;All rights reserved." Foreground="White" TextAlignment="Center" Margin="0, 0, 0, 10"/>
+			</StackPanel>
+		</Panel>
+		<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="200, 0, 0, 0">
+			<TextBlock x:Name="quotationText" Text="&quot;A Random Quotation That Changes At Every&#x0a;Startup.&quot;" FontSize="26" Foreground="White"/>
+			<TextBlock x:Name="quotationAuthor" Text="- Author" FontSize="26" Foreground="White" Margin="0, 5, 0, 0" HorizontalAlignment="Right"/>
+		</StackPanel>
+		<TextBlock Text="ReNote Client 2022.12" Width="150" FontStyle="Italic" Foreground="White" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="10, 10"/>
+	</Panel>
+</UserControl>

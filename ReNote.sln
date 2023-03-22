@@ -13,6 +13,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server.Modules.Common", "Se
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server.Database.CLI", "Server.Database.CLI\Server.Database.CLI.csproj", "{701AAFEC-6A4B-4C82-9943-330B077748E2}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server.Resource.GUI", "Server.Resource.GUI\Server.Resource.GUI.csproj", "{17FB63CA-6F59-432F-BCCA-74D849BC8D24}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client", "Client\Client.csproj", "{47EF4608-8D69-4F46-989B-4D2268B70746}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +43,14 @@ Global
 		{701AAFEC-6A4B-4C82-9943-330B077748E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{701AAFEC-6A4B-4C82-9943-330B077748E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{701AAFEC-6A4B-4C82-9943-330B077748E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17FB63CA-6F59-432F-BCCA-74D849BC8D24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17FB63CA-6F59-432F-BCCA-74D849BC8D24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17FB63CA-6F59-432F-BCCA-74D849BC8D24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17FB63CA-6F59-432F-BCCA-74D849BC8D24}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47EF4608-8D69-4F46-989B-4D2268B70746}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47EF4608-8D69-4F46-989B-4D2268B70746}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47EF4608-8D69-4F46-989B-4D2268B70746}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47EF4608-8D69-4F46-989B-4D2268B70746}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,17 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:controls="clr-namespace:Client.Controls;assembly=Client"
+             mc:Ignorable="d" d:DesignWidth="960" d:DesignHeight="540"
+             x:Class="Client.Layout.SplashUI">
+	<Panel>
+		<Panel HorizontalAlignment="Center" VerticalAlignment="Center">
+			<controls:ProgressRing x:Name="loadingRing" Width="50" Height="50" IsActive="True" VerticalAlignment="Center" Foreground="White" Margin="60"/>
+			<Button x:Name="tryAgainButton" Margin="0, 90, 0, 0" Content="Try again" IsVisible="False" Click="OnTryAgainButtonClicked"/>
+		</Panel>
+		<TextBlock x:Name="errorMessage" Text="An error occurred. The application may not be configured properly." VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Transparent"/>
+		<TextBlock Text="Entirely developed by AlianDead." FontStyle="Italic" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10"/>
+		<TextBlock Text="© ReNote NETW. All rights reserved." FontStyle="Italic" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="10"/>
+	</Panel>
+</UserControl>

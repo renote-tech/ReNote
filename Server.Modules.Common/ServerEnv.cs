@@ -39,7 +39,7 @@
         public const string ApiVersion = "v1";
 
         /// <summary>
-        /// Detects whether the environment is running Windows or Unix.
+        /// Returns whether the environment is running Windows or Unix.
         /// </summary>
         /// <returns><see cref="ServerOS"/></returns>
         public static ServerOS DetectOS()
@@ -48,6 +48,18 @@
                 return ServerOS.WINDOWS;
 
             return ServerOS.UNIX;
+        }
+
+        /// <summary>
+        /// Returns the name of the platform ReNote is running on.
+        /// </summary>
+        /// <returns><see cref="string"/></returns>
+        public static string GetPlatformName()
+        {
+            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+                return "Windows NT";
+
+            return "Unix";
         }
     }
 

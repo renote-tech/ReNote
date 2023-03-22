@@ -7,9 +7,14 @@
     <Nullable>disable</Nullable>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <RootNamespace>Server</RootNamespace>
+    <Configurations>Debug;Release;SC Debug</Configurations>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>portable</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='SC Debug|AnyCPU'">
     <DebugType>portable</DebugType>
   </PropertyGroup>
 

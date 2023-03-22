@@ -16,6 +16,7 @@
     <Title>ReNote Database CLI</Title>
     <AssemblyName>RDBC</AssemblyName>
     <RootNamespace>Server.Database</RootNamespace>
+    <Configurations>Debug;Release;SC Debug</Configurations>
   </PropertyGroup>
 
   <ItemGroup>

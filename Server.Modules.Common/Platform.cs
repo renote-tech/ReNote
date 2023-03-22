@@ -21,7 +21,8 @@ namespace Server
             Console.Title = "ReNote \u03a9 2023";
             Console.Write($"      ____       _   __      __     \r\n     / __ \\___  / | / /___  / /____ \r\n    / /_/ / _ \\/  |/ / __ \\/ __/ _ \\\r\n   / _, _/  __/ /|  / /_/ / /_/  __/\r\n  /_/ |_|\\___/_/ |_/\\____/\\__/\\___/   Version {ServerEnv.Version}\r\n                                    \r\n");
 
-            Log($"Thanks for choosing ReNote!", LogLevel.INFO);
+            Log("Thanks for choosing ReNote!", LogLevel.INFO);
+            Log($"Running on {ServerEnv.GetPlatformName()}", LogLevel.INFO);
 
             initialized = true;
         }
