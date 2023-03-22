@@ -1,4 +1,6 @@
-﻿namespace Server.Resource.GUI
+﻿using Server.Resource.Enums;
+
+namespace Server.Resource.IO
 {
     internal class FileHelper
     {

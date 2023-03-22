@@ -1,6 +1,6 @@
 ﻿using System.Windows.Forms;
 
-namespace Server.Resource.GUI
+namespace Server.Resource.Windows
 {
     partial class MainWindow
     {

@@ -4,10 +4,10 @@ using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
-using Server.Resource.GUI.Enums;
-using Server.Resource.GUI.Utils;
+using Server.Resource.Enums;
+using Server.Resource.IO;
 
-namespace Server.Resource.GUI
+namespace Server.Resource.Windows
 {
     public partial class MainWindow : Form
     {

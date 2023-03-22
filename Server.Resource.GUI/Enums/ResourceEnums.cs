@@ -1,4 +1,4 @@
-﻿namespace Server.Resource.GUI
+﻿namespace Server.Resource.Enums
 {
     internal enum ResourceType
     {

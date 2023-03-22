@@ -25,7 +25,7 @@
 		<Panel Background="#1f1f1f" HorizontalAlignment="Left">
 			<StackPanel VerticalAlignment="Top">
 				<Border Background="Black" CornerRadius="64" BorderThickness="10" Margin="0, 50, 0, 0" Width="128" Height="128" BorderBrush="Black" PointerReleased="OnLogoClicked">
-					<Image Source="/Assets/renote-no-bg.png" Width="150" Height="150"/>
+					<Image Source="/Assets/renote_no_bg.png" Width="150" Height="150"/>
 				</Border>
 				<TextBlock Text="Sign in" Foreground="White" FontSize="22" Margin="0, 20, 0, 0" HorizontalAlignment="Center"/>
 				<TextBox x:Name="usernameBox" Classes="loginBox" TabIndex="-1" Foreground="White" Watermark="Username" Margin="10, 20, 10, 20" CaretBrush="White" Width="225"/>

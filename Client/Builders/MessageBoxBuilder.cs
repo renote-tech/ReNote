@@ -39,15 +39,13 @@ namespace Client.Builders
             return this;
         }
 
-        public MessageBoxCode Show(Window owner = default)
+        public void Show(Window owner = default)
         {
             if (owner == default)
                 owner = MainWindow.Instance;
 
             MessageBox dialog = new MessageBox(Title, Message, MessageBoxType, MessageBoxIcon);
             dialog.ShowDialog(owner);
-
-            return dialog.ExitCode;
         }
 
         public async Task<MessageBoxCode> ShowAsync(Window owner = default)
@@ -64,8 +62,8 @@ namespace Client.Builders
 
     public enum MessageBoxType
     {
-        OK,
-        YES_CANCEL
+        OK         = 0,
+        YES_CANCEL = 1
     }
 
     public enum MessageBoxIcon

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Buffers.Binary;
 
-namespace Server.Resource.GUI.IO
+namespace Server.Resource.IO
 {
     internal class FileAttribute
     {

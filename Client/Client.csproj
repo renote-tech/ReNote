@@ -28,8 +28,8 @@
 		<None Remove="Assets\home_button.png" />
 		<None Remove="Assets\logout_button.png" />
 		<None Remove="Assets\more_button.png" />
-		<None Remove="Assets\renote-no-bg.png" />
 		<None Remove="Assets\ReNote_big_italic.png" />
+		<None Remove="Assets\renote_no_bg.png" />
 		<None Remove="Assets\user.bmp" />
 	</ItemGroup>
 	<ItemGroup>

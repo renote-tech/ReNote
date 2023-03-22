@@ -12,5 +12,13 @@ namespace Client
                      .LogToTrace()
                      .StartWithClassicDesktopLifetime(args);
         }
+
+        // DEBUGGING ONLY
+        public AppBuilder BuildAvaloniaApp()
+        {
+            return AppBuilder.Configure<App>()
+                     .UsePlatformDetect()
+                     .LogToTrace();
+        }
     }
 }

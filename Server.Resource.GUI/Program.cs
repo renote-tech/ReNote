@@ -1,5 +1,6 @@
 using System;
 using System.Windows.Forms;
+using Server.Resource.Windows;
 
 namespace Server.Resource.GUI
 {
