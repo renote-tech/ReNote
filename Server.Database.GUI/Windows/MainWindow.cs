@@ -282,6 +282,6 @@ namespace Server.Database.Windows
             }
         }
 
-        public static MainWindow GetInstance() => s_Instance;
+        public static MainWindow GetInstance() => s_Instance; 
     }
 }
