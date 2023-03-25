@@ -9,7 +9,7 @@ using Server.Web.Utilities;
 
 namespace Server.ReNote.Api
 {
-    public class AuthenticateEndpoint
+    public class Authenticate
     {
         /// <summary>
         /// Operates a request.
@@ -46,7 +46,7 @@ namespace Server.ReNote.Api
                 return await ApiUtil.SendAsync(400, ApiMessages.UserNotExists());
 
             User userData = UserManager.GetUser(reqBody.Username);
-            byte[] hashPassword = EncryptionUtil.ComputeSha256(reqBody.Password);
+            byte[] hashPassword = await EncryptionUtil.ComputeSha256Async(reqBody.Password);
             AESObject aesObject = new AESObject(userData.SecurePassword, iv: userData.IVPassword, key: hashPassword);
 
             if (AES.Decrypt(aesObject) == string.Empty)

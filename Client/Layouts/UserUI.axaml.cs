@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Input;
+using Client.Api;
 using Client.ReNote;
 using Client.Windows;
 
@@ -14,9 +15,6 @@ namespace Client.Layout
             InitializeComponent();
             Initialized += (sender, e) =>
             {
-                if (Session == null)
-                    return;
-
                 SessionText.Text = $"{ReNote.Client.Instance.SchoolInformation.GetSchoolName()}\n{Session.RealName}";
             };
         }
@@ -26,8 +24,9 @@ namespace Client.Layout
             Session ??= session;
         }
 
-        private void OnLogoutButtonClicked(object sender, PointerReleasedEventArgs e)
+        private async void OnLogoutButtonClicked(object sender, PointerReleasedEventArgs e)
         {
+            await ApiClient.SendLogoutAsync(Session.SessionId, Session.AuthToken);
             MainWindow.Instance.SetContent(new LogonUI());
         }
 

@@ -16,18 +16,18 @@ namespace Server.ReNote.Management
         public static async Task<GlobalSession> CreateSessionAsync(long userId)
         {
             long sessionId = CreateSessionId();
-            string authToken = ReNoteSecureToken.Generate(sessionId);
-            string sha256AuthToken = EncryptionUtil.ComputeStringSha256(authToken);
+            string authToken = await ReNoteSecureToken.GenerateAsync(sessionId);
+            string sha256AuthToken = await EncryptionUtil.ComputeStringSha256Async(authToken);
 
             User userData = UserManager.GetUser(userId);
 
             GlobalSession session = new GlobalSession(sessionId, userId, authToken, userData.AccountType);
-            Document[] sessions = DatabaseUtil.GetDocuments(Constants.DB_ROOT_SESSIONS);
+            string[] sessions = DatabaseUtil.GetValues(Constants.DB_ROOT_SESSIONS);
             
 
             for(int i = 0; i < sessions.Length; i++)
             {
-                string rawSession = sessions[i].GetRaw();
+                string rawSession = sessions[i];
                 if (!JsonUtil.ValiditateJson(rawSession))
                     continue;
 
@@ -41,16 +41,15 @@ namespace Server.ReNote.Management
             internalSession.Connection = internalSession.RequestTimestamp;
 
             DatabaseUtil.Set(Constants.DB_ROOT_SESSIONS, session.SessionId.ToString(), JsonConvert.SerializeObject(internalSession));
-            await Database.Instance.SaveAsync();
             
             return session;
         }
 
         /// <summary>
-        /// Updates the session timestamp.
+        /// Updates the request timestamp.
         /// </summary>
         /// <param name="sessionId">The session id.</param>
-        public static void UpdateSessionTimestamp(long sessionId)
+        public static void UpdateRequestTimestamp(long sessionId)
         {
             GlobalSession session = GetSession(sessionId);
             session.RequestTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
@@ -68,7 +67,7 @@ namespace Server.ReNote.Management
             if (!SessionExists(sessionId))
                 return null;
 
-            string rawSession = DatabaseUtil.Get(Constants.DB_ROOT_SESSIONS, sessionId.ToString()).GetRaw();
+            string rawSession = DatabaseUtil.Get(Constants.DB_ROOT_SESSIONS, sessionId.ToString());
             if (!JsonUtil.ValiditateJson(rawSession))
                 return null;
 
@@ -96,7 +95,7 @@ namespace Server.ReNote.Management
         /// <returns><see cref="bool"/></returns>
         public static bool SessionExists(long sessionId)
         {
-            return DatabaseUtil.DocumentExists(Constants.DB_ROOT_SESSIONS, sessionId.ToString());
+            return DatabaseUtil.ItemExists(Constants.DB_ROOT_SESSIONS, sessionId.ToString());
         }
 
         /// <summary>
@@ -174,6 +173,9 @@ namespace Server.ReNote.Management
         {
             bool isExpiredSession = false;
             if ((RequestTimestamp + 600000) < DateTimeOffset.Now.ToUnixTimeMilliseconds())
+                isExpiredSession = true;
+
+            if ((Connection + 1800000) < DateTimeOffset.Now.ToUnixTimeMilliseconds())
                 isExpiredSession = true;
 
             if (isExpiredSession)

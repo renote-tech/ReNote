@@ -28,11 +28,11 @@ namespace Server.ReNote.Management
         /// <returns><see cref="User"/></returns>
         public static User GetUser(long userId)
         {
-            Document userDocument = DatabaseUtil.Get(Constants.DB_ROOT_USERS, userId.ToString());
-            if (userDocument == null)
+            string userItem = DatabaseUtil.Get(Constants.DB_ROOT_USERS, userId.ToString());
+            if (userItem == null)
                 return null;
 
-            return JsonConvert.DeserializeObject<User>(userDocument.GetRaw());
+            return JsonConvert.DeserializeObject<User>(userItem);
         }
 
         /// <summary>
@@ -48,16 +48,16 @@ namespace Server.ReNote.Management
                 return UserExists(userId) ? userId : -1;
             }
 ;
-            Dictionary<string, Document> documents = DatabaseUtil.GetDictionary(Constants.DB_ROOT_USERS);
-            if (documents.Count == 0)
+            Dictionary<string, string> items = DatabaseUtil.GetItems(Constants.DB_ROOT_USERS);
+            if (items.Count == 0)
                 return -1;
 
-            for(int i = 0; i < documents.Count; i++)
+            for(int i = 0; i < items.Count; i++)
             {
-                if (documents.ElementAt(i).Value == null)
+                if (items.ElementAt(i).Value == null)
                     continue;
 
-                User user = GetUser(documents.ElementAt(i).Key);
+                User user = GetUser(items.ElementAt(i).Key);
                 if (user.Username == username)
                     return user.UserId;
             }
@@ -72,7 +72,7 @@ namespace Server.ReNote.Management
         /// <returns><see cref="bool"/></returns>
         private static bool UserExists(long userId)
         {
-            if (DatabaseUtil.DocumentExists(Constants.DB_ROOT_USERS, userId.ToString()))
+            if (DatabaseUtil.ItemExists(Constants.DB_ROOT_USERS, userId.ToString()))
                 return true;
 
             return false;

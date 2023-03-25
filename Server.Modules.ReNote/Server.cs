@@ -15,11 +15,19 @@ namespace Server.ReNote
                 instance ??= new Server();
                 return instance;
             }
-            private set
+        }
+
+        /// <summary>
+        /// The current instance of the <see cref="Database"/> class.
+        /// </summary>
+        public static Database Database
+        {
+            get
             {
-                instance = value;
+                return dbInstance;
             }
         }
+
         /// <summary>
         /// The school information.
         /// </summary>
@@ -33,6 +41,10 @@ namespace Server.ReNote
         /// The private instance of the <see cref="Instance"/> field.
         /// </summary>
         private static Server instance;
+        /// <summary>
+        /// The private <see cref="Database"/> instance.
+        /// </summary>
+        private static Database dbInstance;
         /// <summary>
         /// True if the <see cref="Server"/>'s instance is initialized; otherwise false.
         /// </summary>
@@ -51,6 +63,8 @@ namespace Server.ReNote
             if (initialized)
                 return;
 
+            dbInstance = new Database();
+
             SchoolInformation = new School()
             {
                 SchoolLocation = Configuration.ReNoteConfig.SchoolLocation,
@@ -58,12 +72,12 @@ namespace Server.ReNote
                 SchoolType     = (SchoolType)Configuration.ReNoteConfig.SchoolType
             };
 
-            Database.Instance.SaveLocation = Configuration.ReNoteConfig.DBSaveLocation;
-            bool isLoaded = Database.Instance.Load();
+            dbInstance.SaveLocation = Configuration.ReNoteConfig.DBSaveLocation;
+            bool isLoaded = dbInstance.Load();
             if (!isLoaded)
                 Platform.Log("Coudln't load the database", LogLevel.WARN);
 
-            DatabaseTimer.Elapsed  += async (sender, e) => await Database.Instance.SaveAsync();
+            DatabaseTimer.Elapsed  += async (sender, e) => await dbInstance.SaveAsync(true);
             DatabaseTimer.AutoReset = true;
             DatabaseTimer.Enabled   = true;
 

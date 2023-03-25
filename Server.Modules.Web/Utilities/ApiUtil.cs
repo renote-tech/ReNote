@@ -78,8 +78,8 @@ namespace Server.Web.Utilities
         /// <returns><see cref="ApiResponse"/></returns>
         public static async Task<ApiResponse> VerifyAuthorizationAsync(NameValueCollection headers)
         {
-            string sessionId = GetHeaderFirstValue(headers["sessionId"]);
-            string authToken = GetHeaderFirstValue(headers["authToken"]);
+            string sessionId = GetHeaderValue(headers["sessionId"]);
+            string authToken = GetHeaderValue(headers["authToken"]);
 
             if (string.IsNullOrWhiteSpace(sessionId) || string.IsNullOrWhiteSpace(authToken))
                 return await SendAsync(400, ApiMessages.NullOrEmpty("sessionId", "authToken"));
@@ -97,20 +97,21 @@ namespace Server.Web.Utilities
             if (session.HasExpired())
                 return await SendAsync(ApiStatus.SESSION_EXPIRED, ApiMessages.SessionExpired(), 401);
 
-            if (EncryptionUtil.ComputeStringSha256(authToken) != session.AuthToken)
+            string computedHash = await EncryptionUtil.ComputeStringSha256Async(authToken);
+            if (computedHash != session.AuthToken)
                 return await SendAsync(401, ApiMessages.InvalidAuthToken());
 
-            SessionManager.UpdateSessionTimestamp(session.SessionId);
+            SessionManager.UpdateRequestTimestamp(session.SessionId);
 
             return await SendWithDataAsync(200, ApiMessages.Success(), session.UserId);
         }
 
         /// <summary>
-        /// Returns the first value of an header value field.
+        /// Returns the value of an header field.
         /// </summary>
         /// <param name="headerValue">The header to be proceeded.</param>
         /// <returns><see cref="string"/></returns>
-        public static string GetHeaderFirstValue(string headerValue)
+        public static string GetHeaderValue(string headerValue)
         {
             if (string.IsNullOrWhiteSpace(headerValue))
                 return string.Empty;

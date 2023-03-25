@@ -13,90 +13,90 @@ namespace Server.ReNote.Utilities
         /// <summary>
         /// Sets data to the <see cref="Database"/>.
         /// </summary>
-        /// <param name="root">The name of the <see cref="RootDocument"/>.</param>
-        /// <param name="key">The key of the <see cref="Document"/>.</param>
-        /// <param name="value">The value of the <see cref="Document"/>.</param>
+        /// <param name="root">The name of the <see cref="Container"/>.</param>
+        /// <param name="key">The key of the item.</param>
+        /// <param name="value">The value of the item.</param>
         public static void Set(string root, string key, string value)
         {
-            if (Database.Instance[root] == null)
-                Database.Instance.AddDocument(root);
+            if (Server.Database[root] == null)
+                Server.Database.AddContainer(root);
 
-            bool isDocumentExists = DocumentExists(root, key);
-            if (isDocumentExists)
-                Database.Instance[root][key] = value;
+            bool itemExists = ItemExists(root, key);
+            if (itemExists)
+                Server.Database[root][key] = value;
             else
-                Database.Instance[root].AddKey(key, new Document(value));
+                Server.Database[root].AddItem(key, value);
         }
 
         /// <summary>
         /// Removes a key from the <see cref="Database"/>. Returns whether the key has actually been removed.
         /// </summary>
-        /// <param name="root">The name of the <see cref="RootDocument"/>.</param>
-        /// <param name="key">The key of the <see cref="Document"/>.</param>
+        /// <param name="root">The name of the <see cref="Container"/>.</param>
+        /// <param name="key">The key of the item.</param>
         /// <returns><see cref="bool"/></returns>
         public static bool Remove(string root, string key)
         {
-            if (Database.Instance[root] == null)
+            if (Server.Database[root] == null)
                 return false;
 
-            return Database.Instance[root].RemoveKey(key);
+            return Server.Database[root].RemoveItem(key);
         }
 
         /// <summary>
         /// Gets data from the <see cref="Database"/>.
         /// </summary>
-        /// <param name="root">The name of the <see cref="RootDocument"/>.</param>
-        /// <param name="key">The key of the <see cref="Document"/>.</param>
-        /// <returns><see cref="Document"/></returns>
-        public static Document Get(string root, string key)
+        /// <param name="root">The name of the <see cref="Container"/>.</param>
+        /// <param name="key">The key of the item.</param>
+        /// <returns><see cref="string"/></returns>
+        public static string Get(string root, string key)
         {
-            if (Database.Instance[root] == null)
+            if (Server.Database[root] == null)
                 return null;
 
-            if (Database.Instance[root][key] == null)
+            if (Server.Database[root][key] == null)
                 return null;
 
-            return (Document)Database.Instance[root][key];
+            return (string)Server.Database[root][key];
         }
 
         /// <summary>
-        /// Gets a dictionary with all the <see cref="Document"/>s.
+        /// Gets a dictionary with all the items.
         /// </summary>
-        /// <param name="root">The name of the <see cref="RootDocument"/>.</param>
-        /// <returns>Dictionary[<see cref="string"/>, <see cref="Document"/>]</returns>
-        public static Dictionary<string, Document> GetDictionary(string root)
+        /// <param name="root">The name of the <see cref="Container"/>.</param>
+        /// <returns>Dictionary[<see cref="string"/>, <see cref="string"/>]</returns>
+        public static Dictionary<string, string> GetItems(string root)
         {
-            if (Database.Instance[root] == null)
-                return new Dictionary<string, Document>();
+            if (Server.Database[root] == null)
+                return new Dictionary<string, string>();
 
-            return Database.Instance[root].GetDictionary();
+            return Server.Database[root].GetItems();
         }
 
         /// <summary>
-        /// Gets all the <see cref="Document"/>s within a <see cref="RootDocument"/>.
+        /// Gets all the values of the items within a <see cref="Container"/>.
         /// </summary>
-        /// <param name="root">The name of the <see cref="RootDocument"/>.</param>
-        /// <returns><see cref="Document"/>[]</returns>
-        public static Document[] GetDocuments(string root)
+        /// <param name="root"></param>
+        /// <returns></returns>
+        public static string[] GetValues(string root)
         {
-            if (Database.Instance[root] == null)
-                return Array.Empty<Document>();
+            if (Server.Database[root] == null)
+                return Array.Empty<string>();
 
-            return Database.Instance[root].GetValues();
+            return Server.Database[root].GetItemsValues();
         }
 
         /// <summary>
-        /// Returns whether the <see cref="Document"/> exists.
+        /// Returns whether the item exists.
         /// </summary>
-        /// <param name="root">The name of the <see cref="RootDocument"/>.</param>
-        /// <param name="key">The key of the <see cref="Document"/>.</param>
+        /// <param name="root">The name of the <see cref="Container"/>.</param>
+        /// <param name="key">The key of the item.</param>
         /// <returns><see cref="bool"/></returns>
-        public static bool DocumentExists(string root, string key)
+        public static bool ItemExists(string root, string key)
         {
-            if (Database.Instance[root] == null)
+            if (Server.Database[root] == null)
                 return false;
 
-            if (Database.Instance[root][key] == null)
+            if (Server.Database[root][key] == null)
                 return false;
 
             return true;

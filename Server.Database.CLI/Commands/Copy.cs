@@ -3,8 +3,15 @@ using Server.ReNote.Utilities;
 
 namespace Server.Database.Commands
 {
-    internal class Cop
+    internal class Copy
     {
+        private static readonly CommandInfo m_CommandInfo = new CommandInfo()
+        {
+            Name        = "Copy",
+            Description = "Copies a document value to another",
+            Usage       = "COPY root->doc TO root->doc2"
+        };
+
         public static string Execute(string[] args)
         {
             if (!CommandUtil.IsExpectedLength(args, 3))
@@ -27,6 +34,11 @@ namespace Server.Database.Commands
 
             DatabaseUtil.Set(outPath.Root, outPath.Document, value);
             return CommandMessages.Success();
+        }
+
+        public static CommandInfo GetCommandInfo()
+        {
+            return m_CommandInfo;
         }
     }
 }

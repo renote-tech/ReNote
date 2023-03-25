@@ -8,7 +8,9 @@ namespace Client.Api
     {
         public const string GLOBAL_AUTH  = "/global/v1/auth";
         public const string SCHOOL_DATA  = "/global/v1/school/info";
+        public const string QUOTATION    = "/global/v1/quotation";
         public const string USER_PROFILE = "/user/v1/profile";
+        public const string USER_LOGOUT  = "/user/v1/session/delete";
 
         private static HttpClient httpClient;
         private static bool initialized;
@@ -25,6 +27,7 @@ namespace Client.Api
 
         public static async Task<HttpResponseMessage> SendRequestAsync(string uri, HttpMethod method, Dictionary<string, string> headers, StringContent body)
         {
+            Platform.Log($"Sending {method.Method} request: {uri}");
             using HttpRequestMessage request = new HttpRequestMessage(method, uri);
             HttpResponseMessage response = new HttpResponseMessage();
 
@@ -42,6 +45,8 @@ namespace Client.Api
             catch (HttpRequestException)
             { response.StatusCode = HttpStatusCode.InternalServerError; }
 
+            Platform.Log($"Received {response.StatusCode}: {uri}");
+
             return response;
         }
         
@@ -58,6 +63,11 @@ namespace Client.Api
             return await SendRequestAsync(GLOBAL_AUTH, HttpMethod.Post, null, JsonUtil.SerializeAsBody(obj));
         }
 
+        public static async Task<HttpResponseMessage> GetQuotationAsync()
+        {
+            return await SendRequestAsync(QUOTATION, HttpMethod.Get, null, null);
+        }
+
         public static async Task<HttpResponseMessage> GetProfileAsync(long sessionId, string authToken)
         {
             Dictionary<string, string> headers = new Dictionary<string, string>()
@@ -67,6 +77,17 @@ namespace Client.Api
             };
 
             return await SendRequestAsync(USER_PROFILE, HttpMethod.Get, headers, null);
+        }
+
+        public static async Task<HttpResponseMessage> SendLogoutAsync(long sessionId, string authToken)
+        {
+            Dictionary<string, string> headers = new Dictionary<string, string>()
+            {
+                { "sessionId", sessionId.ToString() },
+                { "authToken", authToken }
+            };
+
+            return await SendRequestAsync(USER_LOGOUT, HttpMethod.Delete, headers, null);
         }
     }
 }

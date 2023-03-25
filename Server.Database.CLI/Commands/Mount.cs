@@ -1,9 +1,8 @@
 ﻿using Server.Database.Utilities;
-using Server.ReNote.Data;
 
 namespace Server.Database.Commands
 {
-    internal class Lod
+    internal class Mnt
     {
         public static string Execute(string[] args)
         {

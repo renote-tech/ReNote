@@ -1,9 +1,9 @@
-﻿using System.Dynamic;
-using Newtonsoft.Json;
-using ProtoBuf;
+﻿using ProtoBuf;
 using Server.Common;
-using Server.Common.Proto;
 using Server.Common.Utilities;
+#if !DEBUG
+    using Server.Common.Proto;
+#endif
 
 namespace Server.ReNote.Data
 {
@@ -11,84 +11,72 @@ namespace Server.ReNote.Data
     public class Database
     {
         /// <summary>
-        /// The current existing instance of the <see cref="Database"/> class; creates one if <see cref="instance"/> is null.
-        /// </summary>
-        public static Database Instance
-        {
-            get
-            {
-                return instance ??= new Database();
-            }
-            private set
-            {
-                instance = value;
-            }
-        }
-        /// <summary>
         /// The location of the database file.
         /// </summary>
         public string SaveLocation { get; set; }
 
         /// <summary>
-        /// The private instance of the <see cref="Instance"/> field.
-        /// </summary>
-        private static Database instance;
-
-        /// <summary>
-        /// The <see cref="Database"/>'s instance <see cref="RootDocument"/> list.
+        /// The <see cref="Database"/>'s instance <see cref="Container"/> list.
         /// </summary>
         [ProtoMember(1)]
-        private List<RootDocument> rootDocuments = new List<RootDocument>();
+        private List<Container> containers = new List<Container>();
 
         /// <summary>
-        /// Returns a <see cref="RootDocument"/> class.
+        /// Returns a <see cref="Container"/> class.
         /// </summary>
-        /// <param name="name">The name of the <see cref="RootDocument"/> class.</param>
-        /// <returns><see cref="RootDocument"/></returns>
-        public RootDocument this[string name]
+        /// <param name="name">The name of the <see cref="Container"/> class.</param>
+        /// <returns><see cref="Container"/></returns>
+        public Container this[string name]
         {
             get
             {
-                for (int i = 0; i < rootDocuments.Count; i++)
+                for (int i = 0; i < containers.Count; i++)
                 {
-                    if (rootDocuments[i].Name == name)
-                        return rootDocuments[i];
+                    if (containers[i].Name == name)
+                        return containers[i];
                 }
                 return null;
             }
             set
             {
-                for (int i = 0; i < rootDocuments.Count; i++)
+                for (int i = 0; i < containers.Count; i++)
                 {
-                    if (rootDocuments[i].Name != name)
+                    if (containers[i].Name != name)
                         continue;
 
-                    rootDocuments[i] = value;
+                    containers[i] = value;
                 }
             }
         }
 
         /// <summary>
-        /// Adds a <see cref="RootDocument"/> to the <see cref="rootDocuments"/> list.
+        /// Adds a <see cref="Container"/> to the <see cref="containers"/> list.
         /// </summary>
-        /// <param name="documentName">The <see cref="RootDocument"/> name.</param>
-        public void AddDocument(string documentName)
+        /// <param name="containerName">The <see cref="Container"/> name.</param>
+        public void AddContainer(string containerName)
         {
-            if (!string.IsNullOrWhiteSpace(documentName))
-                rootDocuments.Add(new RootDocument(documentName));
+            if (!string.IsNullOrWhiteSpace(containerName))
+                containers.Add(new Container(containerName));
+        }
+
+        public Container[] GetContainers()
+        {
+            return containers.ToArray();
+        }
+
+        public bool IsContainerExists(string containerName)
+        {
+            for (int i = 0; i < containers.Count; i++)
+            {
+                if (containers[i].Name == containerName)
+                    return true;
+            }
+
+            return false;
         }
 
         /// <summary>
-        /// Returns whether the <see cref="rootDocuments"/> list is empty;
-        /// </summary>
-        /// <returns><see cref="bool"/></returns>
-        public bool IsEmpty()
-        {
-            return rootDocuments.Count == 0;
-        }
-
-        /// <summary>
-        /// Loads the <see cref="rootDocuments"/> list from a database file. Returns whether the file was actually loaded.
+        /// Loads the <see cref="containers"/> list from a database file. Returns whether the file was actually loaded.
         /// </summary>
         /// <returns><see cref="bool"/></returns>
         public bool Load()
@@ -110,13 +98,13 @@ namespace Server.ReNote.Data
                 using MemoryStream stream = new MemoryStream(decryptedData);
                 Database database = Serializer.Deserialize<Database>(stream);
 
-                rootDocuments = database.rootDocuments;
+                containers = database.containers;
 #else
                 byte[] data = File.ReadAllBytes(SaveLocation);
                 using MemoryStream stream = new MemoryStream(data);
                 Database database = Serializer.Deserialize<Database>(stream);
 
-                rootDocuments = database.rootDocuments;
+                containers = database.containers;
 #endif
             }
             catch (ProtoException)
@@ -128,38 +116,15 @@ namespace Server.ReNote.Data
         }
 
         /// <summary>
-        /// Clears the <see cref="rootDocuments"/> list.
-        /// </summary>
-        public void Clear()
-        {
-            rootDocuments.Clear();
-        }
-
-        /// <summary>
         /// Saves the <see cref="Database"/> to a database file.
         /// </summary>
         /// <param name="doBackup">If true; do a backup of the <see cref="Database"/>.</param>
-        public async Task<bool> SaveAsync(bool doBackup = true)
+        public async Task<bool> SaveAsync(bool doBackup = false)
         {
             if(doBackup)
                 await BackupAsync();
 
             return await SaveAsync(SaveLocation);
-        }
-
-        /// <summary>
-        /// Back up the <see cref="Database"/>'s instance to a different file (backups/db_school_YYYY_DD_MM_HH_mm_ss_MIM.dat)
-        /// </summary>
-        public async Task<bool> BackupAsync()
-        {
-            string dirName = Configuration.ReNoteConfig.DBBackupLocation ?? "backups";
-            if (!Directory.Exists(dirName))
-                Directory.CreateDirectory(dirName);
-
-            string fileName = $"db_school_{DateTime.Now.ToString("yyyy-dd-M--HH-mm-ss")}-{DateTime.Now.Millisecond}.dat";
-            string path = PathUtil.NormalizeToOS(Path.Combine(dirName, fileName));
-
-            return await SaveAsync(path);
         }
 
         /// <summary>
@@ -183,42 +148,75 @@ namespace Server.ReNote.Data
 #endif
             return true;
         }
+
+        /// <summary>
+        /// Back up the <see cref="Database"/>'s instance to a different file (backups/db_school_YYYY_DD_MM_HH_mm_ss_MIM.dat)
+        /// </summary>
+        public async Task<bool> BackupAsync()
+        {
+            string dirName = Configuration.ReNoteConfig.DBBackupLocation ?? "backups";
+            if (!Directory.Exists(dirName))
+                Directory.CreateDirectory(dirName);
+
+            string formatTime = DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss-fff");
+            string fileName = $"db_school_{formatTime}.dat";
+            string path = PathUtil.NormalizeToOS(Path.Combine(dirName, fileName));
+
+            return await SaveAsync(path);
+        }
+
+        /// <summary>
+        /// Clears the <see cref="containers"/> list.
+        /// </summary>
+        public void Clear()
+        {
+            containers.Clear();
+        }
+
+        /// <summary>
+        /// Returns whether the <see cref="containers"/> list is empty;
+        /// </summary>
+        /// <returns><see cref="bool"/></returns>
+        public bool IsEmpty()
+        {
+            return containers.Count == 0;
+        }
     }
 
     [ProtoContract]
-    public class RootDocument
+    public class Container
     {
         /// <summary>
-        /// The name of the <see cref="RootDocument"/>'s instance.
+        /// The name of the <see cref="Container"/>'s instance.
         /// </summary>
         [ProtoMember(1)]
         public string Name { get; set; }
 
         /// <summary>
-        /// The <see cref="RootDocument"/>'s instance <see cref="Document"/> list.
+        /// The dictionary that contains all of the items.
         /// </summary>
         [ProtoMember(2)]
-        private readonly Dictionary<string, Document> documents = new Dictionary<string, Document>();
+        private readonly Dictionary<string, string> items = new Dictionary<string, string>();
 
-        public RootDocument()
+        public Container()
         { }
 
-        public RootDocument(string name)
+        public Container(string name)
         {
             Name = name;
         }
 
         /// <summary>
-        /// Returns a <see cref="Document"/>.
+        /// Returns an item.
         /// </summary>
-        /// <param name="name">The name of the <see cref="Document"/>.</param>
-        /// <returns><see cref="object"/></returns>
-        public object this[string name]
+        /// <param name="name">The name of the item.</param>
+        /// <returns><see cref="string"/></returns>
+        public string this[string name]
         {
             get
             {
-                if (documents.ContainsKey(name))
-                    return documents[name];
+                if (items.ContainsKey(name))
+                    return items[name];
                
                 return null;
             }
@@ -227,115 +225,78 @@ namespace Server.ReNote.Data
                 if (value is not string)
                     return;
 
-                if (documents.ContainsKey(name))
-                    documents[name] = new Document((string)value);
+                if (items.ContainsKey(name))
+                    items[name] = value;
             }
         }
 
         /// <summary>
-        /// Adds a <see cref="Document"/> to the <see cref="documents"/> list.
+        /// Adds an item to the <see cref="items"/> list.
         /// </summary>
-        /// <param name="key">The key of the <see cref="Document"/> to be added.</param>
-        /// <param name="value">The <see cref="Document"/>.</param>
-        public void AddKey(string key, Document value)
+        /// <param name="key">The key of the item.</param>
+        /// <param name="value">The item value.</param>
+        public void AddItem(string key, string value)
         {
-            if (!documents.ContainsKey(key))
-                documents.Add(key, value);
+            if (!items.ContainsKey(key))
+                items.Add(key, value);
         }
 
         /// <summary>
-        /// Removes a <see cref="Document"/> from the <see cref="documents"/> list. Returns whether the key has actually been removed.
+        /// Removes an item from the <see cref="items"/> list. Returns whether the key has actually been removed.
         /// </summary>
-        /// <param name="key">The key of the <see cref="Document"/> to be removed.</param>
+        /// <param name="key">The key of the item to be removed.</param>
         /// <returns><see cref="bool"/></returns>
-        public bool RemoveKey(string key)
+        public bool RemoveItem(string key)
         {
-            if (!documents.ContainsKey(key))
+            if (!items.ContainsKey(key))
                 return false;
 
-            documents.Remove(key);
+            items.Remove(key);
             return true;
         }
 
         /// <summary>
-        /// Returns a dictionary with all the <see cref="Document"/>s.
+        /// Returns whether the item already exists.
         /// </summary>
-        /// <returns>Dictionary[<see cref="string"/>, <see cref="Document"/>]</returns>
-        public Dictionary<string, Document> GetDictionary()
+        /// <param name="key">The key to be checked.</param>
+        /// <returns><see cref="bool"/></returns>
+        public bool IsItemExists(string key)
         {
-            return documents;
+            if (!items.ContainsKey(key))
+                return false;
+
+            return true;
         }
 
         /// <summary>
-        /// Returns all the <see cref="Document"/>s from the <see cref="documents"/> list.
+        /// Returns a dictionary with all the items.
         /// </summary>
-        /// <returns></returns>
-        public Document[] GetValues()
+        /// <returns>Dictionary[<see cref="string"/>, <see cref="string"/>]</returns>
+        public Dictionary<string, string> GetItems()
         {
-            Document[] docsValues = new Document[documents.Count];
-            for(int i = 0; i < docsValues.Length; i++)
-                docsValues[i] = documents.ElementAt(i).Value;
+            return items;
+        }
+
+        /// <summary>
+        /// Returns all the values of the items.
+        /// </summary>
+        /// <returns><see cref="string"/></returns>
+        public string[] GetItemsValues()
+        {
+            string[] docsValues = new string[items.Count];
+            for (int i = 0; i < docsValues.Length; i++)
+                docsValues[i] = items.ElementAt(i).Value;
 
             return docsValues;
         }
 
         /// <summary>
-        /// Returns whether the <see cref="documents"/> list is empty.
+        /// Returns whether the <see cref="items"/> list is empty.
         /// </summary>
         /// <returns><see cref="bool"/></returns>
         public bool IsEmpty()
         {
-            return documents.Count == 0;
-        }
-    }
-
-    [ProtoContract]
-    public class Document
-    {
-        /// <summary>
-        /// The deserialized data of <see cref="jsonData"/> as an <see cref="ExpandoObject"/>.
-        /// </summary>
-        public dynamic Data
-        {
-            get
-            {
-                if (!JsonUtil.ValiditateJson(jsonData))
-                    return null;
-
-                return JsonConvert.DeserializeObject<ExpandoObject>(jsonData);
-            }
-        }
-
-        /// <summary>
-        /// The JSON data of the <see cref="Document"/> as a <see cref="string"/>.
-        /// </summary>
-        [ProtoMember(1)]
-        private string jsonData;
-
-        public Document()
-        { }
-
-        public Document(string data)
-        {
-            Set(data);
-        }
-
-        /// <summary>
-        /// Sets the <see cref="Document"/>'s JSON data.
-        /// </summary>
-        /// <param name="data">The data to be setted.</param>
-        public void Set(string data)
-        {
-            jsonData = data;
-        }
-
-        /// <summary>
-        /// Returns the JSON data of the <see cref="Document"/>.
-        /// </summary>
-        /// <returns><see cref="string"/></returns>
-        public string GetRaw()
-        {
-            return jsonData;
+            return items.Count == 0;
         }
     }
 }

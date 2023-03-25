@@ -45,7 +45,7 @@ namespace Server
                 IVPassword     = aesObject.IV
             };
 
-            Database.Instance.Clear();
+            ReNote.Server.Database.Clear();
             DatabaseUtil.Set("users", "256", JsonConvert.SerializeObject(user));
             /* End Test */
 
@@ -62,7 +62,7 @@ namespace Server
 
             AppDomain.CurrentDomain.ProcessExit += async (sender, e) =>
             {
-                await Database.Instance.SaveAsync(false);
+                await ReNote.Server.Database.SaveAsync();
             };
         }
     }

@@ -15,7 +15,7 @@ namespace Client
 #endif
             }
         }
-        public static readonly string Version = $"{(IsDebug ? "Dev" : "Release")}-0.2.32";
+        public static readonly string Version = $"{(IsDebug ? "Dev" : "Release")}-0.3.04";
         public const string VersionName = "ProtoClient";
 
         public static void ExecuteArguments()

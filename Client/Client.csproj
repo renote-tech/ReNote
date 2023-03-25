@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<OutputType>WinExe</OutputType>
+		<OutputType>Exe</OutputType>
 		<TargetFramework>net7.0</TargetFramework>
 		<Nullable>disable</Nullable>
 		<!--Avalonia doesen't support TrimMode=link currently,but we are working on that https://github.com/AvaloniaUI/Avalonia/issues/6892 -->
@@ -54,7 +54,6 @@
 		<AvaloniaResource Include="Assets\**" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Folder Include="Pages\" />
 	  <Folder Include="ReNote\Student\" />
 	</ItemGroup>
 	<ItemGroup>

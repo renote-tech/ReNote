@@ -17,6 +17,17 @@ namespace Client.Layout
         public LogonUI()
         {
             InitializeComponent();
+            Initialized += OnLayoutInitialized;
+        }
+
+        private async void OnLayoutInitialized(object sender, EventArgs e)
+        {
+            HttpResponseMessage quotationDataResponse = await ApiClient.GetQuotationAsync();
+            string body = await quotationDataResponse.Content.ReadAsStringAsync();
+            QuotationData quotationData = JsonConvert.DeserializeObject<QuotationResponse>(body).GetData();
+
+            quotationText.Text = $"\"{quotationData.GetContent()}\"";
+            quotationAuthor.Text = $"- {quotationData.GetAuthor()}";
         }
 
         private void OnPasswordBoxKeyUp(object sender, KeyEventArgs e)
@@ -34,7 +45,7 @@ namespace Client.Layout
         {
             MessageBoxBuilder.Create()
                              .SetTitle("About ReNote \u03A3")
-                             .SetMessage("Entirely developed by Alian/DEAD \ud83d\udc7b\n© ReNote NETW. All rights reserved.")
+                             .SetMessage($"Entirely developed by Alian/DEAD \ud83d\udc7b\nVersion {Platform.VersionName}/{Platform.Version}")
                              .SetType(MessageBoxType.OK)
                              .SetIcon(MessageBoxIcon.INFO)
                              .Show();

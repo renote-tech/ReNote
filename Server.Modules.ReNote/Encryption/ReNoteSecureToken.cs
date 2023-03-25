@@ -10,11 +10,11 @@ namespace Server.ReNote.Encryption
         /// </summary>
         /// <param name="sessionId">The session id.</param>
         /// <returns><see cref="string"/></returns>
-        public static string Generate(long sessionId)
+        public static async Task<string> GenerateAsync(long sessionId)
         {
             string tokenContent = $"{sessionId}-{DateTimeOffset.Now.ToUnixTimeMilliseconds()}-{EncryptionUtil.RandomTokenSalt()}";
-            byte[] tokenHash    = EncryptionUtil.ComputeSha256(tokenContent);
-            string tokenBas64   = Base64Url.Encode(tokenHash);
+            byte[] tokenHash    = await EncryptionUtil.ComputeSha256Async(tokenContent);
+            string tokenBas64   = Base64Url.Encode(tokenHash, false);
 
             return $"{Constants.TOKEN_BASE_PATTERN}.{tokenBas64}";
         }

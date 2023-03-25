@@ -24,13 +24,17 @@ namespace Server.ReNote
         public const int PUBLIC_AUTH_ID = 0;
 
         /// <summary>
-        /// The name of a <see cref="RootDocument"/> for storing the <see cref="User"/>s' data.
+        /// The name of a <see cref="Container"/> for storing the <see cref="User"/>s' data.
         /// </summary>
         public const string DB_ROOT_USERS = "users";
         /// <summary>
-        /// The name of a <see cref="RootDocument"/> for storing the <see cref="GlobalSession"/>s' data.
+        /// The name of a <see cref="Container"/> for storing the <see cref="GlobalSession"/>s' data.
         /// </summary>
         public const string DB_ROOT_SESSIONS = "sessions";
+        /// <summary>
+        /// The name of a <see cref="Container"/> for storing a list of quotations.
+        /// </summary>
+        public const string DB_ROOT_QUOTATIONS = "quotations";
         /// <summary>
         /// The <see cref="ReNoteSecureToken"/> pattern.
         /// </summary>

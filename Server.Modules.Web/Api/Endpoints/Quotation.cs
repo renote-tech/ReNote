@@ -1,13 +1,12 @@
 ﻿using Newtonsoft.Json;
-using Server.ReNote.Data;
-using Server.ReNote.Management;
+using Server.ReNote.Utilities;
 using Server.Web.Api;
 using Server.Web.Api.Responses;
 using Server.Web.Utilities;
 
 namespace Server.ReNote.Api
 {
-    public class ProfileEndpoint
+    public class Quotation
     {
         /// <summary>
         /// Operates a request.
@@ -32,24 +31,20 @@ namespace Server.ReNote.Api
         /// <returns><see cref="ApiResponse"/></returns>
         private static async Task<ApiResponse> Get(ApiRequest req)
         {
-            ApiResponse verification = await ApiUtil.VerifyAuthorizationAsync(req.Headers);
-            if (verification.Status != 200)
-                return verification;
+            string[] rawQuotations = DatabaseUtil.GetValues(Constants.DB_ROOT_QUOTATIONS);
+            if (rawQuotations.Length == 0)
+                return await ApiUtil.SendWithDataAsync(200, ApiMessages.Success(), new QuotationResponse()
+                {
+                    Author = "Sun Tzu, The Art of War",
+                    Content = "The opportunity of defeating the enemy\nis provided by the enemy himself."
+                });
 
-            DataResponse verificationResponse = JsonConvert.DeserializeObject<DataResponse>(verification.Body);
-            long userId = (long)verificationResponse.Data;
+            int quotationIndex = new Random().Next(0, rawQuotations.Length);
 
-            User userData = UserManager.GetUser(userId);
-            ProfileResponse response = new ProfileResponse()
-            {
-                RealName       = userData.RealName,
-                ProfilePicture = userData.ProfilePicture,
-                Birthday       = userData.Birthday,
-                Email          = userData.Email,
-                LastConnection = userData.LastConnection,
-                Phone          = userData.Phone
-            };
+            if (rawQuotations[quotationIndex] == null)
+                return await ApiUtil.SendErrorAsync("The quotation index returned a null value");
 
+            QuotationResponse response = JsonConvert.DeserializeObject<QuotationResponse>(rawQuotations[quotationIndex]);
             return await ApiUtil.SendWithDataAsync(200, ApiMessages.Success(), response);
         }
     }

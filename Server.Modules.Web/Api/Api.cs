@@ -207,10 +207,12 @@ namespace Server.Web.Api
             ApiAtlas.AddEndpoint("Authenticate", $"/global/{ServerEnv.ApiVersion}/auth");
             ApiAtlas.AddEndpoint("SchoolInfo",   $"/global/{ServerEnv.ApiVersion}/school/info");
             ApiAtlas.AddEndpoint("About",        $"/global/{ServerEnv.ApiVersion}/about");
+            ApiAtlas.AddEndpoint("Quotation",    $"/global/{ServerEnv.ApiVersion}/quotation");
 
             ApiAtlas.AddEndpoint("Profile",      $"/user/{ServerEnv.ApiVersion}/profile");
             ApiAtlas.AddEndpoint("Preferences",  $"/user/{ServerEnv.ApiVersion}/preferences");
             ApiAtlas.AddEndpoint("Timetable",    $"/user/{ServerEnv.ApiVersion}/timetable");
+            ApiAtlas.AddEndpoint("LogOut",       $"/user/{ServerEnv.ApiVersion}/session/delete");
 
             ApiAtlas.Clean();
             Platform.Log($"Registered {ApiAtlas.GetEndpointsCount()} endpoints", LogLevel.INFO);

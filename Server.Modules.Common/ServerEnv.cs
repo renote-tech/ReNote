@@ -3,7 +3,7 @@
     public class ServerEnv
     {
         /// <summary>
-        /// True if the build configuration is debug; otherwise false for release.
+        /// Returns true if the build configuration is debug; otherwise false for release.
         /// </summary>
         public static bool IsDebug
         {
@@ -28,7 +28,7 @@
         /// <summary>
         /// The server version.
         /// </summary>
-        public static readonly string Version = $"{(IsDebug ? "Dev" : "Release")}-0.7.57";
+        public static readonly string Version = $"{(IsDebug ? "Dev" : "Release")}-0.9.84";
         /// <summary>
         /// The server version name.
         /// </summary>

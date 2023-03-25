@@ -4,7 +4,7 @@ using Server.Web.Utilities;
 
 namespace Server.ReNote.Api
 {
-    public class AboutEndpoint
+    public class About
     {
         /// <summary>
         /// Operates a request.

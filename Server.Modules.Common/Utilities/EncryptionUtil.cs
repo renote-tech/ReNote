@@ -6,23 +6,25 @@ namespace Server.Common.Utilities
     public class EncryptionUtil
     {
         /// <summary>
-        /// Hashifies a <see cref="string"/>.
+        /// Hashifies a <see cref="string"/> using the SHA-256 algorithm.
         /// </summary>
         /// <param name="content">The <see cref="string"/> to be hashed.</param>
         /// <returns><see cref="byte"/>[]</returns>
-        public static byte[] ComputeSha256(string content)
+        public static async Task<byte[]> ComputeSha256Async(string content)
         {
-            return SHA256.Create().ComputeHash(Encoding.ASCII.GetBytes(content));
+            byte[] data = Encoding.ASCII.GetBytes(content);
+            return await Task.Run(() => SHA256.Create().ComputeHash(data));
         }
 
         /// <summary>
-        /// Hashifies a <see cref="string"/> as Base64.
+        /// Hashifies a <see cref="string"/> using the SHA-256 algorithm as Base64.
         /// </summary>
         /// <param name="content">The <see cref="string"/> to be hashed.</param>
         /// <returns><see cref="string"/></returns>
-        public static string ComputeStringSha256(string content)
+        public static async Task<string> ComputeStringSha256Async(string content)
         {
-            return Convert.ToBase64String(ComputeSha256(content));
+            byte[] data = await ComputeSha256Async(content);
+            return Convert.ToBase64String(data);
         }
 
         /// <summary>

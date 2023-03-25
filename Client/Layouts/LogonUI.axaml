@@ -39,8 +39,8 @@
 			</StackPanel>
 		</Panel>
 		<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="200, 0, 0, 0">
-			<TextBlock x:Name="quotationText" Text="&quot;A Random Quotation That Changes At Every&#x0a;Startup.&quot;" FontSize="26" Foreground="White"/>
-			<TextBlock x:Name="quotationAuthor" Text="- Author" FontSize="26" Foreground="White" Margin="0, 5, 0, 0" HorizontalAlignment="Right"/>
+			<TextBlock x:Name="quotationText" FontSize="26" Foreground="White"/>
+			<TextBlock x:Name="quotationAuthor" FontSize="26" Foreground="White" Margin="0, 5, 0, 0" HorizontalAlignment="Right"/>
 		</StackPanel>
 		<TextBlock Text="ReNote Client 2022.12" Width="150" FontStyle="Italic" Foreground="White" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="10, 10"/>
 	</Panel>

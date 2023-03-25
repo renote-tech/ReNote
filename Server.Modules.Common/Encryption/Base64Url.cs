@@ -7,15 +7,19 @@
         /// </summary>
         /// <param name="data">The <see cref="byte"/>[] to be encoded.</param>
         /// <returns><see cref="string"/></returns>
-        public static string Encode(byte[] data)
+        public static string Encode(byte[] data, bool usePadding = true)
         {
             if (data == null)
                 return string.Empty;
 
-            return Convert.ToBase64String(data)
-                          .Replace("=", "")
-                          .Replace("/", "_")
-                          .Replace("+", "-");
+            string base64 = Convert.ToBase64String(data);
+
+            if(usePadding)
+                return base64;
+
+            return base64.Replace("=", "")
+                         .Replace("/", "_")
+                         .Replace("+", "-");
         }
 
         /// <summary>
@@ -27,6 +31,11 @@
         {
             if (string.IsNullOrWhiteSpace(content))
                 return null;
+
+            bool hasPadding = content.Length % 4 != 0;
+
+            if (hasPadding)
+                return Convert.FromBase64String(content);
 
             content = content.PadRight(content.Length + (4 - content.Length % 4) % 4, '=')
                              .Replace("_", "/")

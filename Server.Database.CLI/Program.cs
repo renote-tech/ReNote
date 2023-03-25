@@ -71,7 +71,7 @@ namespace Server.Database.CLI
                    "DEL Deletes a document\n" +
                    "GEN Generates a DB script\n" +
                    "GET Gets the value of a document\n" +
-                   "LOD Loads a database from file\n" +
+                   "MNT Mounts a database from file\n" +
                    "MOV Moves the content of a document to another\n" +
                    "RUN Runs a DB script\n" +
                    "SAV Writes the database data to a file\n" +

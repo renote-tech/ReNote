@@ -3,7 +3,7 @@ using Server.Web.Utilities;
 
 namespace Server.ReNote.Api
 {
-    public class RootEndpoint
+    public class Root
     {
         /// <summary>
         /// Operates a request.

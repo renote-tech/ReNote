@@ -14,7 +14,7 @@
         /// <param name="uri">The uri of the <see cref="ApiEndpoint"/>.</param>
         public static void AddEndpoint(string name, string uri)
         {
-            endpoints.Add(new ApiEndpoint($"{name}Endpoint", uri));
+            endpoints.Add(new ApiEndpoint($"{name}", uri));
         }
 
         /// <summary>
