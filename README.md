@@ -12,7 +12,7 @@
 </p>
 
 # Build ReNote
-Use the `cd` command to navigate to one of the following directories: `Client`, `Server` or `Server.Database.CLI`. 
+Use the `cd` command to navigate to one of the following directories: `Client`, `Server`, `Server.Database.CLI` or `Server.Resource.GUI`. 
 Next run the command below for the corresponding platform.
 
 ### Windows
@@ -33,11 +33,14 @@ dotnet build --runtime osx-x64
 Important: macOS is **not** officialy supported for the `Server`, you may want to use Linux Server or Windows Server.
 
 Notes:
-   - You need the .NET SDK to run the commands above. Download <a href="https://aka.ms/netcore">here</a>.
+   - You need the .NET SDK (7.0+) to run the commands above. Download <a href="https://aka.ms/netcore">here</a>.
    - You can add the `--self-contained` parameter to add necessary dependencies to the output folder.
    - You can also build for 32bit platforms by changing the suffix `-x64` to `-x86` (Windows only).
-   - Same apply for arm64 platforms by changing the suffix to `-arm64`. 
+   - Same apply for arm64 platforms by changing the suffix to `-arm64`.
 
+# Run ReNote
+If there is a pre-built version of ReNote available in the Releases <a href="https://github.com/renote-tech/ReNote/releases">section</a>, you'll need .NET Runtime 7.0+ to run it.
+Download <a href="https://dotnet.microsoft.com/en-us/download/dotnet/7.0#runtime-7.0.4">here</a>.
 
 # Features
 ### → Server
