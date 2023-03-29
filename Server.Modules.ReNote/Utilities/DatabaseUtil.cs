@@ -5,12 +5,6 @@ namespace Server.ReNote.Utilities
     public class DatabaseUtil
     {
         /// <summary>
-        /// Allowed characters for [root->key] database path style.
-        /// </summary>
-        public static readonly char[] PATH_ALLOWED_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".ToLower()
-                                                                                                 .ToCharArray();
-
-        /// <summary>
         /// Sets data to the <see cref="Database"/>.
         /// </summary>
         /// <param name="root">The name of the <see cref="Container"/>.</param>
@@ -100,22 +94,6 @@ namespace Server.ReNote.Utilities
                 return false;
 
             return true;
-        }
-
-        /// <summary>
-        /// Returns whether a path contains illegal characters.
-        /// </summary>
-        /// <param name="path">The <see cref="string"/> to be proceeded.</param>
-        /// <returns><see cref="bool"/></returns>
-        public static bool ContainsIllegalCharacters(string path)
-        {
-            for(int i = 0; i < path.Length; i++)
-            {
-                if (!PATH_ALLOWED_CHARS.Contains(path[i]))
-                    return true;
-            }
-
-            return false;
         }
     }
 }

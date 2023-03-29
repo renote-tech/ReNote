@@ -1,9 +1,4 @@
-﻿using Newtonsoft.Json;
-using Server.Common;
-using Server.Common.Encryption;
-using Server.Common.Proto;
-using Server.ReNote.Data;
-using Server.ReNote.Utilities;
+﻿using Server.Common;
 using Server.Web.Api;
 using Server.Web.Static;
 
@@ -27,27 +22,6 @@ namespace Server
             ApiRegisterer.Initialize();
 
             ReNote.Server.Instance.Initialize();
-
-            /* Test Only */
-
-            //ByteShifting.Encrypt(File.ReadAllBytes("./test_scl.dat"), "./enc.enc");
-            //File.WriteAllBytes("./dec.dec", ByteShifting.Decrypt(File.ReadAllBytes("./enc.enc")));
-
-            AESObject aesObject = AES.Encrypt("password");
-            User user = new User()
-            {
-                RealName       = "Alian DEAD",
-                Username       = "adead99",
-                Email          = "",
-                AccountType    = 1,
-                UserId         = 256,
-                SecurePassword = aesObject.Data,
-                IVPassword     = aesObject.IV
-            };
-
-            ReNote.Server.Database.Clear();
-            DatabaseUtil.Set("users", "256", JsonConvert.SerializeObject(user));
-            /* End Test */
 
             StaticInterface.Instance.Start();
             ApiInterface.Instance.Start();

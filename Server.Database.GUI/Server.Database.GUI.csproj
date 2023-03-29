@@ -18,6 +18,12 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Update="Windows\EditItemDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Windows\RenameContainerDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="Windows\NewItemDialog.cs" />
     <Compile Update="Windows\NewContainerDialog.cs">
       <SubType>Form</SubType>

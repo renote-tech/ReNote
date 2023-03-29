@@ -1,6 +1,6 @@
 ﻿namespace Server.Database.Windows
 {
-    partial class NewDatabaseDialog
+    partial class RenameContainerDialog
     {
         /// <summary>
         /// Required designer variable.
@@ -28,33 +28,34 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.dbNameLabel = new System.Windows.Forms.Label();
-            this.dbNameTB = new System.Windows.Forms.TextBox();
+            this.newContainerNameLabel = new System.Windows.Forms.Label();
+            this.newContainerNameTB = new System.Windows.Forms.TextBox();
             this.createButton = new System.Windows.Forms.Button();
             this.cancelButton = new System.Windows.Forms.Button();
+            this.dbPathLabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
-            // dbNameLabel
+            // newContainerNameLabel
             // 
-            this.dbNameLabel.AutoSize = true;
-            this.dbNameLabel.Location = new System.Drawing.Point(12, 19);
-            this.dbNameLabel.Name = "dbNameLabel";
-            this.dbNameLabel.Size = new System.Drawing.Size(42, 15);
-            this.dbNameLabel.TabIndex = 0;
-            this.dbNameLabel.Text = "Name:";
+            this.newContainerNameLabel.AutoSize = true;
+            this.newContainerNameLabel.Location = new System.Drawing.Point(12, 9);
+            this.newContainerNameLabel.Name = "newContainerNameLabel";
+            this.newContainerNameLabel.Size = new System.Drawing.Size(67, 15);
+            this.newContainerNameLabel.TabIndex = 0;
+            this.newContainerNameLabel.Text = "New name:";
             // 
-            // dbNameTB
+            // newContainerNameTB
             // 
-            this.dbNameTB.Location = new System.Drawing.Point(12, 37);
-            this.dbNameTB.Name = "dbNameTB";
-            this.dbNameTB.Size = new System.Drawing.Size(380, 23);
-            this.dbNameTB.TabIndex = 1;
-            this.dbNameTB.KeyDown += new System.Windows.Forms.KeyEventHandler(this.OnTextBoxKeyDown);
-            this.dbNameTB.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.OnTextBoxKeyPressed);
+            this.newContainerNameTB.Location = new System.Drawing.Point(12, 27);
+            this.newContainerNameTB.Name = "newContainerNameTB";
+            this.newContainerNameTB.Size = new System.Drawing.Size(380, 23);
+            this.newContainerNameTB.TabIndex = 1;
+            this.newContainerNameTB.KeyDown += new System.Windows.Forms.KeyEventHandler(this.OnTextBoxKeyDown);
+            this.newContainerNameTB.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.OnTextBoxKeyPressed);
             // 
             // createButton
             // 
-            this.createButton.Location = new System.Drawing.Point(302, 78);
+            this.createButton.Location = new System.Drawing.Point(302, 86);
             this.createButton.Name = "createButton";
             this.createButton.Size = new System.Drawing.Size(90, 23);
             this.createButton.TabIndex = 2;
@@ -64,7 +65,7 @@
             // 
             // cancelButton
             // 
-            this.cancelButton.Location = new System.Drawing.Point(12, 78);
+            this.cancelButton.Location = new System.Drawing.Point(12, 86);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(90, 23);
             this.cancelButton.TabIndex = 3;
@@ -72,25 +73,35 @@
             this.cancelButton.UseVisualStyleBackColor = true;
             this.cancelButton.Click += new System.EventHandler(this.OnCancelButtonClicked);
             // 
-            // NewDatabaseDialog
+            // dbPathLabel
+            // 
+            this.dbPathLabel.AutoSize = true;
+            this.dbPathLabel.Location = new System.Drawing.Point(12, 60);
+            this.dbPathLabel.Name = "dbPathLabel";
+            this.dbPathLabel.Size = new System.Drawing.Size(43, 15);
+            this.dbPathLabel.TabIndex = 4;
+            this.dbPathLabel.Text = "Edit in:";
+            // 
+            // RenameContainerDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.CancelButton = this.cancelButton;
-            this.ClientSize = new System.Drawing.Size(404, 111);
+            this.ClientSize = new System.Drawing.Size(404, 121);
+            this.Controls.Add(this.dbPathLabel);
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.createButton);
-            this.Controls.Add(this.dbNameTB);
-            this.Controls.Add(this.dbNameLabel);
+            this.Controls.Add(this.newContainerNameTB);
+            this.Controls.Add(this.newContainerNameLabel);
             this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(420, 150);
-            this.MinimumSize = new System.Drawing.Size(420, 150);
-            this.Name = "NewDatabaseDialog";
+            this.MaximumSize = new System.Drawing.Size(420, 160);
+            this.MinimumSize = new System.Drawing.Size(420, 160);
+            this.Name = "RenameContainerDialog";
             this.ShowIcon = false;
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Create a new Database...";
+            this.Text = "Rename an existing Container...";
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -98,9 +109,10 @@
 
         #endregion
 
-        private System.Windows.Forms.Label dbNameLabel;
-        private System.Windows.Forms.TextBox dbNameTB;
+        private System.Windows.Forms.Label newContainerNameLabel;
+        private System.Windows.Forms.TextBox newContainerNameTB;
         private System.Windows.Forms.Button createButton;
         private System.Windows.Forms.Button cancelButton;
+        private System.Windows.Forms.Label dbPathLabel;
     }
 }

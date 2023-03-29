@@ -4,18 +4,25 @@ using System.Windows.Forms;
 
 namespace Server.Database.Windows
 {
-    public partial class NewItemDialog : Form
+    public partial class EditItemDialog : Form
     {
         private string m_Database;
         private string m_Container;
+        private string m_ItemName;
+        private string m_ItemValue;
 
-        public NewItemDialog(string database, string container)
+        public EditItemDialog(string database, string container, string itemName, string itemValue)
         {
             InitializeComponent();
 
             m_Database = database;
             m_Container = container;
-            dbPathLabel.Text = $"Create in: {m_Database}/{m_Container}";
+            m_ItemName = itemName;
+            m_ItemValue = itemValue;
+
+            dbPathLabel.Text = $"Edit in: {m_Database}/{m_Container} $ {m_ItemName}";
+            itemNameTB.Text = m_ItemName;
+            itemValueTB.Text = m_ItemValue;
         }
 
         private void OnCancelButtonClicked(object sender, EventArgs e)
@@ -43,10 +50,13 @@ namespace Server.Database.Windows
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(m_Database))
+            if (string.IsNullOrWhiteSpace(m_Database) || string.IsNullOrWhiteSpace(m_Container))
                 return;
 
-            int code = DatabaseManager.AddItem(m_Database, m_Container, itemNameTB.Text, itemValueTB.Text);
+            if (m_ItemName == itemNameTB.Text && m_ItemName == itemValueTB.Text)
+                this.Close();
+
+            int code = DatabaseManager.EditItem(m_Database, m_Container, m_ItemName, itemNameTB.Text, itemValueTB.Text);
             switch (code)
             {
                 case 0:
@@ -65,7 +75,7 @@ namespace Server.Database.Windows
         private void OnTextBoxKeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
-                createButton.PerformClick();
+                editButton.PerformClick();
         }
 
         private void OnTextBoxNameKeyPressed(object sender, KeyPressEventArgs e)
@@ -73,9 +83,9 @@ namespace Server.Database.Windows
             e.Handled = DatabaseManager.IsIllegalChar(e.KeyChar);
         }
 
-        private void OnOpenEditorButtonClicked(object sender, EventArgs e)
+        private void OnOpenEditorClicked(object sender, EventArgs e)
         {
-            JsonEditorWindow editor = new JsonEditorWindow("{}");
+            JsonEditorWindow editor = new JsonEditorWindow(itemValueTB.Text);
             editor.ShowDialog();
             if (!string.IsNullOrWhiteSpace(editor.Data))
                 itemValueTB.Text = editor.Data;

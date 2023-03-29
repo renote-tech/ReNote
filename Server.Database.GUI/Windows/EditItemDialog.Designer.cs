@@ -1,6 +1,6 @@
 ﻿namespace Server.Database.Windows
 {
-    partial class NewItemDialog
+    partial class EditItemDialog
     {
         /// <summary>
         /// Required designer variable.
@@ -30,7 +30,7 @@
         {
             this.itemNameLabel = new System.Windows.Forms.Label();
             this.itemNameTB = new System.Windows.Forms.TextBox();
-            this.createButton = new System.Windows.Forms.Button();
+            this.editButton = new System.Windows.Forms.Button();
             this.cancelButton = new System.Windows.Forms.Button();
             this.dbPathLabel = new System.Windows.Forms.Label();
             this.itemValueTB = new System.Windows.Forms.TextBox();
@@ -55,15 +55,15 @@
             this.itemNameTB.TabIndex = 1;
             this.itemNameTB.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.OnTextBoxNameKeyPressed);
             // 
-            // createButton
+            // editButton
             // 
-            this.createButton.Location = new System.Drawing.Point(302, 136);
-            this.createButton.Name = "createButton";
-            this.createButton.Size = new System.Drawing.Size(90, 23);
-            this.createButton.TabIndex = 5;
-            this.createButton.Text = "Create";
-            this.createButton.UseVisualStyleBackColor = true;
-            this.createButton.Click += new System.EventHandler(this.OnCreateButtonClicked);
+            this.editButton.Location = new System.Drawing.Point(302, 136);
+            this.editButton.Name = "editButton";
+            this.editButton.Size = new System.Drawing.Size(90, 23);
+            this.editButton.TabIndex = 5;
+            this.editButton.Text = "Edit";
+            this.editButton.UseVisualStyleBackColor = true;
+            this.editButton.Click += new System.EventHandler(this.OnCreateButtonClicked);
             // 
             // cancelButton
             // 
@@ -80,9 +80,9 @@
             this.dbPathLabel.AutoSize = true;
             this.dbPathLabel.Location = new System.Drawing.Point(12, 112);
             this.dbPathLabel.Name = "dbPathLabel";
-            this.dbPathLabel.Size = new System.Drawing.Size(57, 15);
+            this.dbPathLabel.Size = new System.Drawing.Size(46, 15);
             this.dbPathLabel.TabIndex = 6;
-            this.dbPathLabel.Text = "Create in:";
+            this.dbPathLabel.Text = "Edit in: ";
             // 
             // itemValueTB
             // 
@@ -106,12 +106,12 @@
             this.openEditorButton.Location = new System.Drawing.Point(354, 78);
             this.openEditorButton.Name = "openEditorButton";
             this.openEditorButton.Size = new System.Drawing.Size(38, 23);
-            this.openEditorButton.TabIndex = 9;
+            this.openEditorButton.TabIndex = 10;
             this.openEditorButton.Text = "...";
             this.openEditorButton.UseVisualStyleBackColor = true;
-            this.openEditorButton.Click += new System.EventHandler(this.OnOpenEditorButtonClicked);
+            this.openEditorButton.Click += new System.EventHandler(this.OnOpenEditorClicked);
             // 
-            // NewItemDialog
+            // EditItemDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -123,17 +123,17 @@
             this.Controls.Add(this.itemValueLabel);
             this.Controls.Add(this.dbPathLabel);
             this.Controls.Add(this.cancelButton);
-            this.Controls.Add(this.createButton);
+            this.Controls.Add(this.editButton);
             this.Controls.Add(this.itemNameTB);
             this.Controls.Add(this.itemNameLabel);
             this.MaximizeBox = false;
             this.MaximumSize = new System.Drawing.Size(420, 210);
             this.MinimumSize = new System.Drawing.Size(420, 210);
-            this.Name = "NewItemDialog";
+            this.Name = "EditItemDialog";
             this.ShowIcon = false;
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Create a new Item...";
+            this.Text = "Edit  an existing Item...";
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -143,7 +143,7 @@
 
         private System.Windows.Forms.Label itemNameLabel;
         private System.Windows.Forms.TextBox itemNameTB;
-        private System.Windows.Forms.Button createButton;
+        private System.Windows.Forms.Button editButton;
         private System.Windows.Forms.Button cancelButton;
         private System.Windows.Forms.Label dbPathLabel;
         private System.Windows.Forms.TextBox itemValueTB;

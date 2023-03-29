@@ -13,7 +13,7 @@ namespace Server.Database.Windows
             InitializeComponent();
 
             m_Database = database;
-            databaseLabel.Text = m_Database;
+            dbPathLabel.Text = $"Create in: {m_Database}";
         }
 
         private void OnCancelButtonClicked(object sender, EventArgs e)
@@ -23,7 +23,7 @@ namespace Server.Database.Windows
 
         private void OnCreateButtonClicked(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(dbNameTextBox.Text))
+            if (string.IsNullOrWhiteSpace(containerNameTB.Text))
             {
                 MessageBox.Show("Please enter a name for the container!",
                                 "Uh Oh!",
@@ -35,11 +35,13 @@ namespace Server.Database.Windows
             if (string.IsNullOrWhiteSpace(m_Database))
                 return;
 
-            int code = DatabaseManager.AddContainer(m_Database, dbNameTextBox.Text);
-            switch( code)
+            int code = DatabaseManager.AddContainer(m_Database, containerNameTB.Text);
+            switch (code)
             {
                 case 0:
-                    MainWindow.GetInstance().AddContainerNode(m_Database, dbNameTextBox.Text);
+                    int index = MainWindow.GetInstance().AddContainerNode(m_Database, containerNameTB.Text);
+                    if (index != -1)
+                        MainWindow.GetInstance().DatabaseTreeView.Nodes[0].Nodes[index].Expand();
                     this.Close();
                     break;
                 case 1:
@@ -49,6 +51,17 @@ namespace Server.Database.Windows
                                     MessageBoxIcon.Error);
                     break;
             }
+        }
+
+        private void OnTextBoxKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+                createButton.PerformClick();
+        }
+
+        private void OnTextBoxKeyPressed(object sender, KeyPressEventArgs e)
+        {
+            e.Handled = DatabaseManager.IsIllegalChar(e.KeyChar);
         }
     }
 }

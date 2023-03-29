@@ -16,6 +16,11 @@ namespace Server.ReNote.Data
         public string SaveLocation { get; set; }
 
         /// <summary>
+        /// External boolean property.
+        /// </summary>
+        public bool NeedSave { get; set; }
+
+        /// <summary>
         /// The <see cref="Database"/>'s instance <see cref="Container"/> list.
         /// </summary>
         [ProtoMember(1)]
@@ -50,13 +55,33 @@ namespace Server.ReNote.Data
         }
 
         /// <summary>
-        /// Adds a <see cref="Container"/> to the <see cref="containers"/> list.
+        /// Creates and adds a <see cref="Container"/> to the <see cref="containers"/> list.
         /// </summary>
         /// <param name="containerName">The <see cref="Container"/> name.</param>
         public void AddContainer(string containerName)
         {
             if (!string.IsNullOrWhiteSpace(containerName))
                 containers.Add(new Container(containerName));
+        }
+
+        /// <summary>
+        /// Removes a <see cref="Container"/> from the <see cref="containers"/> list.
+        /// Returns whether the operation was successful or not.
+        /// </summary>
+        /// <param name="containerName"></param>
+        /// <returns><see cref="bool"/></returns>
+        public bool RemoveContainer(string containerName)
+        {
+            if (string.IsNullOrWhiteSpace(containerName))
+                return false;
+
+            for (int i = 0; i < containers.Count; i++)
+            {
+                if (containers[i].Name == containerName)
+                    return containers.Remove(containers[i]);
+            }
+
+            return false;
         }
 
         public Container[] GetContainers()
@@ -76,7 +101,8 @@ namespace Server.ReNote.Data
         }
 
         /// <summary>
-        /// Loads the <see cref="containers"/> list from a database file. Returns whether the file was actually loaded.
+        /// Loads the <see cref="containers"/> list from a database file.
+        /// Returns whether the file was actually loaded.
         /// </summary>
         /// <returns><see cref="bool"/></returns>
         public bool Load()
@@ -117,6 +143,7 @@ namespace Server.ReNote.Data
 
         /// <summary>
         /// Saves the <see cref="Database"/> to a database file.
+        /// Returns whether the file has actually been saved.
         /// </summary>
         /// <param name="doBackup">If true; do a backup of the <see cref="Database"/>.</param>
         public async Task<bool> SaveAsync(bool doBackup = false)
@@ -237,6 +264,9 @@ namespace Server.ReNote.Data
         /// <param name="value">The item value.</param>
         public void AddItem(string key, string value)
         {
+            if (string.IsNullOrWhiteSpace(key))
+                return;
+
             if (!items.ContainsKey(key))
                 items.Add(key, value);
         }
@@ -248,6 +278,9 @@ namespace Server.ReNote.Data
         /// <returns><see cref="bool"/></returns>
         public bool RemoveItem(string key)
         {
+            if (string.IsNullOrWhiteSpace(key))
+                return false;
+
             if (!items.ContainsKey(key))
                 return false;
 
@@ -262,6 +295,9 @@ namespace Server.ReNote.Data
         /// <returns><see cref="bool"/></returns>
         public bool IsItemExists(string key)
         {
+            if (string.IsNullOrWhiteSpace(key))
+                return false;
+
             if (!items.ContainsKey(key))
                 return false;
 
