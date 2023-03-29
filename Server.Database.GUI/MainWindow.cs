@@ -1,5 +1,3 @@
-using Server.Database.Management;
-using Server.ReNote.Data;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -7,6 +5,9 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+
+using Server.Database.Management;
+using Server.ReNote.Data;
 using RNDatabase = Server.ReNote.Data.Database;
 
 namespace Server.Database.Windows
@@ -29,6 +30,9 @@ namespace Server.Database.Windows
         [DllImport("uxtheme.dll", CharSet = CharSet.Unicode)]
         private extern static int SetWindowTheme(IntPtr hWnd, string pszSubAppName, string pszSubIdList);
 
+        /// <summary>
+        /// Constructor.
+        /// </summary>
         public MainWindow()
         {
             InitializeComponent();
@@ -41,12 +45,21 @@ namespace Server.Database.Windows
             DatabaseTreeView.ImageList.Images.Add(new Bitmap("./assets/text.png"));
         }
 
+        /// <summary>
+        /// Modifies the style of the <see cref="DatabaseTreeView"/>.
+        /// </summary>
         protected override void CreateHandle()
         {
             base.CreateHandle();
             SetWindowTheme(DatabaseTreeView.Handle, "explorer", null);
         }
 
+        /// <summary>
+        /// Occurs when the user clicked OK in the open dialog.
+        /// Opens a database file.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The event arguments.</param>
         private void OnSelectedOpenDBFile(object sender, System.ComponentModel.CancelEventArgs e)
         {
             FileInfo fileInfo = new FileInfo(openDatabaseDialog.FileName);
@@ -64,9 +77,9 @@ namespace Server.Database.Windows
             if (database == null)
             {
                 MessageBox.Show("A database with the same name is already loaded! Unmount the existing one and try again.",
-                "Uh Oh!",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Error);
+                                "Uh Oh!",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
                 return;
             }
 
@@ -89,6 +102,12 @@ namespace Server.Database.Windows
             DatabaseTreeView.Nodes[0].Expand();
         }
 
+        /// <summary>
+        /// Occurs when the user clicked OK in the save dialog.
+        /// Saves a database.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The event arguments.</param>
         private void OnSelectedSaveDBFile(object sender, System.ComponentModel.CancelEventArgs e)
         {
             string dbName = GetCurrentDBName();
@@ -99,41 +118,89 @@ namespace Server.Database.Windows
             SaveAsync();
         }
 
+        /// <summary>
+        /// Occurs when the new database item is clicked.
+        /// Creates a new database.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The event arguments.</param>
         private void OnNewDatabaseMenuItemClicked(object sender, EventArgs e)
         {
             new NewDatabaseDialog().ShowDialog();
         }
 
-        private void OnMountMenuItemClicked(object sender, EventArgs e)
+        /// <summary>
+        /// Occurs when the mount database item is clicked.
+        /// Mounts a database.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The event arguments.</param>
+        private void OnMountDatabaseMenuItemClicked(object sender, EventArgs e)
         {
             openDatabaseDialog.ShowDialog();
         }
 
+        /// <summary>
+        /// Occurs when the exit item is clicked.
+        /// Closes the application.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The event arguments.</param>
         private void OnExitMenuItemClicked(object sender, EventArgs e)
         {
             Application.Exit();
         }
 
+        /// <summary>
+        /// Occurs when the expand all item is clicked.
+        /// Expands the <see cref="DatabaseTreeView"/> completely.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The event arguments.</param>
         private void OnExpandAllMenuItemClicked(object sender, EventArgs e)
         {
             DatabaseTreeView.ExpandAll();
         }
 
+        /// <summary>
+        /// Occurs when the show discard dialogs item is clicked.
+        /// Enables or disables discard dialogs when deleting or unmounting.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The event arguments.</param>
         private void OnShowDiscardDialogsMenuItemClicked(object sender, EventArgs e)
         {
             IsDiscardDialogsEnabled = showDiscardDialogsMenuItem.Checked;
         }
 
+        /// <summary>
+        /// Occurs when the save item is clicked.
+        /// Saves a database.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The event arguments.</param>
         private void OnSaveTreeItemClicked(object sender, EventArgs e)
         {
             SaveAsync();
         }
 
+        /// <summary>
+        /// Occurs when the save as item is clicked.
+        /// Saves a database as.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The event arguments.</param>
         private void OnSaveAsTreeItemClicked(object sender, EventArgs e)
         {
             saveDatabaseDialog.ShowDialog();
         }
 
+        /// <summary>
+        /// Occurs when the add container item is clicked.
+        /// Adds a container to a specified database.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The event arguments.</param>
         private void OnAddContainerMenuItemClicked(object sender, EventArgs e)
         {
             string dbName = GetCurrentDBName();
@@ -143,6 +210,12 @@ namespace Server.Database.Windows
             new NewContainerDialog(dbName).ShowDialog();
         }
 
+        /// <summary>
+        /// Occurs when the unmount item is clicked.
+        /// Unmounts a database.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The event arguments.</param>
         private void OnUnmountDatabaseTreeItemClicked(object sender, EventArgs e)
         {
             string dbName = GetCurrentDBName();
@@ -166,24 +239,48 @@ namespace Server.Database.Windows
             RefreshDataView();
         }
 
+        /// <summary>
+        /// Occurs when the expand item is clicked.
+        /// Expand a database tree node.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The event arguments.</param>
         private void OnExpandDatabaseTreeItemClicked(object sender, EventArgs e)
         {
             TreeNode treeNode = DatabaseTreeView.SelectedNode;
             treeNode.Expand();
         }
 
+        /// <summary>
+        /// Occurs when the copy name item is clicked.
+        /// Copies the name of a database or container to the clipboard.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The event arguments.</param>
         private void OnCopyNameClicked(object sender, EventArgs e)
         {
             TreeNode treeNode = DatabaseTreeView.SelectedNode;
             Clipboard.SetText(treeNode.Text);
         }
 
-        private void OnAddDataItemClicked(object sender, EventArgs e)
+        /// <summary>
+        /// Occurs when the add data item is clicked.
+        /// Adds an item to a specified container.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The event arguments.</param>
+        private void OnAddDataTreeItemClicked(object sender, EventArgs e)
         {
             new NewItemDialog(m_CurrentDatabase,
                               m_CurrentContainer).ShowDialog();
         }
 
+        /// <summary>
+        /// Occurs when the rename container item is clicked.
+        /// Renames a container.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The event arguments.</param>
         private void OnRenameContainerTreeItemClicked(object sender, EventArgs e)
         {
             TreeNode treeNode = DatabaseTreeView.SelectedNode;
@@ -194,6 +291,12 @@ namespace Server.Database.Windows
             new RenameContainerDialog(path[0], path[1]).ShowDialog();
         }
 
+        /// <summary>
+        /// Occurs when the delete container item is clicked.
+        /// Deletes a container.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The event arguments.</param>
         private void OnDeleteContainerTreeItemClicked(object sender, EventArgs e)
         {
             TreeNode treeNode = DatabaseTreeView.SelectedNode;
@@ -218,6 +321,12 @@ namespace Server.Database.Windows
             ContainerClean(path[0], path[1], treeNode);
         }
 
+        /// <summary>
+        /// Occurs when the add data item is clicked.
+        /// Adds an item to a specified container.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The event arguments.</param>
         private void OnAddDataMenuItemClicked(object sender, EventArgs e)
         {
             TreeNode treeNode = DatabaseTreeView.SelectedNode;
@@ -228,16 +337,34 @@ namespace Server.Database.Windows
             new NewItemDialog(path[0], path[1]).ShowDialog();
         }
 
+        /// <summary>
+        /// Occurs when the paste item is clicked.
+        /// Pastes an item to a specified container.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The event arguments.</param>
         private void OnPasteDataMenuItemClicked(object sender, EventArgs e)
         {
             PasteDataItem();
         }
 
+        /// <summary>
+        /// Occurs when the copy item is clicked.
+        /// Copies an item from a specified container.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The event arguments.</param>
         private void OnCopyDataMenuItemClicked(object sender, EventArgs e)
         {
             CopyDataItem();
         }
 
+        /// <summary>
+        /// Occurs when the edit item is clicked.
+        /// Edits an item from a specified container.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The event arguments.</param>
         private void OnEditItemMenuItem(object sender, EventArgs e)
         {
             new EditItemDialog(m_CurrentDatabase,
@@ -246,6 +373,12 @@ namespace Server.Database.Windows
                                m_CurrentItemValue).ShowDialog();
         }
 
+        /// <summary>
+        /// Occurs when the delete item is clicked.
+        /// Deletes an item from a specified item.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The event arguments.</param>
         private void OnDeleteItemMenuItemClicked(object sender, EventArgs e)
         {
             if (!IsDiscardDialogsEnabled)
@@ -266,6 +399,12 @@ namespace Server.Database.Windows
             ItemClean();
         }
 
+        /// <summary>
+        /// Occurs when the copy name item is clicked.
+        /// Copies the name of a specified item.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The event arguments.</param>
         private void OnCopyItemNameMenuItemClicked(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(m_CurrentItemName))
@@ -274,6 +413,12 @@ namespace Server.Database.Windows
             Clipboard.SetText(m_CurrentItemName);
         }
 
+        /// <summary>
+        /// Occurs when the copy value item is clicked.
+        /// Copies the value of a specified item.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The event arguments.</param>
         private void OnCopyItemValueMenuItemClicked(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(m_CurrentItemValue))
@@ -282,40 +427,42 @@ namespace Server.Database.Windows
             Clipboard.SetText(m_CurrentItemValue);
         }
 
+        /// <summary>
+        /// Occurs when an item is selected.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The event arguments.</param>
         private void OnTreeNodeItemClicked(object sender, TreeNodeMouseClickEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
                 DatabaseTreeView.SelectedNode = e.Node;
         }
 
-        private void OnTreeViewItemClicked(object sender, TreeViewEventArgs e)
+        /// <summary>
+        /// Occurs after the selection of an item in the <see cref="DatabaseTreeView"/>.
+        /// Shows the data of a container.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnTreeNodeItemAfterSelected(object sender, TreeViewEventArgs e)
         {
             string[] path = GetDatabasePath(e.Node);
             if (path == null)
                 return;
 
-            Dictionary<string, string> data = DatabaseManager.GetItems(path[0], path[1]);
-            if (data == null)
-                return;
-
-            databaseDataView.Items.Clear();
-
-            for (int i = 0; i < data.Count; i++)
-            {
-                KeyValuePair<string, string> keyValuePair = data.ElementAt(i);
-                ListViewItem dataViewItem = new ListViewItem(keyValuePair.Key);
-                dataViewItem.SubItems.Add(keyValuePair.Value);
-
-                databaseDataView.Items.Add(dataViewItem);
-            }
-
             m_CurrentDatabase = path[0];
             m_CurrentContainer = path[1];
 
-            OnDataViewChanged();
+            RefreshDataView();
         }
 
-        private void OnDataKeyDown(object sender, KeyEventArgs e)
+        /// <summary>
+        /// Occurs when a key is down when the <see cref="databaseDataView"/> is focused.
+        /// Executes a specific action based on the key.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The event arguments.</param>
+        private void OnDatabaseDataViewKeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Delete)
                 DeleteDataItem();
@@ -325,6 +472,11 @@ namespace Server.Database.Windows
                 PasteDataItem();
         }
 
+        /// <summary>
+        /// Occurs when the item selection has changed.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The event arguments.</param>
         private void OnItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
         {
             if (e.IsSelected)
@@ -340,12 +492,24 @@ namespace Server.Database.Windows
             databaseDataView.ContextMenuStrip = databaseDataContextMenu;
         }
 
+        /// <summary>
+        /// Occurs when the <see cref="databaseDataView"/> size has changed.
+        /// Resize the second column of the <see cref="databaseDataView"/>.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The event arguments.</param>
         private void OnDataViewSizeChanged(object sender, EventArgs e)
         {
             // databaseDataView.Columns[1] represents the value column
             databaseDataView.Columns[1].Width = databaseDataView.Width - 135;
         }
 
+        /// <summary>
+        /// Occurs when the item context menu is opening.
+        /// Enables or disables the items of the <see cref="databaseDataContextMenu"/> based on the current state.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The event arguments.</param>
         private void OnDataContextMenuOpening(object sender, System.ComponentModel.CancelEventArgs e)
         {
             bool canCreateItem = !(string.IsNullOrWhiteSpace(m_CurrentDatabase) || string.IsNullOrWhiteSpace(m_CurrentContainer));
@@ -354,11 +518,17 @@ namespace Server.Database.Windows
             databaseDataContextMenu.Items[1].Enabled = canPasteItem;
         }
 
+        /// <summary>
+        /// Updates the item count when the <see cref="databaseDataView"/>'s data is refreshed.
+        /// </summary>
         private void OnDataViewChanged()
         {
             statusItemsCountLabel.Text = $"{databaseDataView.Items.Count} item{(databaseDataView.Items.Count == 1 ? "" : "s")}";
         }
 
+        /// <summary>
+        /// Copies an item.
+        /// </summary>
         private void CopyDataItem()
         {
             if (databaseDataView.SelectedItems.Count == 0)
@@ -369,6 +539,9 @@ namespace Server.Database.Windows
             m_CopiedDataItemNumber = 0;
         }
 
+        /// <summary>
+        /// Pastes a copied item.
+        /// </summary>
         private void PasteDataItem()
         {
             if (m_CopiedDataItem == null)
@@ -392,6 +565,12 @@ namespace Server.Database.Windows
             databaseDataView.Items.Add(m_CopiedDataItem);
         }
 
+        /// <summary>
+        /// Deletes a container and clean up.
+        /// </summary>
+        /// <param name="dbName">The database name.</param>
+        /// <param name="containerName">The container name.</param>
+        /// <param name="treeNode">The tree node.</param>
         private void ContainerClean(string dbName, string container, TreeNode treeNode)
         {
             m_CurrentDatabase = null;
@@ -404,6 +583,9 @@ namespace Server.Database.Windows
             RefreshDataView();
         }
 
+        /// <summary>
+        /// Deletes an item and clean up.
+        /// </summary>
         private void ItemClean()
         {
             DatabaseManager.DeleteItem(m_CurrentDatabase, m_CurrentContainer, m_CurrentItemName);
@@ -413,6 +595,9 @@ namespace Server.Database.Windows
             m_CurrentItemValue = null;
         }
 
+        /// <summary>
+        /// Performs an item deletion.
+        /// </summary>
         private void DeleteDataItem()
         {
             if (databaseDataView.SelectedItems.Count == 0)
@@ -421,6 +606,9 @@ namespace Server.Database.Windows
             databaseDataItemContextMenu.Items[2].PerformClick();
         }
 
+        /// <summary>
+        /// Saves asynchronously the database.
+        /// </summary>
         private async void SaveAsync()
         {
             string dbName = GetCurrentDBName();
@@ -442,6 +630,10 @@ namespace Server.Database.Windows
             }
         }
 
+        /// <summary>
+        /// Gets the database's name based on the selected node.
+        /// </summary>
+        /// <returns><see cref="string"/></returns>
         private string GetCurrentDBName()
         {
             TreeNode treeNode = DatabaseTreeView.SelectedNode;
@@ -451,6 +643,11 @@ namespace Server.Database.Windows
             return treeNode.Tag.ToString();
         }
 
+        /// <summary>
+        /// Gets the database's path (db/container) based on the specified node.
+        /// </summary>
+        /// <param name="treeNode">The tree node.</param>
+        /// <returns><see cref="string"/>[]</returns>
         private string[] GetDatabasePath(TreeNode treeNode)
         {
             if (treeNode.Tag == null)
@@ -467,6 +664,10 @@ namespace Server.Database.Windows
             return dbPathParts;
         }
 
+        /// <summary>
+        /// Adds a database node.
+        /// </summary>
+        /// <param name="databaseName">The database name.</param>
         public void AddDatabaseNode(string databaseName)
         {
             TreeNode databaseNode = new TreeNode(databaseName)
@@ -480,6 +681,13 @@ namespace Server.Database.Windows
             DatabaseTreeView.Nodes[0].Nodes.Add(databaseNode);
         }
 
+        /// <summary>
+        /// Adds a container node in the <see cref="databaseTreeView"/>.
+        /// Returns the index of the container node.
+        /// </summary>
+        /// <param name="dbName">The database name.</param>
+        /// <param name="containerName">The container name.</param>
+        /// <returns><see cref="int"/></returns>
         public int AddContainerNode(string dbName, string containerName)
         {
             TreeNode treeNode = null;
@@ -510,6 +718,12 @@ namespace Server.Database.Windows
             return dbIndex;
         }
 
+        /// <summary>
+        /// Renames a container node in the <see cref="DatabaseTreeView"/>.
+        /// </summary>
+        /// <param name="dbName">The database name.</param>
+        /// <param name="containerName">The container name.</param>
+        /// <param name="newContainerName">The new container name.</param>
         public void RenameContainerNode(string dbName, string containerName, string newContainerName)
         {
             TreeNode dbNode = null;
@@ -542,6 +756,9 @@ namespace Server.Database.Windows
             }
         }
 
+        /// <summary>
+        /// Refreshes the data within the <see cref="databaseDataView"/>.
+        /// </summary>
         public void RefreshDataView()
         {
             databaseDataView.Items.Clear();
@@ -567,6 +784,10 @@ namespace Server.Database.Windows
             OnDataViewChanged();
         }
 
+        /// <summary>
+        /// Main Window Instance.
+        /// </summary>
+        /// <returns><see cref="MainWindow"/></returns>
         public static MainWindow GetInstance() => s_Instance;
     }
 }

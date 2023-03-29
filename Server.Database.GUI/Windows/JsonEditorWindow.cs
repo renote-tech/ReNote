@@ -25,6 +25,10 @@ namespace Server.Database.Windows
 
         public string Data { get; private set; }
 
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="data">The data that's going to be displayed by default.</param>
         public JsonEditorWindow(string data)
         {
             InitializeComponent();
@@ -43,6 +47,12 @@ namespace Server.Database.Windows
             jsonEditor.TextChanged += OnEditorTextChanged;
         }
 
+        /// <summary>
+        /// Occurs when a key is down while focusing the <see cref="jsonEditor"/>.
+        /// Handles specific keys.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The event arguments.</param>
         private void OnEditorKeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Tab)
@@ -57,6 +67,12 @@ namespace Server.Database.Windows
             }
         }
 
+        /// <summary>
+        /// Occurs when a key is pressed while focusing the <see cref="jsonEditor"/>.
+        /// Handles specific keys.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The event arguments.</param>
         private void OnEditorKeyPress(object sender, KeyPressEventArgs e)
         {
 
@@ -83,6 +99,12 @@ namespace Server.Database.Windows
             }
         }
 
+        /// <summary>
+        /// Occurs when the text inside the <see cref="jsonEditor"/> is modified.
+        /// Applies syntax highlighting.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The event arguments.</param>
         private void OnEditorTextChanged(object sender, EventArgs e)
         {
             if (JsonParseError != null)
@@ -95,6 +117,12 @@ namespace Server.Database.Windows
             HandleSyntaxHighlighting();
         }
 
+        /// <summary>
+        /// Occurs when the confirm button is clicked.
+        /// Minifies the JSON data and closes the dialog.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The event arguments.</param>
         private void OnConfirmButtonClicked(object sender, EventArgs e)
         {
             Minify();
@@ -105,11 +133,20 @@ namespace Server.Database.Windows
                 this.Close();
         }
 
+        /// <summary>
+        /// Occurs when the cancel button is clicked.
+        /// Closes the dialog.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The event arguments.</param>
         private void OnCancelButtonClicked(object sender, EventArgs e)
         {
             this.Close();
         }
 
+        /// <summary>
+        /// Applies syntax highlighting.
+        /// </summary>
         private void HandleSyntaxHighlighting()
         {
             int originalIndex = jsonEditor.SelectionStart;
@@ -168,6 +205,28 @@ namespace Server.Database.Windows
             jsonEditor.Focus();
         }
 
+        /// <summary>
+        /// Occurs when the details button is clicked.
+        /// Shows details about a JSON syntax error.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The event arguments.</param>
+        private void OnDetailsButtonClicked(object sender, EventArgs e)
+        {
+            if (JsonParseError == null)
+                return;
+
+            MessageBox.Show(JsonParseError.ToString(),
+                            "JSON Parse Error Stacktrace",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
+        }
+
+        /// <summary>
+        /// Applies formatting.
+        /// Returns whether the TextChanged event should be handled.
+        /// </summary>
+        /// <returns><see cref="bool"/></returns>
         private bool HandleFormatting()
         {
             int cursorPosition = jsonEditor.SelectionStart;
@@ -202,6 +261,9 @@ namespace Server.Database.Windows
             return true;
         }
 
+        /// <summary>
+        /// Minifies the data.
+        /// </summary>
         private void Minify()
         {
             try
@@ -217,6 +279,10 @@ namespace Server.Database.Windows
             }
         }
 
+        /// <summary>
+        /// Beautifies the data.
+        /// </summary>
+        /// <param name="data">The data to be beautified.</param>
         private void Beautify(string data)
         {
             try
@@ -233,17 +299,6 @@ namespace Server.Database.Windows
                 detailsButton.Visible = true;
                 JsonParseError = ex;
             }
-        }
-
-        private void OnDetailsButtonClicked(object sender, EventArgs e)
-        {
-            if (JsonParseError == null)
-                return;
-
-            MessageBox.Show(JsonParseError.ToString(),
-                            "JSON Parse Error Stacktrace",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Error);
         }
     }
 }

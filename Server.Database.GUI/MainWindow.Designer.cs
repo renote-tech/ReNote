@@ -59,7 +59,7 @@ namespace Server.Database.Windows
             this.columnName = new System.Windows.Forms.ColumnHeader();
             this.columnValue = new System.Windows.Forms.ColumnHeader();
             this.databaseDataContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.addDataMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addDataTreeItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pasteDataMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ContainerContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.addItemTreeItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -109,7 +109,7 @@ namespace Server.Database.Windows
             this.mountDatabaseTreeItem.Name = "mountDatabaseTreeItem";
             this.mountDatabaseTreeItem.Size = new System.Drawing.Size(160, 22);
             this.mountDatabaseTreeItem.Text = "Mount database";
-            this.mountDatabaseTreeItem.Click += new System.EventHandler(this.OnMountMenuItemClicked);
+            this.mountDatabaseTreeItem.Click += new System.EventHandler(this.OnMountDatabaseMenuItemClicked);
             // 
             // menuBar
             // 
@@ -149,7 +149,7 @@ namespace Server.Database.Windows
             this.mountDatabaseMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
             this.mountDatabaseMenuItem.Size = new System.Drawing.Size(204, 22);
             this.mountDatabaseMenuItem.Text = "Mount Database";
-            this.mountDatabaseMenuItem.Click += new System.EventHandler(this.OnMountMenuItemClicked);
+            this.mountDatabaseMenuItem.Click += new System.EventHandler(this.OnMountDatabaseMenuItemClicked);
             // 
             // fileSeperator
             // 
@@ -213,7 +213,7 @@ namespace Server.Database.Windows
             this.DatabaseTreeView.PathSeparator = "";
             this.DatabaseTreeView.Size = new System.Drawing.Size(215, 454);
             this.DatabaseTreeView.TabIndex = 1;
-            this.DatabaseTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnTreeViewItemClicked);
+            this.DatabaseTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnTreeNodeItemAfterSelected);
             this.DatabaseTreeView.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.OnTreeNodeItemClicked);
             // 
             // openDatabaseDialog
@@ -302,7 +302,7 @@ namespace Server.Database.Windows
             this.databaseDataView.View = System.Windows.Forms.View.Details;
             this.databaseDataView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.OnItemSelectionChanged);
             this.databaseDataView.SizeChanged += new System.EventHandler(this.OnDataViewSizeChanged);
-            this.databaseDataView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.OnDataKeyDown);
+            this.databaseDataView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.OnDatabaseDataViewKeyDown);
             // 
             // columnName
             // 
@@ -317,7 +317,7 @@ namespace Server.Database.Windows
             // databaseDataContextMenu
             // 
             this.databaseDataContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.addDataMenuItem,
+            this.addDataTreeItem,
             this.pasteDataMenuItem});
             this.databaseDataContextMenu.Name = "databaseDataContextMenu";
             this.databaseDataContextMenu.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
@@ -326,10 +326,10 @@ namespace Server.Database.Windows
             // 
             // addDataMenuItem
             // 
-            this.addDataMenuItem.Name = "addDataMenuItem";
-            this.addDataMenuItem.Size = new System.Drawing.Size(123, 22);
-            this.addDataMenuItem.Text = "Add item";
-            this.addDataMenuItem.Click += new System.EventHandler(this.OnAddDataItemClicked);
+            this.addDataTreeItem.Name = "addDataTreeItem";
+            this.addDataTreeItem.Size = new System.Drawing.Size(123, 22);
+            this.addDataTreeItem.Text = "Add item";
+            this.addDataTreeItem.Click += new System.EventHandler(this.OnAddDataTreeItemClicked);
             // 
             // pasteDataMenuItem
             // 
@@ -540,7 +540,7 @@ namespace Server.Database.Windows
         private ToolStripMenuItem addContainerTreeItem;
         private ToolStripMenuItem addItemTreeItem;
         private ContextMenuStrip databaseDataContextMenu;
-        private ToolStripMenuItem addDataMenuItem;
+        private ToolStripMenuItem addDataTreeItem;
         private ContextMenuStrip databaseDataItemContextMenu;
         private ToolStripMenuItem editDataMenuItem;
         private ToolStripMenuItem deleteDataMenuItem;
