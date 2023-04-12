@@ -1,4 +1,5 @@
-﻿using Avalonia;
+﻿using System;
+using Avalonia;
 using Avalonia.Controls.Primitives;
 using Avalonia.Media;
 
@@ -6,15 +7,13 @@ namespace Client.Controls
 {
     public class ProgressRing : TemplatedControl
     {
-        private const string LargeState = ":large";
-        private const string SmallState = ":small";
+        public static readonly StyledProperty<bool> IsActiveProperty = AvaloniaProperty.Register<ProgressRing, bool>(nameof(IsActive), defaultValue: true, notifying: OnIsActiveChanged);
 
-        private const string InactiveState = ":inactive";
-        private const string ActiveState = ":active";
+        public static readonly DirectProperty<ProgressRing, double> MaxSideLengthProperty = AvaloniaProperty.RegisterDirect<ProgressRing, double>(nameof(MaxSideLength), o => o.MaxSideLength);
 
-        private double maxSideLength = 10;
-        private double ellipseDiameter = 10;
-        private Thickness ellipseOffset = new Thickness(2);
+        public static readonly DirectProperty<ProgressRing, double> EllipseDiameterProperty = AvaloniaProperty.RegisterDirect<ProgressRing, double>(nameof(EllipseDiameter), o => o.EllipseDiameter);
+
+        public static readonly DirectProperty<ProgressRing, Thickness> EllipseOffsetProperty = AvaloniaProperty.RegisterDirect<ProgressRing, Thickness>(nameof(EllipseOffset), o => o.EllipseOffset);
 
         public bool IsActive
         {
@@ -22,23 +21,11 @@ namespace Client.Controls
             set => SetValue(IsActiveProperty, value);
         }
 
-
-        public static readonly StyledProperty<bool> IsActiveProperty = AvaloniaProperty.Register<ProgressRing, bool>(nameof(IsActive), defaultValue: true, notifying: OnIsActiveChanged);
-
-        private static void OnIsActiveChanged(IAvaloniaObject obj, bool arg)
-        {
-            ((ProgressRing)obj).UpdateVisualStates();
-        }
-
-        public static readonly DirectProperty<ProgressRing, double> MaxSideLengthProperty = AvaloniaProperty.RegisterDirect<ProgressRing, double>(nameof(MaxSideLength), o => o.MaxSideLength);
-
         public double MaxSideLength
         {
             get { return maxSideLength; }
             private set { SetAndRaise(MaxSideLengthProperty, ref maxSideLength, value); }
         }
-
-        public static readonly DirectProperty<ProgressRing, double> EllipseDiameterProperty = AvaloniaProperty.RegisterDirect<ProgressRing, double>(nameof(EllipseDiameter), o => o.EllipseDiameter);
 
         public double EllipseDiameter
         {
@@ -46,23 +33,36 @@ namespace Client.Controls
             private set { SetAndRaise(EllipseDiameterProperty, ref ellipseDiameter, value); }
         }
 
-        public static readonly DirectProperty<ProgressRing, Thickness> EllipseOffsetProperty = AvaloniaProperty.RegisterDirect<ProgressRing, Thickness>(nameof(EllipseOffset), o => o.EllipseOffset);
-
         public Thickness EllipseOffset
         {
             get { return ellipseOffset; }
             private set { SetAndRaise(EllipseOffsetProperty, ref ellipseOffset, value); }
         }
 
+        private const string LargeState = ":large";
+        private const string SmallState = ":small";
+
+        private const string InactiveState = ":inactive";
+        private const string ActiveState   = ":active";
+
+        private double maxSideLength    = 10;
+        private double ellipseDiameter  = 10;
+        private Thickness ellipseOffset = new Thickness(2);
+
+        public override void Render(DrawingContext context)
+        {
+            base.Render(context);
+            UpdateVisualStates();
+        }
+
         protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
         {
             base.OnApplyTemplate(e);
+
             double maxSideLength = Math.Min(this.Width, this.Height);
             double ellipseDiameter = 0.1 * maxSideLength;
             if (maxSideLength <= 40)
-            {
                 ellipseDiameter += 1;
-            }
 
             EllipseDiameter = ellipseDiameter;
             MaxSideLength = maxSideLength;
@@ -70,10 +70,9 @@ namespace Client.Controls
             UpdateVisualStates();
         }
 
-        public override void Render(DrawingContext context)
+        private static void OnIsActiveChanged(IAvaloniaObject obj, bool arg)
         {
-            base.Render(context);
-            UpdateVisualStates();
+            ((ProgressRing)obj).UpdateVisualStates();
         }
 
         private void UpdateVisualStates()

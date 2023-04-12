@@ -1,0 +1,25 @@
+﻿splash_developer_info=Komplett entwickelt von Alian DEAD.
+splash_copyright_info=© ReNote NETW. Alle Rechte vorbehalten.
+splash_connection_error=Es ist ein Fehler aufgetreten. Die Anwendung ist möglicherweise nicht richtig konfiguriert.
+splash_try_again=Versuchen Sie es erneut
+
+logon_main_title=Anmelden
+logon_watermark_username=Nutzername
+logon_watermark_password=Kennwort
+logon_sign_in_button=Anmelden
+logon_copyright_text=© ReNote NETW.\nAlle Rechte vorbehalten.
+
+account_profile=Profil
+account_contact=Kontakt
+account_last_connection=Letzte Verbindung
+
+account_security=Sicherheit
+account_password=Passwort
+account_change_password=Kennwort ändern
+
+account_preferences=Einstellungen
+account_themes=Themen
+
+account_mobile=Mobile Anmeldung
+
+account_about=Um

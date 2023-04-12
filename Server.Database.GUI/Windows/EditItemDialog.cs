@@ -6,10 +6,10 @@ namespace Server.Database.Windows
 {
     public partial class EditItemDialog : Form
     {
-        private string m_Database;
-        private string m_Container;
-        private string m_ItemName;
-        private string m_ItemValue;
+        private readonly string m_Database;
+        private readonly string m_Container;
+        private readonly string m_ItemName;
+        private readonly string m_ItemValue;
 
         /// <summary>
         /// Constructor.

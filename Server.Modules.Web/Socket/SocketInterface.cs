@@ -1,5 +1,7 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 using Server.Common;
 using Server.Web.Interfaces;
 
@@ -27,10 +29,12 @@ namespace Server.Web.Socket
         /// The <see cref="TcpListener"/>.
         /// </summary>
         public TcpListener Listener { get; private set; }
+
         /// <summary>
         /// True if the <see cref="SocketInterface"/>'s instance is running; otherwise false.
         /// </summary>
         public bool IsRunning { get; private set; }
+
         /// <summary>
         /// Thre if the <see cref="SocketInterface"/>'s instance is disposed; otherwise false.
         /// </summary>
@@ -40,6 +44,7 @@ namespace Server.Web.Socket
         /// The private field of the <see cref="Instance"/> field.
         /// </summary>
         private static SocketInterface instance;
+
         /// <summary>
         /// The request handler <see cref="Thread"/>.
         /// </summary>
@@ -80,6 +85,8 @@ namespace Server.Web.Socket
         /// <exception cref="ObjectDisposedException">Throws an exception if the <see cref="SocketInterface"/>'s instance is disposed.</exception>
         public void End()
         {
+            Platform.Log("Stopping SocketInterface Service", LogLevel.INFO);
+
             if (IsDisposed)
                 throw new ObjectDisposedException("SocketInterface");
 

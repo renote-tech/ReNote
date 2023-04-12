@@ -1,9 +1,9 @@
-﻿using Newtonsoft.Json;
-using Client.ReNote;
+﻿using Client.ReNote;
+using Newtonsoft.Json;
 
 namespace Client.Api.Responses
 {
-    internal class SchoolResponse : BaseResponse
+    internal class SchoolResponse : Response
     {
         [JsonProperty("data", Order = 10)]
         private School m_Data;

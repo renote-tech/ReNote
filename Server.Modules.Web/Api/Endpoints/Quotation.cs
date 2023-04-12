@@ -1,12 +1,14 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using System.Threading.Tasks;
 using Server.ReNote.Utilities;
 using Server.Web.Api;
 using Server.Web.Api.Responses;
 using Server.Web.Utilities;
+using Newtonsoft.Json;
 
 namespace Server.ReNote.Api
 {
-    public class Quotation
+    internal class Quotation
     {
         /// <summary>
         /// Operates a request.

@@ -1,5 +1,5 @@
 using Avalonia.Controls;
-using Client.Layout;
+using Client.Layouts;
 
 namespace Client.Windows
 {
@@ -8,15 +8,21 @@ namespace Client.Windows
         public static MainWindow Instance { get; private set; }
         public MainWindow()
         {
-            Instance = this;
-
             InitializeComponent();
-            SetContent(new SplashUI());
-
-            Platform.ExecuteArguments();
+            InitializeClient();
         }
 
-        public void SetContent(UserControl layout)
+        private void InitializeClient()
+        {
+            Instance = this;
+
+            Language.Initialize();
+            Configuration.Load();
+
+            SetWindowContent(new SplashLayout());
+        }
+
+        public void SetWindowContent(Layout layout)
         {
             Content = layout;
         }

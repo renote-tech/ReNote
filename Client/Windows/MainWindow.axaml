@@ -3,6 +3,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="960" d:DesignHeight="540"
-        x:Class="Client.Windows.MainWindow"
-        Title="ReNote &#425;" Width="960" Height="540" MinWidth="960" MinHeight="540" Background="Black" WindowStartupLocation="CenterScreen">
+        x:Class="Client.Windows.MainWindow" Title="ReNote &#425;"
+		Width="960" Height="540" MinWidth="960" MinHeight="540"
+		Background="{DynamicResource BaseBackground}"
+		WindowStartupLocation="CenterScreen">
 </Window>

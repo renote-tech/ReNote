@@ -1,4 +1,6 @@
 ﻿using System.Buffers.Binary;
+using System.IO;
+using System.Threading.Tasks;
 using Server.Common;
 using Server.Common.Utilities;
 using Server.ReNote;
@@ -21,9 +23,9 @@ namespace Server.Web.Static
         private const byte OFFSET_SIZE = 1;
 
         /// <summary>
-        /// Returns a resource from the specified uri.
+        /// Returns a resource from the specified URI.
         /// </summary>
-        /// <param name="uri">The resource uri.</param>
+        /// <param name="uri">The resource URI.</param>
         /// <returns><see cref="byte"/>[]</returns>
         public static async Task<byte[]> GetResourceAsync(string uri, long userId)
         {
@@ -47,7 +49,7 @@ namespace Server.Web.Static
         /// <summary>
         /// Returns whether the resource exists or not.
         /// </summary>
-        /// <param name="uri">The resource uri.</param>
+        /// <param name="uri">The resource URI.</param>
         /// <returns><see cref="bool"/></returns>
         public static bool ResourceExists(string uri)
         {
@@ -55,20 +57,37 @@ namespace Server.Web.Static
         }
 
         /// <summary>
-        /// Returns an absolute path representing the path of a file from an uri.
+        /// Returns an absolute path representing the path of a file from an URI.
         /// </summary>
-        /// <param name="uri"></param>
+        /// <param name="uri">The resource URI.</param>
         /// <returns><see cref="string"/></returns>
         private static string GetResourcePath(string uri)
         {
-            if (uri == "/" || string.IsNullOrWhiteSpace(uri))
+            if (string.IsNullOrWhiteSpace(uri) || uri == "/")
                 return WebResources.Index;
-            else if (Configuration.WebConfig.WebNoDotHtml)
+            else if (Configuration.WebConfig.WebNoDotHtml && GetPathExtension(uri) == "DotHtml")
                 return PathUtil.NormalizeToOS($"{WebResources.WebRoot}/{uri}/index.html");
-            else if (!Configuration.WebConfig.WebVueSupport)
-                return PathUtil.NormalizeToOS($"{WebResources.WebRoot}/{uri}");
-            else
+            else if (Configuration.WebConfig.WebVueSupport && GetPathExtension(uri) == "VueHtml")
                 return WebResources.Index;
+            else
+                return PathUtil.NormalizeToOS($"{WebResources.WebRoot}/{uri}");
+        }
+
+        /// <summary>
+        /// Returns the type of file represented in the URI.
+        /// </summary>
+        /// <param name="uri">The resource URI.</param>
+        /// <returns><see cref="string"/></returns>
+        private static string GetPathExtension(string uri)
+        {
+            if (string.IsNullOrWhiteSpace(uri) || uri == "/")
+                return "None";
+            else if (Configuration.WebConfig.WebNoDotHtml && uri.LastIndexOf('.') == -1)
+                return "DotHtml";
+            else if (Configuration.WebConfig.WebVueSupport)
+                return "VueHtml";
+            else
+                return "Other";
         }
 
         /// <summary>

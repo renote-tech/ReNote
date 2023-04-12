@@ -6,12 +6,10 @@
 		<StyleInclude Source="avares://Client/Controls/ProgressRing.axaml"/>
 	</Application.Styles>
 	<Application.Resources>
-		<Color x:Key="SystemAccentColor">#9370db</Color>
-		<Color x:Key="SystemAccentColorDark1">#9370db</Color>
-		<Color x:Key="SystemAccentColorDark2">#9370db</Color>
-		<Color x:Key="SystemAccentColorDark3">#9370db</Color>
-		<Color x:Key="SystemAccentColorLight1">#9370db</Color>
-		<Color x:Key="SystemAccentColorLight2">#9370db</Color>
-		<Color x:Key="SystemAccentColorLight3">#9370db</Color>
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceInclude Source="/AppTheme.axaml"/>
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
 	</Application.Resources>
 </Application>

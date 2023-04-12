@@ -6,7 +6,7 @@ namespace Server.Database.Windows
 {
     public partial class NewContainerDialog : Form
     {
-        private string m_Database;
+        private readonly string m_Database;
 
         /// <summary>
         /// Constructor.

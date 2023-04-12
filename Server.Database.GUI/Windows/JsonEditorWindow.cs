@@ -11,17 +11,17 @@ namespace Server.Database.Windows
     {
         private JsonException JsonParseError;
 
-        private Color m_BraceColor = Color.Blue;
-        private Color m_StringColor = Color.Green;
-        private Color m_NumberColor = Color.DarkOrange;
-        private Color m_KeywordColor = Color.Red;
-        private Color m_DefaultColor = Color.Black;
+        private readonly Color m_BraceColor   = Color.Blue;
+        private readonly Color m_StringColor  = Color.Green;
+        private readonly Color m_NumberColor  = Color.DarkOrange;
+        private readonly Color m_KeywordColor = Color.Red;
+        private readonly Color m_DefaultColor = Color.Black;
 
-        private Regex m_BraceRegex = new Regex(@"[\{\}]");
-        private Regex m_BracketRegex = new Regex(@"[\[\]]");
-        private Regex m_StringRegex = new Regex("\"(?:\\\\.|[^\"])*\"");
-        private Regex m_NumberRegex = new Regex(@"-?\d+(?:\.\d+)?");
-        private Regex m_KeywordRegex = new Regex(@"\b(?:true|false|null)\b");
+        private readonly Regex m_BraceRegex   = new Regex(@"[\{\}]");
+        private readonly Regex m_BracketRegex = new Regex(@"[\[\]]");
+        private readonly Regex m_StringRegex  = new Regex("\"(?:\\\\.|[^\"])*\"");
+        private readonly Regex m_NumberRegex  = new Regex(@"-?\d+(?:\.\d+)?");
+        private readonly Regex m_KeywordRegex = new Regex(@"\b(?:true|false|null)\b");
 
         public string Data { get; private set; }
 

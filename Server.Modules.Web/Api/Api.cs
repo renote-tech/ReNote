@@ -1,4 +1,5 @@
 ﻿using System.Collections.Specialized;
+using System.IO;
 using System.Text;
 using Server.Common;
 
@@ -124,69 +125,41 @@ namespace Server.Web.Api
         /// <returns><see cref="string"/></returns>
         public static string NullOrEmpty(params string[] properties)
         {
+            if (properties.Length == 0)
+                return string.Empty;
+            else if (properties.Length == 1)
+                return $"{properties[0]} may not be empty";
+
             StringBuilder baseMessage = new StringBuilder(); 
             for(int i = 0; i < properties.Length; i++)
             {
-                baseMessage.Append($"{properties[i]}");
-                if(i != properties.Length - 1)
+                if (i > 0 && i == properties.Length - 1)
+                    baseMessage.Append(" and ");
+                else if (i > 0 && i < properties.Length - 2)
                     baseMessage.Append(", ");
+
+                baseMessage.Append($"{properties[i]}");
             }
             baseMessage.Append(" may not be empty");
             return baseMessage.ToString();
         }
 
         /// <summary>
-        /// Returns an user not exists message.
+        /// Returns an invalid username or password message.
         /// </summary>
         /// <returns><see cref="string"/></returns>
-        public static string UserNotExists()
+        public static string InvalidUsernameOrPassword()
         {
-            return "User doesn't exist";
+            return "Invalid username or password";
         }
 
         /// <summary>
-        /// Returns an invalid password message.
+        /// Returns a session not exists or expired message.
         /// </summary>
         /// <returns><see cref="string"/></returns>
-        public static string InvalidPassword()
+        public static string InvalidSession()
         {
-            return "Password is invalid";
-        }
-
-        /// <summary>
-        /// Returns a session not exists message.
-        /// </summary>
-        /// <returns><see cref="string"/></returns>
-        public static string SessionNotExists()
-        {
-            return "Session doesn't exist";
-        }
-
-        /// <summary>
-        /// Returns a session expired message.
-        /// </summary>
-        /// <returns><see cref="string"/></returns>
-        public static string SessionExpired()
-        {
-            return "Session has expired";
-        }
-
-        /// <summary>
-        /// Returns an invalid auth token message.
-        /// </summary>
-        /// <returns><see cref="string"/></returns>
-        public static string InvalidAuthToken()
-        {
-            return "Auth token is invalid";
-        }
-
-        /// <summary>
-        /// Returns an invalid session id message.
-        /// </summary>
-        /// <returns><see cref="string"/></returns>
-        public static string InvalidSessionId()
-        {
-            return "Session ID is invalid";
+            return "Session either doesn't exist, is expired or provided token is invalid";
         }
     }
 
@@ -202,19 +175,21 @@ namespace Server.Web.Api
         /// </summary>
         public static void Initialize()
         {
-            ApiAtlas.AddEndpoint("Root", "/");
+            ApiAtlas.RegisterEndpoints("Root", "/",
 
-            ApiAtlas.AddEndpoint("Authenticate", $"/global/{ServerEnv.ApiVersion}/auth");
-            ApiAtlas.AddEndpoint("SchoolInfo",   $"/global/{ServerEnv.ApiVersion}/school/info");
-            ApiAtlas.AddEndpoint("About",        $"/global/{ServerEnv.ApiVersion}/about");
-            ApiAtlas.AddEndpoint("Quotation",    $"/global/{ServerEnv.ApiVersion}/quotation");
+                                       "Authenticate",  $"/global/{ServerEnv.ApiVersion}/auth",
+                                       "SchoolInfo",    $"/global/{ServerEnv.ApiVersion}/school/info",
+                                       "About",         $"/global/{ServerEnv.ApiVersion}/about",
+                                       "Quotation",     $"/global/{ServerEnv.ApiVersion}/quotation",
+                                       "ColorSchema",   $"/global/{ServerEnv.ApiVersion}/color/themes",
+                                       "Configuration", $"/global/{ServerEnv.ApiVersion}/client/config",
 
-            ApiAtlas.AddEndpoint("Profile",      $"/user/{ServerEnv.ApiVersion}/profile");
-            ApiAtlas.AddEndpoint("Preferences",  $"/user/{ServerEnv.ApiVersion}/preferences");
-            ApiAtlas.AddEndpoint("Timetable",    $"/user/{ServerEnv.ApiVersion}/timetable");
-            ApiAtlas.AddEndpoint("LogOut",       $"/user/{ServerEnv.ApiVersion}/session/delete");
+                                       "Profile",       $"/user/{ServerEnv.ApiVersion}/profile",
+                                       "Preferences",   $"/user/{ServerEnv.ApiVersion}/preferences",
+                                       "Timetable",     $"/user/{ServerEnv.ApiVersion}/timetable",
+                                       "LogOut",        $"/user/{ServerEnv.ApiVersion}/session/delete",
+                                       "TeamProfile",   $"/user/{ServerEnv.ApiVersion}/team/profile");
 
-            ApiAtlas.Clean();
             Platform.Log($"Registered {ApiAtlas.GetEndpointsCount()} endpoints", LogLevel.INFO);
         }
     }

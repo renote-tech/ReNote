@@ -1,4 +1,6 @@
-﻿namespace Server.Web.Api
+﻿using System.Collections.Generic;
+
+namespace Server.Web.Api
 {
     public class ApiAtlas
     {
@@ -8,13 +10,18 @@
         private static readonly List<ApiEndpoint> endpoints = new List<ApiEndpoint>();
 
         /// <summary>
-        /// Adds an <see cref="ApiEndpoint"/> to the <see cref="endpoints"/> list.
+        /// Register a specified amount of endpoints.
         /// </summary>
-        /// <param name="name">The name of the <see cref="ApiEndpoint"/>.</param>
-        /// <param name="uri">The uri of the <see cref="ApiEndpoint"/>.</param>
-        public static void AddEndpoint(string name, string uri)
+        /// <param name="endpoints">The endpoints to register.</param>
+        public static void RegisterEndpoints(params string[] endpoints)
         {
-            endpoints.Add(new ApiEndpoint($"{name}", uri));
+            if (endpoints.Length == 0 || endpoints.Length % 2 != 0)
+                return;
+
+            for (int i = 0; i < endpoints.Length; i += 2)
+                ApiAtlas.endpoints.Add(new ApiEndpoint(endpoints[i], endpoints[i + 1]));
+
+            ApiAtlas.endpoints.TrimExcess();
         }
 
         /// <summary>
@@ -39,14 +46,6 @@
         public static int GetEndpointsCount()
         {
             return endpoints.Count;
-        }
-
-        /// <summary>
-        /// Cleans up the <see cref="endpoints"/>'s internal array.
-        /// </summary>
-        public static void Clean()
-        {
-            endpoints.TrimExcess();
         }
     }
 }

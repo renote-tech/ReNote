@@ -1,0 +1,22 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+					xmlns:sys="using:System">
+	<SolidColorBrush x:Key="BaseBackground"		 Color="#141414"/>
+	<SolidColorBrush x:Key="BaseSelectionHover"  Color="#555555"/>
+	<SolidColorBrush x:Key="BaseButton"          Color="#4b4b4b"/>
+	<SolidColorBrush x:Key="BaseButtonHover"     Color="#373737"/>
+	<SolidColorBrush x:Key="BaseButtonPress"     Color="#787878"/>
+	<SolidColorBrush x:Key="BaseSidebar"		 Color="#1e1e1e"/>
+	<SolidColorBrush x:Key="BaseAccent"			 Color="#9370db"/>
+	<SolidColorBrush x:Key="BaseAccentHover"	 Color="#895be9"/>
+	<SolidColorBrush x:Key="BaseAccentPress"	 Color="#7a46e7"/>
+	<SolidColorBrush x:Key="BaseTopBar"          Color="#151515"/>
+	<SolidColorBrush x:Key="BaseToolBar"         Color="#464646"/>
+	<SolidColorBrush x:Key="BaseForegroundError" Color="#db7093"/>
+	<SolidColorBrush x:Key="BaseForegroundTitle" Color="#d2d2d2"/>
+	<SolidColorBrush x:Key="BaseForeground"      Color="#ffffff"/>
+
+	<Thickness x:Key="ComboBoxDropdownBorderThickness">0</Thickness>
+
+	<Color x:Key="SystemAccentColor">#9370db</Color>
+</ResourceDictionary>

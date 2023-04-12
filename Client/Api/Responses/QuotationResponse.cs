@@ -2,7 +2,7 @@
 
 namespace Client.Api.Responses
 {
-    internal class QuotationResponse : BaseResponse
+    internal class QuotationResponse : Response
     {
         [JsonProperty("data", Order = 10)]
         private QuotationData m_Data;
@@ -31,14 +31,14 @@ namespace Client.Api.Responses
             m_Author = author;
         }
 
-        public void SetContent(string content)
-        {
-            m_Content = content;
-        }
-
         public string GetAuthor()
         {
             return m_Author;
+        }
+
+        public void SetContent(string content)
+        {
+            m_Content = content;
         }
 
         public string GetContent()

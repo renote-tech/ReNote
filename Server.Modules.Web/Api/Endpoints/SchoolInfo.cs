@@ -1,9 +1,10 @@
-﻿using Server.Web.Api;
+﻿using System.Threading.Tasks;
+using Server.Web.Api;
 using Server.Web.Utilities;
 
 namespace Server.ReNote.Api
 {
-    public class SchoolInfo
+    internal class SchoolInfo
     {
         /// <summary>
         /// Operates a request.

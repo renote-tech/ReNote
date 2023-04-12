@@ -1,10 +1,11 @@
-﻿using Server.Web.Api;
+﻿using System.Threading.Tasks;
+using Server.Web.Api;
 using Server.Web.Api.Responses;
 using Server.Web.Utilities;
 
 namespace Server.ReNote.Api
 {
-    public class About
+    internal class About
     {
         /// <summary>
         /// Operates a request.
@@ -32,7 +33,7 @@ namespace Server.ReNote.Api
             AboutResponse response = new AboutResponse()
             {
                 SoftwareName      = "ReNote Σ/Ω",
-                SoftwareVersion   = "ReNote 2022.11",
+                SoftwareVersion   = "ReNote 2023.04",
                 SoftwareCopyright = "© ReNote NETW. All rights reserved."
             };
 

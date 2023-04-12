@@ -1,4 +1,5 @@
-﻿using Avalonia.Controls;
+﻿using System.Threading.Tasks;
+using Avalonia.Controls;
 using Client.Windows;
 
 namespace Client.Builders
@@ -37,6 +38,14 @@ namespace Client.Builders
         {
             MessageBoxIcon = icon;
             return this;
+        }
+
+        public MessageBox GetWindow()
+        {
+            return new MessageBox(Title, Message, MessageBoxType, MessageBoxIcon)
+            {
+                WindowStartupLocation = WindowStartupLocation.CenterScreen
+            };
         }
 
         public void Show(Window owner = default)

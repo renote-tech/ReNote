@@ -1,4 +1,6 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
+using System.Threading;
 using Server.Common;
 using Server.Common.Exceptions;
 using Server.Web.Interfaces;
@@ -28,10 +30,12 @@ namespace Server.Web.Static
         /// The <see cref="HttpListener"/>.
         /// </summary>
         public HttpListener Listener { get; private set; }
+        
         /// <summary>
         /// True if the <see cref="StaticInterface"/>'s instance is running; otherwise false.
         /// </summary>
         public bool IsRunning { get; private set; }
+        
         /// <summary>
         /// True if the <see cref="StaticInterface"/>'s instance is disposed; otherwise false.
         /// </summary>
@@ -41,10 +45,12 @@ namespace Server.Web.Static
         /// The private instance of the <see cref="Instance"/> field.
         /// </summary>
         private static StaticInterface instance;
+        
         /// <summary>
         /// True if the <see cref="StaticInterface"/>'s instance is initialized; otherwise false.
         /// </summary>
         private bool initialized;
+        
         /// <summary>
         /// The request handler <see cref="Thread"/>.
         /// </summary>
@@ -104,6 +110,8 @@ namespace Server.Web.Static
         /// <exception cref="UninitializedException">Throws an exception if the <see cref="StaticInterface"/>'s instance is not initialized.</exception>
         public void End()
         {
+            Platform.Log("Stopping StaticInterface Service", LogLevel.INFO);
+
             if (IsDisposed)
                 throw new ObjectDisposedException("StaticInterface");
 
@@ -119,6 +127,7 @@ namespace Server.Web.Static
             IsDisposed = true;
 
             Listener.Stop();
+            Listener.Close();
             requestHandler = null;
         }
     }

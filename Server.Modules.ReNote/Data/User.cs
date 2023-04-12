@@ -29,6 +29,12 @@ namespace Server.ReNote.Data
         public long UserId { get; set; }
 
         /// <summary>
+        /// The team id of the <see cref="User"/>.
+        /// </summary>
+        [JsonProperty("teamId")]
+        public int TeamId { get; set; }
+
+        /// <summary>
         /// The account type of the <see cref="User"/>.
         /// </summary>
         [JsonProperty("accountType")]

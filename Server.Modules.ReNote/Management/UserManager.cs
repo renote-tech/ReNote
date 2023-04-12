@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using Server.Common.Utilities;
+﻿using Server.Common.Utilities;
 using Server.ReNote.Data;
 using Server.ReNote.Utilities;
 
@@ -18,7 +17,7 @@ namespace Server.ReNote.Management
             if (userId == -1)
                 return null;
 
-            return GetUser(userId);
+            return DatabaseUtil.GetAs<User>(Constants.DB_ROOT_USERS, userId.ToString());
         }
 
         /// <summary>
@@ -28,11 +27,7 @@ namespace Server.ReNote.Management
         /// <returns><see cref="User"/></returns>
         public static User GetUser(long userId)
         {
-            string userItem = DatabaseUtil.Get(Constants.DB_ROOT_USERS, userId.ToString());
-            if (userItem == null)
-                return null;
-
-            return JsonConvert.DeserializeObject<User>(userItem);
+            return DatabaseUtil.GetAs<User>(Constants.DB_ROOT_USERS, userId.ToString());
         }
 
         /// <summary>
@@ -47,20 +42,14 @@ namespace Server.ReNote.Management
                 long userId = long.Parse(username);
                 return UserExists(userId) ? userId : -1;
             }
-;
+
             Dictionary<string, string> items = DatabaseUtil.GetItems(Constants.DB_ROOT_USERS);
             if (items.Count == 0)
                 return -1;
 
-            for(int i = 0; i < items.Count; i++)
-            {
-                if (items.ElementAt(i).Value == null)
-                    continue;
-
-                User user = GetUser(items.ElementAt(i).Key);
-                if (user.Username == username)
-                    return user.UserId;
-            }
+            string stringUserId = items[username];
+            if (stringUserId != null)
+                return long.Parse(stringUserId);
 
             return -1;
         }

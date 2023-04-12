@@ -13,7 +13,7 @@ namespace Server.Database.Management
         /// </summary>
         public static readonly char[] PATH_ALLOWED_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_".ToCharArray();
 
-        private static Dictionary<string, RNDatabase> s_Databases = new Dictionary<string, RNDatabase>();
+        private readonly static Dictionary<string, RNDatabase> s_Databases = new Dictionary<string, RNDatabase>();
 
         /// <summary>
         /// Creates and adds a database to the <see cref="s_Databases"/> list.
@@ -151,7 +151,7 @@ namespace Server.Database.Management
             if (!s_Databases[dbName].IsContainerExists(containerName))
                 return -1;
 
-            bool itemExists = s_Databases[dbName][containerName].IsItemExists(itemName);
+            bool itemExists = s_Databases[dbName][containerName].ContainsItem(itemName);
             if (itemExists)
                 return 1;
 
@@ -178,7 +178,7 @@ namespace Server.Database.Management
             if (!s_Databases[dbName].IsContainerExists(containerName))
                 return -1;
 
-            bool itemExists = s_Databases[dbName][containerName].IsItemExists(oldItemName);
+            bool itemExists = s_Databases[dbName][containerName].ContainsItem(oldItemName);
             if (itemExists)
                 s_Databases[dbName][containerName].RemoveItem(oldItemName);
 
@@ -248,8 +248,9 @@ namespace Server.Database.Management
             if (s_Databases[dbName].IsEmpty())
                 return 2;
 
+            //TODO: Sort containers and items
             await s_Databases[dbName].SaveAsync();
-            s_Databases[dbName].NeedSave = false;
+            s_Databases[dbName].NeedSave = false;   
 
             return 0;
         }

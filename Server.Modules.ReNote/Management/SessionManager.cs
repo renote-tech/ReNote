@@ -9,11 +9,11 @@ namespace Server.ReNote.Management
     public class SessionManager
     {
         /// <summary>
-        /// Returns a new <see cref="GlobalSession"/> instance.
+        /// Returns a new <see cref="Session"/> instance.
         /// </summary>
         /// <param name="userId">The user id of the <see cref="User"/>.</param>
-        /// <returns><see cref="GlobalSession"/></returns>
-        public static async Task<GlobalSession> CreateSessionAsync(long userId)
+        /// <returns><see cref="Session"/></returns>
+        public static async Task<Session> CreateSessionAsync(long userId)
         {
             long sessionId = CreateSessionId();
             string authToken = await ReNoteSecureToken.GenerateAsync(sessionId);
@@ -21,7 +21,7 @@ namespace Server.ReNote.Management
 
             User userData = UserManager.GetUser(userId);
 
-            GlobalSession session = new GlobalSession(sessionId, userId, authToken, userData.AccountType);
+            Session session = new Session(sessionId, userId, authToken, userData.AccountType);
             string[] sessions = DatabaseUtil.GetValues(Constants.DB_ROOT_SESSIONS);
             
 
@@ -31,17 +31,22 @@ namespace Server.ReNote.Management
                 if (!JsonUtil.ValiditateJson(rawSession))
                     continue;
 
-                GlobalSession cSession = JsonConvert.DeserializeObject<GlobalSession>(rawSession);
+                Session cSession = JsonConvert.DeserializeObject<Session>(rawSession);
                 if (cSession.UserId == userId)
                     DeleteSession(cSession.SessionId);
             }
 
-            GlobalSession internalSession = new GlobalSession(sessionId, userId, sha256AuthToken, userData.AccountType);
-            internalSession.RequestTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-            internalSession.Connection = internalSession.RequestTimestamp;
+            long connectionTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+            Session internalSession = new Session(sessionId, userId, sha256AuthToken, userData.AccountType)
+            {
+                RequestTimestamp = connectionTimestamp,
+                Connection       = connectionTimestamp
+            };
+            DatabaseUtil.Set(Constants.DB_ROOT_SESSIONS, session.SessionId.ToString(), internalSession);
 
-            DatabaseUtil.Set(Constants.DB_ROOT_SESSIONS, session.SessionId.ToString(), JsonConvert.SerializeObject(internalSession));
-            
+            userData.LastConnection = connectionTimestamp;
+            DatabaseUtil.Set(Constants.DB_ROOT_USERS, userData.UserId.ToString(), userData);
+
             return session;
         }
 
@@ -51,27 +56,20 @@ namespace Server.ReNote.Management
         /// <param name="sessionId">The session id.</param>
         public static void UpdateRequestTimestamp(long sessionId)
         {
-            GlobalSession session = GetSession(sessionId);
+            Session session = GetSession(sessionId);
             session.RequestTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
-            DatabaseUtil.Set(Constants.DB_ROOT_SESSIONS, session.SessionId.ToString(), JsonConvert.SerializeObject(session));
+            DatabaseUtil.Set(Constants.DB_ROOT_SESSIONS, session.SessionId.ToString(), session);
         }
 
         /// <summary>
         /// Returns an existing session.
         /// </summary>
         /// <param name="sessionId">The session id.</param>
-        /// <returns><see cref="GlobalSession"/></returns>
-        public static GlobalSession GetSession(long sessionId)
+        /// <returns><see cref="Session"/></returns>
+        public static Session GetSession(long sessionId)
         {
-            if (!SessionExists(sessionId))
-                return null;
-
-            string rawSession = DatabaseUtil.Get(Constants.DB_ROOT_SESSIONS, sessionId.ToString());
-            if (!JsonUtil.ValiditateJson(rawSession))
-                return null;
-
-            return JsonConvert.DeserializeObject<GlobalSession>(rawSession);
+            return DatabaseUtil.GetAs<Session>(Constants.DB_ROOT_SESSIONS, sessionId.ToString());
         }
 
         /// <summary>
@@ -80,11 +78,11 @@ namespace Server.ReNote.Management
         /// <param name="sessionId">The session id.</param>
         public static void DeleteSession(long sessionId)
         {
-            GlobalSession session = GetSession(sessionId);
+            Session session = GetSession(sessionId);
             User user = UserManager.GetUser(session.UserId);
             user.LastConnection = session.Connection;
 
-            DatabaseUtil.Set(Constants.DB_ROOT_USERS, user.UserId.ToString(), JsonConvert.SerializeObject(user));
+            DatabaseUtil.Set(Constants.DB_ROOT_USERS, user.UserId.ToString(), user);
             DatabaseUtil.Remove(Constants.DB_ROOT_SESSIONS, sessionId.ToString());
         }
 
@@ -107,7 +105,7 @@ namespace Server.ReNote.Management
             long minSid = (long)Math.Pow(10, Constants.SID_LENGTH - 1);
             long maxSid = (long)Math.Pow(10, Constants.SID_LENGTH) - 1;
             long sId    = new Random().NextInt64(minSid, maxSid);
-
+            
             if (SessionExists(sId))
                 return CreateSessionId();
 
@@ -116,53 +114,53 @@ namespace Server.ReNote.Management
 
     }
 
-    public class GlobalSession
+    public class Session
     {
         /// <summary>
-        /// The session id of the <see cref="GlobalSession"/>.
+        /// The session id of the <see cref="Session"/>.
         /// </summary>
         [JsonProperty("sessionId")]
         public long SessionId { get; set; }
 
         /// <summary>
-        /// The user id of the <see cref="GlobalSession"/>.
+        /// The user id of the <see cref="Session"/>.
         /// </summary>
         [JsonProperty("userId")]
         public long UserId { get; set; }
 
         /// <summary>
-        /// The account type of the <see cref="GlobalSession"/>.
+        /// The account type of the <see cref="Session"/>.
         /// </summary>
         [JsonProperty("accountType")]
         public int AccountType { get; set; }
 
         /// <summary>
-        /// The auth token of the <see cref="GlobalSession"/>.
+        /// The auth token of the <see cref="Session"/>.
         /// </summary>
         [JsonProperty("authToken")]
         public string AuthToken { get; set; }
 
         /// <summary>
-        /// The request timestamp of the <see cref="GlobalSession"/>.
+        /// The request timestamp of the <see cref="Session"/>.
         /// </summary>
         [JsonProperty("requestTimestamp")]
         public long RequestTimestamp { get; set; }
 
         /// <summary>
-        /// The connection timestamp of the <see cref="GlobalSession"/>.
+        /// The connection timestamp of the <see cref="Session"/>.
         /// </summary>
         [JsonProperty("connection")]
         public long Connection { get; set; }
 
-        public GlobalSession()
+        public Session()
         { }
 
-        public GlobalSession(long sessionId, long userId, string authToken, int accountType)
+        public Session(long sessionId, long userId, string authToken, int accountType)
         {
-            SessionId = sessionId;
-            UserId = userId;
+            SessionId   = sessionId;
+            UserId      = userId;
             AccountType = accountType;
-            AuthToken = authToken;
+            AuthToken   = authToken;
         }
 
         /// <summary>

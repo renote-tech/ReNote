@@ -1,10 +1,11 @@
 ﻿using System.Net;
-using Newtonsoft.Json;
+using System.Threading.Tasks;
 using Server.Common;
 using Server.ReNote;
 using Server.Web.Api;
 using Server.Web.Api.Responses;
 using Server.Web.Utilities;
+using Newtonsoft.Json;
 
 namespace Server.Web.Static
 {
@@ -17,11 +18,8 @@ namespace Server.Web.Static
         {
             while (StaticInterface.Instance.IsRunning)
             {
-                if (StaticInterface.Instance.IsDisposed)
-                    return;
-
                 HttpListener listener = StaticInterface.Instance.Listener;
-                HttpListenerContext webContext = listener.GetContext();
+                HttpListenerContext webContext = await listener.GetContextAsync();
 
                 byte[] webResponse;
                 long userId = Constants.PUBLIC_AUTH_ID;

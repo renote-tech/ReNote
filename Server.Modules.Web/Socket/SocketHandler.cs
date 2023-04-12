@@ -8,9 +8,7 @@
         public static void Handle()
         {
             while (SocketInterface.Instance.IsRunning)
-            {
-
-            }
+            { }
         }
     }
 }

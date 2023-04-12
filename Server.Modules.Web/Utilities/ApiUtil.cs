@@ -1,9 +1,10 @@
 ﻿using System.Collections.Specialized;
-using Newtonsoft.Json;
+using System.Threading.Tasks;
 using Server.Common.Utilities;
 using Server.ReNote.Management;
 using Server.Web.Api;
 using Server.Web.Api.Responses;
+using Newtonsoft.Json;
 
 namespace Server.Web.Utilities
 {
@@ -20,13 +21,14 @@ namespace Server.Web.Utilities
         {
             return await Task.Run(() =>
             {
-                BasicResponse response = new BasicResponse() 
+                Response response = new Response() 
                 { 
                     Status  = status,
                     Message = message
                 };
 
-                return new ApiResponse((httpStatus == default ? status : httpStatus), "application/json", JsonConvert.SerializeObject(response));
+                int httpResponseStatus = httpStatus == default ? status : httpStatus;
+                return new ApiResponse(httpResponseStatus, "application/json", JsonConvert.SerializeObject(response));
             });
         }
 
@@ -85,21 +87,20 @@ namespace Server.Web.Utilities
                 return await SendAsync(400, ApiMessages.NullOrEmpty("sessionId", "authToken"));
 
             if (!NumberUtil.IsSafeLong(sessionId))
-                return await SendAsync(400, ApiMessages.InvalidSessionId());
+                return await SendAsync(400, ApiMessages.InvalidSession());
 
             long realSessionId = long.Parse(sessionId);
-
-            GlobalSession session = SessionManager.GetSession(realSessionId);
+            Session session = SessionManager.GetSession(realSessionId);
 
             if (session == null)
-                return await SendAsync(400, ApiMessages.SessionNotExists());
+                return await SendAsync(400, ApiMessages.InvalidSession());
 
             if (session.HasExpired())
-                return await SendAsync(ApiStatus.SESSION_EXPIRED, ApiMessages.SessionExpired(), 401);
+                return await SendAsync(ApiStatus.SESSION_EXPIRED, ApiMessages.InvalidSession(), 400);
 
             string computedHash = await EncryptionUtil.ComputeStringSha256Async(authToken);
             if (computedHash != session.AuthToken)
-                return await SendAsync(401, ApiMessages.InvalidAuthToken());
+                return await SendAsync(400, ApiMessages.InvalidSession());
 
             SessionManager.UpdateRequestTimestamp(session.SessionId);
 

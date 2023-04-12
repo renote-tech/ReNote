@@ -6,8 +6,8 @@ namespace Server.Database.Windows
 {
     public partial class RenameContainerDialog : Form
     {
-        private string m_Database;
-        private string m_Container;
+        private readonly string m_Database;
+        private readonly string m_Container;
 
         /// <summary>
         /// Constructor.

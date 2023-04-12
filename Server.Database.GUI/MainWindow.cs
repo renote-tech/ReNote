@@ -5,9 +5,9 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-
 using Server.Database.Management;
 using Server.ReNote.Data;
+
 using RNDatabase = Server.ReNote.Data.Database;
 
 namespace Server.Database.Windows
@@ -644,27 +644,6 @@ namespace Server.Database.Windows
         }
 
         /// <summary>
-        /// Gets the database's path (db/container) based on the specified node.
-        /// </summary>
-        /// <param name="treeNode">The tree node.</param>
-        /// <returns><see cref="string"/>[]</returns>
-        private string[] GetDatabasePath(TreeNode treeNode)
-        {
-            if (treeNode.Tag == null)
-                return null;
-
-            string dbPath = treeNode.Tag.ToString();
-            if (!dbPath.Contains('/'))
-                return null;
-
-            string[] dbPathParts = dbPath.Split('/');
-            if (dbPathParts.Length != 2)
-                return null;
-
-            return dbPathParts;
-        }
-
-        /// <summary>
         /// Adds a database node.
         /// </summary>
         /// <param name="databaseName">The database name.</param>
@@ -782,6 +761,27 @@ namespace Server.Database.Windows
             }
 
             OnDataViewChanged();
+        }
+
+        /// <summary>
+        /// Gets the database's path (db/container) based on the specified node.
+        /// </summary>
+        /// <param name="treeNode">The tree node.</param>
+        /// <returns><see cref="string"/>[]</returns>
+        private static string[] GetDatabasePath(TreeNode treeNode)
+        {
+            if (treeNode.Tag == null)
+                return null;
+
+            string dbPath = treeNode.Tag.ToString();
+            if (!dbPath.Contains('/'))
+                return null;
+
+            string[] dbPathParts = dbPath.Split('/');
+            if (dbPathParts.Length != 2)
+                return null;
+
+            return dbPathParts;
         }
 
         /// <summary>

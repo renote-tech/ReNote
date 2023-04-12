@@ -11,30 +11,4 @@
   <ItemGroup>
     <ProjectReference Include="..\Server.Modules.ReNote\Server.Modules.ReNote.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Compile Update="Properties\Resources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Update="Windows\EditItemDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="Windows\RenameContainerDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="Windows\NewItemDialog.cs" />
-    <Compile Update="Windows\NewContainerDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-
 </Project>

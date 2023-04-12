@@ -1,6 +1,8 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 using Server.Common;
 using Server.Web.Utilities;
 
@@ -18,6 +20,14 @@ namespace Server.Web.Api
                 HttpListener listener = ApiInterface.Instance.Listener;
                 HttpListenerContext apiContext = await listener.GetContextAsync();
 
+#if PROD_SIM && !METRICS_ANALYSIS
+                await Task.Delay(new Random().Next(100, 500));
+#endif
+
+#if METRICS_ANALYSIS
+                long startTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+#endif
+
                 ApiResponse apiResponse;
                 ApiEndpoint apiEndpoint = ApiAtlas.GetEndpoint(apiContext.Request.RawUrl);
                 ApiRequest apiRequest = new ApiRequest()
@@ -28,12 +38,18 @@ namespace Server.Web.Api
                     Body    = apiContext.Request.InputStream
                 };
 
-                if (apiRequest.Method == "OPTIONS")
-                    apiResponse = ApiUtil.SendNoData(200);
-                else if (apiEndpoint != null)
+#if METRICS_ANALYSIS
+                long endpointStartTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+#endif
+
+                if (apiEndpoint != null)
                     apiResponse = await CallEndpointAsync(apiEndpoint, apiRequest);
                 else
                     apiResponse = await ApiUtil.SendAsync(404, "Not found");
+
+#if METRICS_ANALYSIS
+                long endpointEndTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+#endif
 
                 byte[] body = Array.Empty<byte>();
 
@@ -59,6 +75,11 @@ namespace Server.Web.Api
                 apiContext.Response.KeepAlive = false;
                 apiContext.Response.OutputStream.Close();
                 apiContext.Response.Close();
+
+#if METRICS_ANALYSIS
+                long endTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+                Platform.Log($"Sent {(HttpStatusCode)apiContext.Response.StatusCode}: {apiEndpoint.Uri}\nOverall: {endTime - startTime}ms\nEndpoint Processing: {endpointEndTime - endpointStartTime}ms\n");
+#endif
             }
         }
 
@@ -80,8 +101,7 @@ namespace Server.Web.Api
             if (endpointMethod == null)
                 return await ApiUtil.SendErrorAsync(ApiMessages.EndpointMethodNotFound());
 
-            Task<ApiResponse> response = (Task<ApiResponse>)endpointMethod.Invoke(null, new object[] { request });
-            return await response;
+            return await (Task<ApiResponse>)endpointMethod.Invoke(null, new object[] { request });
         }
     }
 }

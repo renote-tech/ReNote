@@ -1,7 +1,10 @@
+using System;
+using System.ComponentModel;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media.Imaging;
-using System.ComponentModel;
+using Avalonia.Platform;
 using Client.Builders;
 
 namespace Client.Windows
@@ -37,21 +40,22 @@ namespace Client.Windows
                     break;
             }
 
+            IAssetLoader loader = AvaloniaLocator.Current.GetService<IAssetLoader>();
+
             switch(icon)
             {
-
                 case MessageBoxIcon.QUESTION:
-                    boxIcon.Source = new Bitmap("assets/question.png");
+                    boxIcon.Source = new Bitmap(loader.Open(new Uri("avares://Client/Assets/question.png")));
                     break;
                 case MessageBoxIcon.WARN:
-                    boxIcon.Source = new Bitmap("assets/warn.png");
+                    boxIcon.Source = new Bitmap(loader.Open(new Uri("avares://Client/Assets/warn.png")));
                     break;
                 case MessageBoxIcon.ERROR:
-                    boxIcon.Source = new Bitmap("assets/error.png");
+                    boxIcon.Source = new Bitmap(loader.Open(new Uri("avares://Client/Assets/error.png")));
                     break;
                 case MessageBoxIcon.INFO:
                 default:
-                    boxIcon.Source = new Bitmap("assets/info.png");
+                    boxIcon.Source = new Bitmap(loader.Open(new Uri("avares://Client/Assets/info.png")));
                     break;
             }
         }

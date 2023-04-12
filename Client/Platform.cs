@@ -1,6 +1,4 @@
-﻿using Client.Utilities;
-
-namespace Client
+﻿namespace Client
 {
     public class Platform
     {
@@ -16,31 +14,26 @@ namespace Client
             }
         }
         public static readonly string Version = $"{(IsDebug ? "Dev" : "Release")}-0.3.04";
-        public const string VersionName = "ProtoClient";
-
-        public static void ExecuteArguments()
-        {
-            string[] args = Environment.GetCommandLineArgs();
-        }
+        public const string VersionName = "WhiteMoon";
 
         public static void Log(string message, LogLevel level = LogLevel.DEBUG)
         {
             switch (level)
             {
                 case LogLevel.DEBUG:
-                    ConsoleUtil.Debug(message);
+                    ClientConsole.Debug(message);
                     break;
                 case LogLevel.INFO:
-                    ConsoleUtil.Info(message);
+                    ClientConsole.Info(message);
                     break;
                 case LogLevel.WARN:
-                    ConsoleUtil.Warn(message);
+                    ClientConsole.Warn(message);
                     break;
                 case LogLevel.ERROR:
-                    ConsoleUtil.Error(message);
+                    ClientConsole.Error(message);
                     break;
                 case LogLevel.FATAL:
-                    ConsoleUtil.Fatal(message);
+                    ClientConsole.Fatal(message);
                     break;
             }
         }

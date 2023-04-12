@@ -11,6 +11,12 @@ namespace Server.Web.Api.Responses
         public string RealName { get; set; }
 
         /// <summary>
+        /// The team id of the <see cref="ProfileResponse"/>.
+        /// </summary>
+        [JsonProperty("teamId")]
+        public int TeamId { get; set; }
+
+        /// <summary>
         /// The profile picture of the <see cref="ProfileResponse"/>.
         /// </summary>
         [JsonProperty("profilePicture")]

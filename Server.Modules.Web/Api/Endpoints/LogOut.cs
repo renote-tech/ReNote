@@ -1,10 +1,11 @@
-﻿using Server.ReNote.Management;
+﻿using System.Threading.Tasks;
+using Server.ReNote.Management;
 using Server.Web.Api;
 using Server.Web.Utilities;
 
 namespace Server.ReNote.Api
 {
-    public class LogOut
+    internal class LogOut
     {
         /// <summary>
         /// Operates a request.

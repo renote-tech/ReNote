@@ -55,6 +55,15 @@ namespace Server.ReNote.Data
         }
 
         /// <summary>
+        /// Sets the container list.
+        /// </summary>
+        /// <param name="containerList">The container list.</param>
+        public void SetContainerList(Container[] containerList)
+        {
+            containers = containerList.ToList();
+        }
+
+        /// <summary>
         /// Creates and adds a <see cref="Container"/> to the <see cref="containers"/> list.
         /// </summary>
         /// <param name="containerName">The <see cref="Container"/> name.</param>
@@ -84,9 +93,20 @@ namespace Server.ReNote.Data
             return false;
         }
 
-        public Container[] GetContainers()
+        /// <summary>
+        /// Clears the content from a specified <see cref="Container"/>.
+        /// </summary>
+        /// <param name="containerName">The container name.</param>
+        public void ClearContainerContent(string containerName)
         {
-            return containers.ToArray();
+            if (string.IsNullOrWhiteSpace(containerName))
+                return;
+
+            for (int i = 0; i < containers.Count; i++)
+            {
+                if (containers[i].Name == containerName)
+                    containers[i].Clear();
+            }
         }
 
         public bool IsContainerExists(string containerName)
@@ -98,6 +118,32 @@ namespace Server.ReNote.Data
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Returns all the containers within the <see cref="containers"/> list.
+        /// </summary>
+        /// <returns><see cref="Container"/>[]</returns>
+        public Container[] GetContainers()
+        {
+            return containers.ToArray();
+        }
+
+        /// <summary>
+        /// Clears the <see cref="containers"/> list.
+        /// </summary>
+        public void Clear()
+        {
+            containers.Clear();
+        }
+
+        /// <summary>
+        /// Returns whether the <see cref="containers"/> list is empty;
+        /// </summary>
+        /// <returns><see cref="bool"/></returns>
+        public bool IsEmpty()
+        {
+            return containers.Count == 0;
         }
 
         /// <summary>
@@ -118,18 +164,22 @@ namespace Server.ReNote.Data
 
             try
             {
-#if !DEBUG
-                byte[] encryptedData = File.ReadAllBytes(SaveLocation);
-                byte[] decryptedData = ByteShifting.Decrypt(encryptedData);
-                using MemoryStream stream = new MemoryStream(decryptedData);
-                Database database = Serializer.Deserialize<Database>(stream);
-
-                containers = database.containers;
-#else
+#if DEBUG
                 byte[] data = File.ReadAllBytes(SaveLocation);
                 using MemoryStream stream = new MemoryStream(data);
                 Database database = Serializer.Deserialize<Database>(stream);
 
+                containers = database.containers;
+#else
+
+                byte[] data = File.ReadAllBytes(SaveLocation);
+                using MemoryStream stream = new MemoryStream(data);
+                Database database = Serializer.Deserialize<Database>(stream);
+
+                /*byte[] encryptedData = File.ReadAllBytes(SaveLocation);
+                byte[] decryptedData = ByteShifting.Decrypt(encryptedData);
+                using MemoryStream stream = new MemoryStream(decryptedData);
+                Database database = Serializer.Deserialize<Database>(stream);*/
                 containers = database.containers;
 #endif
             }
@@ -168,10 +218,10 @@ namespace Server.ReNote.Data
 
             using MemoryStream stream = new MemoryStream();
             Serializer.Serialize(stream, this);
-#if !DEBUG
-            await ByteShifting.EncryptAsync(stream.ToArray(), saveLocation);
-#else
+#if DEBUG
             await File.WriteAllBytesAsync(saveLocation, stream.ToArray());
+#else
+            await ByteShifting.EncryptAsync(stream.ToArray(), saveLocation);
 #endif
             return true;
         }
@@ -191,23 +241,6 @@ namespace Server.ReNote.Data
 
             return await SaveAsync(path);
         }
-
-        /// <summary>
-        /// Clears the <see cref="containers"/> list.
-        /// </summary>
-        public void Clear()
-        {
-            containers.Clear();
-        }
-
-        /// <summary>
-        /// Returns whether the <see cref="containers"/> list is empty;
-        /// </summary>
-        /// <returns><see cref="bool"/></returns>
-        public bool IsEmpty()
-        {
-            return containers.Count == 0;
-        }
     }
 
     [ProtoContract]
@@ -223,7 +256,7 @@ namespace Server.ReNote.Data
         /// The dictionary that contains all of the items.
         /// </summary>
         [ProtoMember(2)]
-        private readonly Dictionary<string, string> items = new Dictionary<string, string>();
+        private Dictionary<string, string> items = new Dictionary<string, string>();
 
         public Container()
         { }
@@ -235,6 +268,7 @@ namespace Server.ReNote.Data
 
         /// <summary>
         /// Returns an item.
+        /// Sets the content of an existing item.
         /// </summary>
         /// <param name="name">The name of the item.</param>
         /// <returns><see cref="string"/></returns>
@@ -255,6 +289,15 @@ namespace Server.ReNote.Data
                 if (items.ContainsKey(name))
                     items[name] = value;
             }
+        }
+
+        /// <summary>
+        /// Sets the item dictionary.
+        /// </summary>
+        /// <param name="itemDictionary">The item dictionary.</param>
+        public void SetItemList(Dictionary<string, string> itemDictionary)
+        {
+            items = itemDictionary;
         }
 
         /// <summary>
@@ -293,7 +336,7 @@ namespace Server.ReNote.Data
         /// </summary>
         /// <param name="key">The key to be checked.</param>
         /// <returns><see cref="bool"/></returns>
-        public bool IsItemExists(string key)
+        public bool ContainsItem(string key)
         {
             if (string.IsNullOrWhiteSpace(key))
                 return false;
@@ -324,6 +367,14 @@ namespace Server.ReNote.Data
                 docsValues[i] = items.ElementAt(i).Value;
 
             return docsValues;
+        }
+
+        /// <summary>
+        /// Clears all the content from the <see cref="items"/> dictionary.
+        /// </summary>
+        public void Clear()
+        {
+            items.Clear();
         }
 
         /// <summary>

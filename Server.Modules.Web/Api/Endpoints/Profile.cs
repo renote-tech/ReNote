@@ -1,13 +1,14 @@
-﻿using Newtonsoft.Json;
+﻿using System.Threading.Tasks;
 using Server.ReNote.Data;
 using Server.ReNote.Management;
 using Server.Web.Api;
 using Server.Web.Api.Responses;
 using Server.Web.Utilities;
+using Newtonsoft.Json;
 
 namespace Server.ReNote.Api
 {
-    public class Profile
+    internal class Profile
     {
         /// <summary>
         /// Operates a request.
@@ -43,6 +44,7 @@ namespace Server.ReNote.Api
             ProfileResponse response = new ProfileResponse()
             {
                 RealName       = userData.RealName,
+                TeamId         = userData.TeamId,
                 ProfilePicture = userData.ProfilePicture,
                 Birthday       = userData.Birthday,
                 Email          = userData.Email,

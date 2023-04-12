@@ -1,0 +1,29 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:controls="clr-namespace:Client.Controls;assembly=Client"
+             mc:Ignorable="d" d:DesignWidth="960" d:DesignHeight="540"
+             x:Class="Client.Layouts.SplashLayout"
+			 Background="{DynamicResource BaseBackground}">
+	<UserControl.Styles>
+		<Style Selector="TextBlock">
+			<Setter Property="Foreground" Value="{DynamicResource BaseForeground}"/>
+		</Style>
+		<Style Selector="Button">
+			<Setter Property="Foreground" Value="{DynamicResource BaseForeground}"/>
+		</Style>
+		<Style Selector="Button:pointerover /template/ ContentPresenter">
+			<Setter Property="TextBlock.Foreground" Value="{DynamicResource BaseForeground}"/>
+		</Style>
+	</UserControl.Styles>
+	<Panel>
+		<Panel HorizontalAlignment="Center" VerticalAlignment="Center">
+			<controls:ProgressRing x:Name="m_LoadingRing" Width="50" Height="50" IsActive="True" VerticalAlignment="Center" Foreground="{DynamicResource BaseForeground}" Margin="60"/>
+			<Button x:Name="m_TryAgainButton" Margin="0, 90, 0, 0" IsVisible="False" Click="OnTryAgainButtonClicked"/>
+		</Panel>
+		<TextBlock x:Name="m_ErrorMessage" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+		<TextBlock x:Name="m_SplashDeveloper" FontStyle="Italic" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10"/>
+		<TextBlock x:Name="m_SplashCopyright" FontStyle="Italic" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="10"/>
+	</Panel>
+</UserControl>

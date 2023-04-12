@@ -9,24 +9,22 @@ namespace Server.Common.Encryption
         /// <summary>
         /// Encrypts a <see cref="string"/>.
         /// </summary>
-        /// <param name="data">The <see cref="string"/> to be encrypted.</param>
+        /// <param name="content">The <see cref="string"/> to be encrypted.</param>
         /// <returns><see cref="AESObject"/></returns>
-        public static AESObject Encrypt(string data)
+        public static AESObject Encrypt(string content, byte[] iv = default)
         {
             Aes AES = Aes.Create();
             AES.GenerateIV();
 
-            byte[] content = Encoding.ASCII.GetBytes(data);
-            byte[] key = SHA256.Create().ComputeHash(content);
-            byte[] iv = AES.IV;
+            byte[] data = Encoding.ASCII.GetBytes(content);
+            byte[] aesKey = SHA256.HashData(data);
+            byte[] aesIV = iv == default ? AES.IV : iv;
 
-            AES.Key = key;
+            ICryptoTransform cryptor = AES.CreateEncryptor(aesKey, aesIV);
+            byte[] encryptedBytes = cryptor.TransformFinalBlock(data, 0, data.Length);
             
-            ICryptoTransform cryptor = AES.CreateEncryptor(key, iv);
-            byte[] encryptedBytes = cryptor.TransformFinalBlock(content, 0, content.Length);
-
             cryptor.Dispose();
-            return new AESObject(Convert.ToBase64String(encryptedBytes), iv:iv, key:key);
+            return new AESObject(Convert.ToBase64String(encryptedBytes), iv: aesIV, key: aesKey);
         }
 
         /// <summary>
@@ -37,30 +35,46 @@ namespace Server.Common.Encryption
         public static string Decrypt(AESObject aesObject)
         {
             Aes AES = Aes.Create();
-            byte[] decryptedBytes;
             byte[] content = Convert.FromBase64String(aesObject.Data);
-
-            AES.IV = aesObject.IV;
-            AES.Key = aesObject.Key;
-
-            ICryptoTransform cryptor = AES.CreateDecryptor(aesObject.Key, aesObject.IV);
             try
             {
-                decryptedBytes = cryptor.TransformFinalBlock(content, 0, content.Length);
+                ICryptoTransform cryptor = AES.CreateDecryptor(aesObject.Key, aesObject.IV);
+                byte[] decryptedBytes = cryptor.TransformFinalBlock(content, 0, content.Length);
+                
+                cryptor.Dispose();
+                return Encoding.ASCII.GetString(decryptedBytes);
             } catch(CryptographicException)
             {
+                Platform.Log("The key is likely to be invalid", LogLevel.WARN);
                 return string.Empty;
             }
+        }
 
-            cryptor.Dispose();
-            return Encoding.ASCII.GetString(decryptedBytes);
+        /// <summary>
+        /// Returns whether the given key is correct for a specified <see cref="AESObject"/>.
+        /// </summary>
+        /// <param name="content">The raw key content.</param>
+        /// <param name="aesObject">The AES object.</param>
+        /// <returns><see cref="bool"/></returns>
+        public static bool VerifyKey(string content, AESObject aesObject)
+        {
+            Aes AES = Aes.Create();
+            ICryptoTransform cryptor = AES.CreateEncryptor(aesObject.Key, aesObject.IV);
+
+            byte[] data           = Encoding.ASCII.GetBytes(content);
+            byte[] encryptedBytes = cryptor.TransformFinalBlock(data, 0, data.Length);
+            byte[] contentKey     = Convert.FromBase64String(aesObject.Data);
+
+            // Comparing using the == operator will return false even for two arrays with identical content.
+            // The SequenceEqual method will correctly compare the content of the two arrays.
+            return encryptedBytes.SequenceEqual(contentKey);
         }
     }
 
     public class AESObject
     {
         /// <summary>
-        /// The cipher <see cref="string"/>.
+        /// The cipher string.
         /// </summary>
         public string Data { get; set; }
         /// <summary>
@@ -72,16 +86,11 @@ namespace Server.Common.Encryption
         /// </summary>
         public byte[] Key { get; set; }
 
-        public AESObject()
-        {
-
-        }
-
         public AESObject(string data, byte[] iv, byte[] key)
         {
             Data = data;
-            IV = iv;
-            Key = key;
+            IV   = iv;
+            Key  = key;
         }
     }
 }

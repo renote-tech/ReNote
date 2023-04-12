@@ -1,0 +1,63 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="960" d:DesignHeight="540"
+             x:Class="Client.Layouts.UserLayout">
+	<UserControl.Styles>
+		<Style Selector="TextBlock">
+			<Setter Property="Foreground" Value="{DynamicResource BaseForeground}"/>
+		</Style>
+		<Style Selector="Grid">
+			<Setter Property="Background" Value="{DynamicResource BaseToolBar}"/>
+		</Style>
+		<Style Selector="Button">
+			<Setter Property="Foreground" Value="{DynamicResource BaseForeground}"/>
+		</Style>
+		<Style Selector="Button:pointerover /template/ ContentPresenter">
+			<Setter Property="TextBlock.Foreground" Value="{DynamicResource BaseForeground}"/>
+		</Style>
+		<Style Selector="Button">
+			<Setter Property="Background" Value="{DynamicResource BaseButton}"/>
+		</Style>
+		<Style Selector="Button:pointerover /template/ ContentPresenter">
+			<Setter Property="Background" Value="{DynamicResource BaseButtonHover}"/>
+		</Style>
+		<Style Selector="Button:pressed /template/ ContentPresenter">
+			<Setter Property="Background" Value="{DynamicResource BaseButtonPress}"/>
+		</Style>
+		<Style Selector="Border.topBarButton">
+			<Setter Property="Background" Value="{DynamicResource BaseButton}"/>
+		</Style>
+		<Style Selector="Border.topBarButton:pointerover">
+			<Setter Property="Background" Value="{DynamicResource BaseButtonHover}"/>
+		</Style>
+	</UserControl.Styles>
+	<Panel>
+		<Panel VerticalAlignment="Top" Background="{DynamicResource BaseTopBar}" Height="60">
+			<Border Classes="topBarButton" x:Name="m_MenuButton" HorizontalAlignment="Left" Margin="10, 10, 10, 10" CornerRadius="32" Width="48" Height="48" PointerReleased="OnMenuButtonClicked">
+				<TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="avares://Client/Assets/segfluicons.ttf#Segoe Fluent Icons" FontSize="24" Text="&#xE700;"/>
+			</Border>
+			<Border Classes="topBarButton" x:Name="m_HomeButton" HorizontalAlignment="Left" Margin="70, 10, 10, 10" CornerRadius="32" Width="48" Height="48" PointerReleased="OnHomeButtonClicked">
+				<TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="avares://Client/Assets/segfluicons.ttf#Segoe Fluent Icons" FontSize="24" Text="&#xE80F;"/>
+			</Border>
+			<Border x:Name="m_ProfilePicture" HorizontalAlignment="Right" Margin="0, 0, 70, 0" CornerRadius="32" Width="48" Height="48" PointerReleased="OnProfilePictureClicked">
+				<Border.Background>
+					<ImageBrush Stretch="Fill" Source="/Assets/user.bmp"/>
+				</Border.Background>
+			</Border>
+			<Border Classes="topBarButton" x:Name="m_ExitButton" HorizontalAlignment="Right" Margin="10, 10, 10, 10" CornerRadius="32" Width="48" Height="48" PointerReleased="OnLogoutButtonClicked">
+				<TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="avares://Client/Assets/segfluicons.ttf#Segoe Fluent Icons" FontSize="24" Text="&#xE7e8;"/>
+			</Border>
+			<TextBlock x:Name="m_SchoolName" HorizontalAlignment="Center" TextAlignment="Center" Margin="10"/>
+			<TextBlock x:Name="m_RealName" HorizontalAlignment="Center" TextAlignment="Center" Margin="57" Height="50"/>
+		</Panel>
+		<TextBlock x:Name="m_PageName" HorizontalAlignment="Right" Margin="0, 67, 8, 0" Foreground="{DynamicResource BaseForegroundTitle}" ZIndex="1"/>
+		<Grid x:Name="m_ToolBar" VerticalAlignment="Top" Margin="0, 60, 0, 0" Height="30"/>
+		<Panel x:Name="m_Page" VerticalAlignment="Stretch" Background="#1f1f1f" Margin="0, 90, 0, 0"/>
+		<Panel x:Name="m_MenuSelector" IsVisible="False">
+			<Panel x:Name="m_MenuMask" VerticalAlignment="Top" Margin="0, 60" HorizontalAlignment="Left" Background="#7f000000" Width="{Binding $parent.Bounds.Width}" Height="{Binding $parent.Bounds.Height}" PointerReleased="OnMenuButtonClicked"/>
+			<Border VerticalAlignment="Center" Margin="0, 30, 0, 0" HorizontalAlignment="Center" Background="#323232" Width="550" Height="425" CornerRadius="16"/>
+		</Panel>
+	</Panel>
+</UserControl>

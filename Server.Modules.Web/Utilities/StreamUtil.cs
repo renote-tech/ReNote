@@ -1,23 +1,21 @@
-﻿using Newtonsoft.Json;
-using Server.Common.Utilities;
+﻿using System;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace Server.Web.Utilities
 {
     internal class StreamUtil
     {
         /// <summary>
-        /// Converts a <see cref="Stream"/> to <typeparamref name="T"/>.
+        /// Retrieves the data from a <see cref="Stream"/> as a string.
         /// </summary>
         /// <typeparam name="T">The new type of the <see cref="Stream"/>'s data.</typeparam>
         /// <param name="stream">The stream to be converted.</param>
-        /// <returns><typeparamref name="T"/></returns>
-        public static async Task<T> Convert<T>(Stream stream) where T : class
+        /// <returns><see cref="string"/></returns>
+        public static async Task<string> GetStringAsync(Stream stream)
         {
             using StreamReader strreamReader = new StreamReader(stream);
-            string content = await strreamReader.ReadToEndAsync();
-            if (!JsonUtil.ValiditateJson(content))
-                return null;
-            return JsonConvert.DeserializeObject<T>(content);
+            return await strreamReader.ReadToEndAsync();
         }
     }
 }

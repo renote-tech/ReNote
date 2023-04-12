@@ -32,7 +32,7 @@
         /// <summary>
         /// The server version name.
         /// </summary>
-        public const string VersionName = "ProtoServer";
+        public const string VersionName = "BlackSun";
         /// <summary>
         /// The server API version.
         /// </summary>

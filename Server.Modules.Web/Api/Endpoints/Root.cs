@@ -1,9 +1,10 @@
-﻿using Server.Web.Api;
+﻿using System.Threading.Tasks;
+using Server.Web.Api;
 using Server.Web.Utilities;
 
 namespace Server.ReNote.Api
 {
-    public class Root
+    internal class Root
     {
         /// <summary>
         /// Operates a request.

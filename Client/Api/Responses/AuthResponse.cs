@@ -2,7 +2,7 @@
 
 namespace Client.Api.Responses
 {
-    internal class AuthResponse : BaseResponse
+    internal class AuthResponse : Response
     {
         [JsonProperty("data", Order = 10)]
         private AuthData m_Data;
@@ -18,7 +18,7 @@ namespace Client.Api.Responses
         }
     }
 
-    internal class AuthData
+    public class AuthData
     {
         [JsonProperty("sessionId")]
         private long m_SessionId;
@@ -37,24 +37,14 @@ namespace Client.Api.Responses
             m_SessionId = sessionId;
         }
 
-        public void SetUserId(long userId)
-        {
-            m_UserId = userId;
-        }
-
-        public void SetAccountType(int accountType) 
-        {
-            m_AccountType = accountType;
-        }
-
-        public void SetAuthToken(string authToken)
-        {
-            m_AuthToken = authToken;
-        }
-
         public long GetSessionId()
         {
             return m_SessionId;
+        }
+
+        public void SetUserId(long userId)
+        {
+            m_UserId = userId;
         }
 
         public long GetUserId()
@@ -62,9 +52,18 @@ namespace Client.Api.Responses
             return m_UserId;
         }
 
+        public void SetAccountType(int accountType) 
+        {
+            m_AccountType = accountType;
+        }
         public int GetAccountType()
         {
             return m_AccountType;
+        }
+
+        public void SetAuthToken(string authToken)
+        {
+            m_AuthToken = authToken;
         }
 
         public string GetAuthToken()

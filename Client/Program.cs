@@ -1,5 +1,5 @@
+using System;
 using Avalonia;
-using Client.Utilities;
 
 namespace Client
 {
@@ -25,11 +25,11 @@ namespace Client
         }
 
         // DEVELOPMENT ONLY
-        public AppBuilder BuildAvaloniaApp()
+        public static AppBuilder BuildAvaloniaApp()
         {
             return AppBuilder.Configure<App>()
-                     .UsePlatformDetect()
-                     .LogToTrace();
+                             .UsePlatformDetect()
+                             .LogToTrace();
         }
     }
 }

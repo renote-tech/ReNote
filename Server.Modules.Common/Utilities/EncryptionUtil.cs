@@ -13,7 +13,7 @@ namespace Server.Common.Utilities
         public static async Task<byte[]> ComputeSha256Async(string content)
         {
             byte[] data = Encoding.ASCII.GetBytes(content);
-            return await Task.Run(() => SHA256.Create().ComputeHash(data));
+            return await Task.Run(() => SHA256.HashData(data));
         }
 
         /// <summary>

@@ -23,7 +23,7 @@ namespace Server.Common
         public static ReNoteConfig ReNoteConfig { get; set; }
 
         /// <summary>
-        /// Loads all of the configurations including <see cref="GlobalConfig"/>, <see cref="WebConfig"/> and <see cref="ReNoteConfig"/>.
+        /// Loads all of the specified configurations.
         /// </summary>
         public static void LoadAllConfigurations()
         {
@@ -31,7 +31,7 @@ namespace Server.Common
                 return;
 
             GlobalConfig = LoadConfiguration<GlobalConfig>("Global");
-            WebConfig = LoadConfiguration<WebConfig>("Web");
+            WebConfig    = LoadConfiguration<WebConfig>("Web");
             ReNoteConfig = LoadConfiguration<ReNoteConfig>("ReNote");
 
             IsConfigurationsLoaded = true;
@@ -67,7 +67,7 @@ namespace Server.Common
         }
 
         /// <summary>
-        /// Saves all of the configurations including <see cref="GlobalConfig"/>, <see cref="WebConfig"/> and <see cref="ReNoteConfig"/>.
+        /// Saves all of the specified configurations.
         /// </summary>
         public static void SaveAllConfigurations()
         {
@@ -112,7 +112,10 @@ namespace Server.Common
         [JsonProperty("socketPort")]
         public ushort SocketPort { get; set; }
 
-        public GlobalConfig() => Prefixes = Array.Empty<string>();
+        public GlobalConfig() 
+        {
+            Prefixes = Array.Empty<string>(); 
+        }
     }
 
     public class WebConfig

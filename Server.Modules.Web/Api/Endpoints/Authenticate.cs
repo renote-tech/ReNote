@@ -1,15 +1,17 @@
-﻿using Server.Common.Encryption;
+﻿using System.Threading.Tasks;
+using Server.Common.Encryption;
 using Server.Common.Utilities;
 using Server.ReNote.Data;
 using Server.ReNote.Management;
 using Server.Web.Api;
 using Server.Web.Api.Requests;
 using Server.Web.Api.Responses;
+using Newtonsoft.Json;
 using Server.Web.Utilities;
 
 namespace Server.ReNote.Api
 {
-    public class Authenticate
+    internal class Authenticate
     {
         /// <summary>
         /// Operates a request.
@@ -34,25 +36,29 @@ namespace Server.ReNote.Api
         /// <returns><see cref="ApiResponse"/></returns>
         private static async Task<ApiResponse> Post(ApiRequest req)
         {
-            AuthRequest reqBody = await StreamUtil.Convert<AuthRequest>(req.Body);
+            string contentBody = await StreamUtil.GetStringAsync(req.Body);
+            if (string.IsNullOrWhiteSpace(contentBody))
+                return await ApiUtil.SendAsync(400, ApiMessages.NullOrEmpty("username", "password"));
 
-            if (reqBody == null)
+            if (!JsonUtil.ValiditateJson(contentBody))
                 return await ApiUtil.SendAsync(400, ApiMessages.InvalidJson());
+
+            AuthRequest reqBody = JsonConvert.DeserializeObject<AuthRequest>(contentBody);
 
             if(string.IsNullOrWhiteSpace(reqBody.Username) || string.IsNullOrWhiteSpace(reqBody.Password))
                 return await ApiUtil.SendAsync(400, ApiMessages.NullOrEmpty("username", "password"));
 
             if (UserManager.GetUserId(reqBody.Username) == -1)
-                return await ApiUtil.SendAsync(400, ApiMessages.UserNotExists());
+                return await ApiUtil.SendAsync(400, ApiMessages.InvalidUsernameOrPassword());
 
             User userData = UserManager.GetUser(reqBody.Username);
             byte[] hashPassword = await EncryptionUtil.ComputeSha256Async(reqBody.Password);
             AESObject aesObject = new AESObject(userData.SecurePassword, iv: userData.IVPassword, key: hashPassword);
 
-            if (AES.Decrypt(aesObject) == string.Empty)
-                return await ApiUtil.SendAsync(401, ApiMessages.InvalidPassword());
+            if (!AES.VerifyKey(reqBody.Password, aesObject))
+                return await ApiUtil.SendAsync(401, ApiMessages.InvalidUsernameOrPassword());
 
-            GlobalSession session = await SessionManager.CreateSessionAsync(userData.UserId);
+            Session session = await SessionManager.CreateSessionAsync(userData.UserId);
             AuthResponse response = new AuthResponse()
             {
                 SessionId   = session.SessionId,

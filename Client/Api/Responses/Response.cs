@@ -2,7 +2,7 @@
 
 namespace Client.Api.Responses
 {
-    internal class BaseResponse
+    internal class Response
     {
         [JsonProperty("status")]
         private int m_Status;

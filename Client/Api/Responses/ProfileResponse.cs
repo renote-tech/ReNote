@@ -2,7 +2,7 @@
 
 namespace Client.Api.Responses
 {
-    internal class ProfileResponse : BaseResponse
+    internal class ProfileResponse : Response
     {
         [JsonProperty("data", Order = 10)]
         private ProfileData m_Data;
@@ -22,6 +22,9 @@ namespace Client.Api.Responses
     {
         [JsonProperty("realName")]
         private string m_RealName;
+
+        [JsonProperty("teamId")]
+        private int m_TeamId;
 
         [JsonProperty("profilePicture")]
         private string m_ProfilePicture;
@@ -43,9 +46,29 @@ namespace Client.Api.Responses
             m_RealName = realName;
         }
 
+        public string GetRealName()
+        {
+            return m_RealName;
+        }
+
+        public void SetTeamId(int teamId)
+        {
+            m_TeamId = teamId;
+        }
+
+        public int GetTeamId()
+        {
+            return m_TeamId;
+        }
+
         public void SetProfilePicture(string profilePicture)
         {
             m_ProfilePicture = profilePicture;
+        }
+
+        public string GetProfilePicture()
+        {
+            return m_ProfilePicture;
         }
 
         public void SetEmail(string email)
@@ -53,35 +76,14 @@ namespace Client.Api.Responses
             m_Email = email;
         }
 
-        public void SetPhoneNumber(string phoneNumber)
-        {
-            m_PhoneNumber = phoneNumber;
-        }
-
-        
-        public void SetBirthday(string birthday)
-        {
-            m_Birthday = birthday;
-        }
-
-        public void SetLastConnection(long lastConnection)
-        {
-            m_LastConnection = lastConnection;
-        }
-
-        public string GetRealName()
-        {
-            return m_RealName;
-        }
-
-        public string GetProfilePicture()
-        {
-            return m_ProfilePicture; 
-        }
-
         public string GetEmail()
         {
             return m_Email;
+        }
+
+        public void SetPhoneNumber(string phoneNumber)
+        {
+            m_PhoneNumber = phoneNumber;
         }
 
         public string GetPhoneNumber()
@@ -89,9 +91,19 @@ namespace Client.Api.Responses
             return m_PhoneNumber;
         }
 
+        public void SetBirthday(string birthday)
+        {
+            m_Birthday = birthday;
+        }
+
         public string GetBirthday()
         {
             return m_Birthday;
+        }
+
+        public void SetLastConnection(long lastConnection)
+        {
+            m_LastConnection = lastConnection;
         }
 
         public long GetLastConnection()

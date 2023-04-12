@@ -1,4 +1,6 @@
-﻿using Server.ReNote.Data;
+﻿using Newtonsoft.Json;
+using Server.Common.Utilities;
+using Server.ReNote.Data;
 
 namespace Server.ReNote.Utilities
 {
@@ -10,16 +12,21 @@ namespace Server.ReNote.Utilities
         /// <param name="root">The name of the <see cref="Container"/>.</param>
         /// <param name="key">The key of the item.</param>
         /// <param name="value">The value of the item.</param>
-        public static void Set(string root, string key, string value)
+        public static void Set(string root, string key, object valueData, string secondaryKey = default)
         {
             if (Server.Database[root] == null)
                 Server.Database.AddContainer(root);
+
+            string value = JsonConvert.SerializeObject(valueData);
 
             bool itemExists = ItemExists(root, key);
             if (itemExists)
                 Server.Database[root][key] = value;
             else
                 Server.Database[root].AddItem(key, value);
+
+            if (secondaryKey != default)
+                Server.Database[root].AddItem(secondaryKey, key);
         }
 
         /// <summary>
@@ -50,7 +57,29 @@ namespace Server.ReNote.Utilities
             if (Server.Database[root][key] == null)
                 return null;
 
-            return (string)Server.Database[root][key];
+            return Server.Database[root][key];
+        }
+
+        /// <summary>
+        /// Get data from the <see cref="Database"/> as <typeparamref name="T"/>
+        /// </summary>
+        /// <typeparam name="T">The specified type.</typeparam>
+        /// <param name="root">The name of the <see cref="Container"/>.</param>
+        /// <param name="key">The key of the item.</param>
+        /// <returns><typeparamref name="T"/></returns>
+        public static T GetAs<T>(string root, string key) where T : class
+        {
+            if (Server.Database[root] == null)
+                return null;
+
+            if (Server.Database[root][key] == null)
+                return null;
+
+            string data = Server.Database[root][key];
+            if (string.IsNullOrWhiteSpace(data) || !JsonUtil.ValiditateJson(data))
+                return null;
+
+            return JsonConvert.DeserializeObject<T>(data);
         }
 
         /// <summary>

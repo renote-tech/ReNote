@@ -5,43 +5,13 @@ namespace Client.ReNote
     internal class School
     {
         [JsonProperty("schoolName")]
-        private string m_SchoolName;
+        public string SchoolName { get; set; }
         
         [JsonProperty("schoolType")]
-        private SchoolType m_SchoolType;
+        public SchoolType SchoolType { get; set; }
 
         [JsonProperty("schoolLocation")]
-        private string m_SchoolLocation;
-
-        public void SetSchoolName(string schoolName)
-        {
-            m_SchoolName = schoolName;
-        }
-
-        public void SetSchoolType(SchoolType schoolType)
-        {
-            m_SchoolType = schoolType;
-        }
-
-        public void SetSchoolLocation(string schoolLocation) 
-        {
-            m_SchoolLocation = schoolLocation;
-        }
-
-        public string GetSchoolName()
-        {
-            return m_SchoolName;
-        }
-
-        public SchoolType GetSchoolType()
-        {
-            return m_SchoolType;
-        }
-
-        public string GetSchoolLocation()
-        {
-            return m_SchoolLocation;
-        }
+        public string SchoolLocation { get; set; }
     }
 
     public enum SchoolType
