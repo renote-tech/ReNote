@@ -12,7 +12,7 @@
 </p>
 
 # Build ReNote
-Use the `cd` command to navigate to one of the following directories: `Client`, `Server`, `Server.Database.CLI` or `Server.Resource.GUI`. 
+Use the `cd` command to navigate to one of the following directories: `Client`, `Server`, `Server.Database.GUI` or `Server.Resource.GUI`. 
 Next run the command below for the corresponding platform.
 
 ### Windows
