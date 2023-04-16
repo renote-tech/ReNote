@@ -6,6 +6,8 @@ using Client.Api.Responses;
 using Client.Api;
 using Client.ReNote;
 using Client.Managers;
+using Avalonia.Markup.Xaml.MarkupExtensions;
+using System.Globalization;
 
 namespace Client.Pages
 {
@@ -42,31 +44,27 @@ namespace Client.Pages
 
             if (!string.IsNullOrWhiteSpace(Session.Email))
                 m_Email.Text = Session.Email;
-            else
-                m_Email.Text = "[No email available]";
 
             if (!string.IsNullOrWhiteSpace(Session.PhoneNumber))
                 m_PhoneNumber.Text = Session.PhoneNumber;
-            else
-                m_PhoneNumber.Text = "[No phone number available]";
 
             m_UserId.Text = $"ID: {Session.UserId}";
 
             if (Session.LastConnection == 0)
             {
-                m_LastConnection.Text = "That's the first time you logged to this account!\nWelcome to ReNote!";
+                m_LastConnection[!TextBlock.TextProperty] = new DynamicResourceExtension("AccountWelcome");
                 return;
             }
 
             DateTimeOffset lastConnection = DateTimeOffset.FromUnixTimeMilliseconds(Session.LastConnection).ToLocalTime();
-            m_LastConnection.Text = $"{lastConnection:MMMM d\\t\\h yyyy} at {lastConnection:h:mm tt}";
+            CultureInfo cultureInfo = new CultureInfo(LanguageManager.GetCurrentLanguage());
+            m_LastConnection.Text = lastConnection.ToString("F", cultureInfo);
         }
 
         private async void OnLayoutInitialized(object sender, EventArgs e)
         {
-
-            m_LanguageSelector.Items = Language.LanguageList;
-            m_Version.Text = $"Version {Platform.VersionName}/{Platform.Version}";
+            m_LanguageSelector.Items = LanguageManager.LanguageList;
+            m_Version.Text = $"Ver. {Platform.Version}";
 
             await ApiService.GetThemeList((HttpStatusCode statusCode, ThemeResponse response) =>
             {
@@ -143,6 +141,18 @@ namespace Client.Pages
             ThemeManager.SetTheme(theme);
 
             m_ThemeList.SelectedItems.Clear();
+        }
+
+        private void OnLanguageChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Language selectedLanguage = (Language)m_LanguageSelector.SelectedItem;
+            LanguageManager.SetLanguage(selectedLanguage.LangCode);
+
+            DateTimeOffset lastConnection = DateTimeOffset.FromUnixTimeMilliseconds(Session.LastConnection).ToLocalTime();
+            CultureInfo cultureInfo = new CultureInfo(LanguageManager.GetCurrentLanguage());
+            m_LastConnection.Text = lastConnection.ToString("F", cultureInfo);
+
+            // save setting via API
         }
     }
 }

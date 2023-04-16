@@ -1,4 +1,9 @@
-﻿using ProtoBuf;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using ProtoBuf;
 using Server.Common;
 using Server.Common.Utilities;
 #if !DEBUG
@@ -13,7 +18,7 @@ namespace Server.ReNote.Data
         /// <summary>
         /// The location of the database file.
         /// </summary>
-        public string SaveLocation { get; set; }
+        public string FileLocation { get; set; }
 
         /// <summary>
         /// External boolean property.
@@ -21,10 +26,16 @@ namespace Server.ReNote.Data
         public bool NeedSave { get; set; }
 
         /// <summary>
+        /// Used with the lock() statement; ensure one action at the time.
+        /// </summary>
+        internal readonly object Locker = new object();
+
+        /// <summary>
         /// The <see cref="Database"/>'s instance <see cref="Container"/> list.
         /// </summary>
         [ProtoMember(1)]
-        private List<Container> containers = new List<Container>();
+        private List<Container> m_Containers = new List<Container>();
+
 
         /// <summary>
         /// Returns a <see cref="Container"/> class.
@@ -35,21 +46,27 @@ namespace Server.ReNote.Data
         {
             get
             {
-                for (int i = 0; i < containers.Count; i++)
+                lock (Locker)
                 {
-                    if (containers[i].Name == name)
-                        return containers[i];
+                    for (int i = 0; i < m_Containers.Count; i++)
+                    {
+                        if (m_Containers[i].Name == name)
+                            return m_Containers[i];
+                    }
+                    return null;
                 }
-                return null;
             }
             set
             {
-                for (int i = 0; i < containers.Count; i++)
+                lock (Locker)
                 {
-                    if (containers[i].Name != name)
-                        continue;
+                    for (int i = 0; i < m_Containers.Count; i++)
+                    {
+                        if (m_Containers[i].Name != name)
+                            continue;
 
-                    containers[i] = value;
+                        m_Containers[i] = value;
+                    }
                 }
             }
         }
@@ -60,37 +77,48 @@ namespace Server.ReNote.Data
         /// <param name="containerList">The container list.</param>
         public void SetContainerList(Container[] containerList)
         {
-            containers = containerList.ToList();
+            lock (Locker)
+            {
+                m_Containers = containerList.ToList();
+            }
         }
 
         /// <summary>
-        /// Creates and adds a <see cref="Container"/> to the <see cref="containers"/> list.
+        /// Creates and adds a <see cref="Container"/> to the <see cref="m_Containers"/> list.
         /// </summary>
         /// <param name="containerName">The <see cref="Container"/> name.</param>
         public void AddContainer(string containerName)
         {
-            if (!string.IsNullOrWhiteSpace(containerName))
-                containers.Add(new Container(containerName));
+            lock (Locker)
+            {
+                if (!string.IsNullOrWhiteSpace(containerName))
+                    return;
+
+                m_Containers.Add(new Container(this, containerName));
+            }
         }
 
         /// <summary>
-        /// Removes a <see cref="Container"/> from the <see cref="containers"/> list.
+        /// Removes a <see cref="Container"/> from the <see cref="m_Containers"/> list.
         /// Returns whether the operation was successful or not.
         /// </summary>
         /// <param name="containerName"></param>
         /// <returns><see cref="bool"/></returns>
         public bool RemoveContainer(string containerName)
         {
-            if (string.IsNullOrWhiteSpace(containerName))
-                return false;
-
-            for (int i = 0; i < containers.Count; i++)
+            lock (Locker)
             {
-                if (containers[i].Name == containerName)
-                    return containers.Remove(containers[i]);
-            }
+                if (string.IsNullOrWhiteSpace(containerName))
+                    return false;
 
-            return false;
+                for (int i = 0; i < m_Containers.Count; i++)
+                {
+                    if (m_Containers[i].Name == containerName)
+                        return m_Containers.Remove(m_Containers[i]);
+                }
+
+                return false;
+            }
         }
 
         /// <summary>
@@ -99,96 +127,123 @@ namespace Server.ReNote.Data
         /// <param name="containerName">The container name.</param>
         public void ClearContainerContent(string containerName)
         {
-            if (string.IsNullOrWhiteSpace(containerName))
-                return;
-
-            for (int i = 0; i < containers.Count; i++)
+            lock (Locker)
             {
-                if (containers[i].Name == containerName)
-                    containers[i].Clear();
+                if (string.IsNullOrWhiteSpace(containerName))
+                    return;
+
+                for (int i = 0; i < m_Containers.Count; i++)
+                {
+                    if (m_Containers[i].Name == containerName)
+                        m_Containers[i].Clear();
+                }
             }
         }
 
         public bool IsContainerExists(string containerName)
         {
-            for (int i = 0; i < containers.Count; i++)
+            lock (Locker) 
             {
-                if (containers[i].Name == containerName)
-                    return true;
-            }
+                for (int i = 0; i < m_Containers.Count; i++)
+                {
+                    if (m_Containers[i].Name == containerName)
+                        return true;
+                }
 
-            return false;
+                return false;
+            }
         }
 
         /// <summary>
-        /// Returns all the containers within the <see cref="containers"/> list.
+        /// Returns all the containers within the <see cref="m_Containers"/> list.
         /// </summary>
         /// <returns><see cref="Container"/>[]</returns>
         public Container[] GetContainers()
         {
-            return containers.ToArray();
+            lock (Locker)
+            {
+                return m_Containers.ToArray();
+            }
         }
 
         /// <summary>
-        /// Clears the <see cref="containers"/> list.
+        /// Clears the <see cref="m_Containers"/> list.
         /// </summary>
         public void Clear()
         {
-            containers.Clear();
+            lock (Locker)
+            {
+                m_Containers.Clear();
+            }
         }
 
         /// <summary>
-        /// Returns whether the <see cref="containers"/> list is empty;
+        /// Returns whether the <see cref="m_Containers"/> list is empty;
         /// </summary>
         /// <returns><see cref="bool"/></returns>
         public bool IsEmpty()
         {
-            return containers.Count == 0;
+            lock (Locker)
+            {
+                return m_Containers.Count == 0;
+            }
         }
 
         /// <summary>
-        /// Loads the <see cref="containers"/> list from a database file.
+        /// Loads the <see cref="m_Containers"/> list from a database file.
         /// Returns whether the file was actually loaded.
         /// </summary>
         /// <returns><see cref="bool"/></returns>
         public bool Load()
         {
-            if (string.IsNullOrWhiteSpace(SaveLocation))
-                return false;
-
-            if (FileUtil.IsFileBeingUsed(SaveLocation))
-                return false;
-
-            if (!File.Exists(SaveLocation))
-                return false;
-
-            try
+            lock (Locker)
             {
-#if DEBUG
-                byte[] data = File.ReadAllBytes(SaveLocation);
-                using MemoryStream stream = new MemoryStream(data);
-                Database database = Serializer.Deserialize<Database>(stream);
+                if (string.IsNullOrWhiteSpace(FileLocation))
+                    return false;
 
-                containers = database.containers;
+                if (FileUtil.IsFileBeingUsed(FileLocation))
+                    return false;
+
+                if (!File.Exists(FileLocation))
+                    return false;
+
+                try
+                {
+#if DEBUG
+                    byte[] data = File.ReadAllBytes(FileLocation);
+                    using MemoryStream stream = new MemoryStream(data);
+                    Database database = Serializer.Deserialize<Database>(stream);
+
+                    m_Containers = database.m_Containers;
+
+                    for (int i = 0; i < m_Containers.Count; i++)
+                        m_Containers.ElementAt(i).SetParent(this);
 #else
 
-                byte[] data = File.ReadAllBytes(SaveLocation);
-                using MemoryStream stream = new MemoryStream(data);
-                Database database = Serializer.Deserialize<Database>(stream);
+                    byte[] data = File.ReadAllBytes(FileLocation);
+                    using MemoryStream stream = new MemoryStream(data);
+                    Database database = Serializer.Deserialize<Database>(stream);
 
-                /*byte[] encryptedData = File.ReadAllBytes(SaveLocation);
-                byte[] decryptedData = ByteShifting.Decrypt(encryptedData);
-                using MemoryStream stream = new MemoryStream(decryptedData);
-                Database database = Serializer.Deserialize<Database>(stream);*/
-                containers = database.containers;
+                    /*
+                     * byte[] encryptedData = File.ReadAllBytes(SaveLocation);
+                     * byte[] decryptedData = ByteShifting.Decrypt(encryptedData);
+                     * using MemoryStream stream = new MemoryStream(decryptedData);
+                     * Database database = Serializer.Deserialize<Database>(stream);
+                    */
+
+                    m_Containers = database.m_Containers;
+
+                    for (int i = 0; i < m_Containers.Count; i++)
+                        m_Containers.ElementAt(i).SetParent(this);
 #endif
-            }
-            catch (ProtoException)
-            {
-                return false;
-            }
+                }
+                catch (ProtoException)
+                {
+                    return false;
+                }
 
-            return true;
+                return true;
+            }
         }
 
         /// <summary>
@@ -201,29 +256,7 @@ namespace Server.ReNote.Data
             if(doBackup)
                 await BackupAsync();
 
-            return await SaveAsync(SaveLocation);
-        }
-
-        /// <summary>
-        /// Saves the <see cref="Database"/> to a database file.
-        /// </summary>
-        /// <param name="saveLocation">The file location to save the <see cref="Database"/>.</param>
-        private async Task<bool> SaveAsync(string saveLocation)
-        {
-            if (IsEmpty())
-                return false;
-
-            if (FileUtil.IsFileBeingUsed(saveLocation))
-                return false;
-
-            using MemoryStream stream = new MemoryStream();
-            Serializer.Serialize(stream, this);
-#if DEBUG
-            await File.WriteAllBytesAsync(saveLocation, stream.ToArray());
-#else
-            await ByteShifting.EncryptAsync(stream.ToArray(), saveLocation);
-#endif
-            return true;
+            return await SaveAsync(FileLocation);
         }
 
         /// <summary>
@@ -241,6 +274,50 @@ namespace Server.ReNote.Data
 
             return await SaveAsync(path);
         }
+
+        /// <summary>
+        /// Saves the <see cref="Database"/> to a database file.
+        /// </summary>
+        /// <param name="saveLocation">The file location to save the <see cref="Database"/>.</param>
+        public bool Save()
+        {
+            if (IsEmpty())
+                return false;
+
+            if (FileUtil.IsFileBeingUsed(FileLocation))
+                return false;
+
+            using MemoryStream stream = new MemoryStream();
+            Serializer.Serialize(stream, this);
+#if DEBUG
+            File.WriteAllBytes(FileLocation, stream.ToArray());
+#else
+            ByteShifting.Encrypt(stream.ToArray(), saveLocation);
+#endif
+            return true;
+        }
+
+        /// <summary>
+        /// Saves the <see cref="Database"/> to a database file asynchronously.
+        /// </summary>
+        /// <param name="saveLocation">The file location to save the <see cref="Database"/>.</param>
+        private async Task<bool> SaveAsync(string saveLocation)
+        {
+            if (IsEmpty())
+                return false;
+
+            if (FileUtil.IsFileBeingUsed(saveLocation))
+                return false;
+
+            using MemoryStream stream = new MemoryStream();
+            Serializer.Serialize(stream, this);
+#if DEBUG
+            await File.WriteAllBytesAsync(saveLocation, stream.ToArray());
+#else
+                await ByteShifting.EncryptAsync(stream.ToArray(), saveLocation);
+#endif
+            return true;
+        }
     }
 
     [ProtoContract]
@@ -256,13 +333,27 @@ namespace Server.ReNote.Data
         /// The dictionary that contains all of the items.
         /// </summary>
         [ProtoMember(2)]
-        private Dictionary<string, string> items = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> m_Items = new Dictionary<string, string>();
 
+        /// <summary>
+        /// Parent database of that container instance.
+        /// </summary>
+        private Database m_Parent;
+
+        /// <summary>
+        /// Parameterless constructor required by ProtoBuf.
+        /// </summary>
         public Container()
         { }
 
-        public Container(string name)
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="parent">The parent database instance.</param>
+        /// <param name="name">The name of the contaienr.</param>
+        public Container(Database parent, string name)
         {
+            m_Parent = parent;
             Name = name;
         }
 
@@ -276,59 +367,62 @@ namespace Server.ReNote.Data
         {
             get
             {
-                if (items.ContainsKey(name))
-                    return items[name];
-               
-                return null;
+                lock (m_Parent.Locker)
+                {
+                    if (m_Items.ContainsKey(name))
+                        return m_Items[name];
+
+                    return null;
+                }
             }
             set
             {
-                if (value is not string)
-                    return;
+                lock (m_Parent.Locker)
+                {
+                    if (value is not string)
+                        return;
 
-                if (items.ContainsKey(name))
-                    items[name] = value;
+                    if (m_Items.ContainsKey(name))
+                        m_Items[name] = value;
+                }
             }
         }
 
         /// <summary>
-        /// Sets the item dictionary.
-        /// </summary>
-        /// <param name="itemDictionary">The item dictionary.</param>
-        public void SetItemList(Dictionary<string, string> itemDictionary)
-        {
-            items = itemDictionary;
-        }
-
-        /// <summary>
-        /// Adds an item to the <see cref="items"/> list.
+        /// Adds an item to the <see cref="m_Items"/> list.
         /// </summary>
         /// <param name="key">The key of the item.</param>
         /// <param name="value">The item value.</param>
         public void AddItem(string key, string value)
         {
-            if (string.IsNullOrWhiteSpace(key))
-                return;
+            lock (m_Parent.Locker)
+            {
+                if (string.IsNullOrWhiteSpace(key))
+                    return;
 
-            if (!items.ContainsKey(key))
-                items.Add(key, value);
+                if (!m_Items.ContainsKey(key))
+                    m_Items.Add(key, value);
+            }
         }
 
         /// <summary>
-        /// Removes an item from the <see cref="items"/> list. Returns whether the key has actually been removed.
+        /// Removes an item from the <see cref="m_Items"/> list. Returns whether the key has actually been removed.
         /// </summary>
         /// <param name="key">The key of the item to be removed.</param>
         /// <returns><see cref="bool"/></returns>
         public bool RemoveItem(string key)
         {
-            if (string.IsNullOrWhiteSpace(key))
-                return false;
+            lock (m_Parent.Locker)
+            {
+                if (string.IsNullOrWhiteSpace(key))
+                    return false;
 
-            if (!items.ContainsKey(key))
-                return false;
+                if (!m_Items.ContainsKey(key))
+                    return false;
 
-            items.Remove(key);
-            return true;
+                m_Items.Remove(key);
+                return true;
+            }
         }
 
         /// <summary>
@@ -338,13 +432,16 @@ namespace Server.ReNote.Data
         /// <returns><see cref="bool"/></returns>
         public bool ContainsItem(string key)
         {
-            if (string.IsNullOrWhiteSpace(key))
-                return false;
+            lock (m_Parent.Locker)
+            {
+                if (string.IsNullOrWhiteSpace(key))
+                    return false;
 
-            if (!items.ContainsKey(key))
-                return false;
+                if (!m_Items.ContainsKey(key))
+                    return false;
 
-            return true;
+                return true;
+            }
         }
 
         /// <summary>
@@ -353,7 +450,10 @@ namespace Server.ReNote.Data
         /// <returns>Dictionary[<see cref="string"/>, <see cref="string"/>]</returns>
         public Dictionary<string, string> GetItems()
         {
-            return items;
+            lock (m_Parent.Locker)
+            {
+                return m_Items;
+            }
         }
 
         /// <summary>
@@ -362,28 +462,46 @@ namespace Server.ReNote.Data
         /// <returns><see cref="string"/></returns>
         public string[] GetItemsValues()
         {
-            string[] docsValues = new string[items.Count];
-            for (int i = 0; i < docsValues.Length; i++)
-                docsValues[i] = items.ElementAt(i).Value;
+            lock (m_Parent.Locker)
+            {
+                string[] docsValues = new string[m_Items.Count];
+                for (int i = 0; i < docsValues.Length; i++)
+                    docsValues[i] = m_Items.ElementAt(i).Value;
 
-            return docsValues;
+                return docsValues;
+            }
         }
 
         /// <summary>
-        /// Clears all the content from the <see cref="items"/> dictionary.
+        /// Clears all the content from the <see cref="m_Items"/> dictionary.
         /// </summary>
         public void Clear()
         {
-            items.Clear();
+            lock (m_Parent.Locker)
+            {
+                m_Items.Clear();
+            }
         }
 
         /// <summary>
-        /// Returns whether the <see cref="items"/> list is empty.
+        /// Returns whether the <see cref="m_Items"/> list is empty.
         /// </summary>
         /// <returns><see cref="bool"/></returns>
         public bool IsEmpty()
         {
-            return items.Count == 0;
+            lock (m_Parent.Locker)
+            {
+                return m_Items.Count == 0;
+            }
+        }
+
+        /// <summary>
+        /// Sets the parent database instance.
+        /// </summary>
+        /// <param name="parent">The parent database.</param>
+        internal void SetParent(Database parent)
+        {
+            m_Parent = parent;
         }
     }
 }

@@ -62,7 +62,7 @@ namespace Server.Web.Api
                 apiContext.Response.ContentType = "application/json";
 
                 apiContext.Response.Headers.Add("Server", string.Empty);
-                apiContext.Response.Headers.Add("Server-Agent", ServerEnv.Agent);
+                apiContext.Response.Headers.Add("Server-Agent", ServerInfo.Agent);
                 apiContext.Response.Headers.Add("Access-Control-Allow-Origin", "*");
 
                 if (apiRequest.Method == "OPTIONS")
@@ -73,8 +73,15 @@ namespace Server.Web.Api
 
                 await apiContext.Response.OutputStream.WriteAsync(body);
                 apiContext.Response.KeepAlive = false;
-                apiContext.Response.OutputStream.Close();
-                apiContext.Response.Close();
+
+                try
+                {
+                    apiContext.Response.OutputStream.Close();
+                    apiContext.Response.Close();
+                } catch(Exception ex) when (ex is HttpListenerException)
+                {
+                    Platform.Log(ex.ToString(), LogLevel.ERROR);
+                }
 
 #if METRICS_ANALYSIS
                 long endTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();

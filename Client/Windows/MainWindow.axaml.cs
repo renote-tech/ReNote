@@ -1,5 +1,7 @@
+using Avalonia;
 using Avalonia.Controls;
 using Client.Layouts;
+using Client.Managers;
 
 namespace Client.Windows
 {
@@ -16,8 +18,8 @@ namespace Client.Windows
         {
             Instance = this;
 
-            Language.Initialize();
             Configuration.Load();
+            LanguageManager.Initialize();
 
             SetWindowContent(new SplashLayout());
         }

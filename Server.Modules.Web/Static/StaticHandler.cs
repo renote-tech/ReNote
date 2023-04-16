@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Threading.Tasks;
 using Server.Common;
 using Server.ReNote;
@@ -37,14 +38,21 @@ namespace Server.Web.Static
                 webResponse = await StaticStorage.GetResourceAsync(webContext.Request.RawUrl, userId);
 
                 webContext.Response.Headers.Add("Server", string.Empty);
-                webContext.Response.Headers.Add("Server-Agent", ServerEnv.Agent);
+                webContext.Response.Headers.Add("Server-Agent", ServerInfo.Agent);
 
                 webContext.Request.InputStream.Close();
                 
                 webContext.Response.OutputStream.Write(webResponse, 0, webResponse.Length);
                 webContext.Response.KeepAlive = false;
-                webContext.Response.OutputStream.Close();
-                webContext.Response.Close();
+
+                try
+                {
+                    webContext.Response.OutputStream.Close();
+                    webContext.Response.Close();
+                } catch(Exception ex) when (ex is HttpListenerException) 
+                {
+                    Platform.Log(ex.ToString(), LogLevel.ERROR);
+                }
             }
         }
     }

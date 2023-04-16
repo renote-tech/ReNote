@@ -1,5 +1,6 @@
 ﻿using Server.Common;
 using Server.ReNote.Data;
+using Server.ReNote.Management;
 
 namespace Server.ReNote
 {
@@ -33,9 +34,9 @@ namespace Server.ReNote
         /// </summary>
         public School SchoolInformation { get; set; }
         /// <summary>
-        /// The saving database timer.
+        /// The server worker timer.
         /// </summary>
-        public System.Timers.Timer DatabaseTimer { get; private set; }
+        public System.Timers.Timer ServerWorker { get; private set; }
 
         /// <summary>
         /// The private instance of the <see cref="Instance"/> field.
@@ -52,7 +53,7 @@ namespace Server.ReNote
 
         public Server()
         {
-            DatabaseTimer = new System.Timers.Timer(Constants.DB_SAVE_INTERVAL);
+            ServerWorker = new System.Timers.Timer(Constants.WORKER_INTERVAL);
         }
 
         /// <summary>
@@ -72,18 +73,31 @@ namespace Server.ReNote
                 SchoolType     = (SchoolType)Configuration.ReNoteConfig.SchoolType
             };
 
-            dbInstance.SaveLocation = Configuration.ReNoteConfig.DBSaveLocation;
+            dbInstance.FileLocation = Configuration.ReNoteConfig.DBLocation;
             bool isLoaded = dbInstance.Load();
             if (!isLoaded)
                 Platform.Log("Coudln't load the database", LogLevel.WARN);
 
-            DatabaseTimer.Elapsed  += async (sender, e) => await dbInstance.SaveAsync(true);
-            DatabaseTimer.AutoReset = true;
-            DatabaseTimer.Enabled   = true;
+            ServerWorker.Elapsed += OnWorkerServiceInvoked;
+            ServerWorker.AutoReset = true;
+            ServerWorker.Enabled   = true;
 
             Platform.Log("Initialized ReNote Server", LogLevel.INFO);
 
             initialized = true;
+        }
+
+        /// <summary>
+        /// Occurs when the worker interval has elapsed.
+        /// </summary>
+        /// <param name="sender">The event sender.</param>
+        /// <param name="e">The event arguments.</param>
+        private async void OnWorkerServiceInvoked(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            Platform.Log("[Worker] Cleaning and saving data", LogLevel.INFO);
+
+            SessionManager.Clean();
+            await dbInstance.SaveAsync(true);
         }
     }
 }

@@ -1,4 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Server.Common.Encryption;
 using Server.Common.Utilities;
 using Server.ReNote.Data;
 using Server.ReNote.Encryption;
@@ -16,25 +19,10 @@ namespace Server.ReNote.Management
         public static async Task<Session> CreateSessionAsync(long userId)
         {
             long sessionId = CreateSessionId();
-            string authToken = await ReNoteSecureToken.GenerateAsync(sessionId);
-            string sha256AuthToken = await EncryptionUtil.ComputeStringSha256Async(authToken);
+            string authToken = await ReNoteToken.GenerateAsync(sessionId);
+            string sha256AuthToken = await Sha256.ComputeStringAsync(authToken);
 
             User userData = UserManager.GetUser(userId);
-
-            Session session = new Session(sessionId, userId, authToken, userData.AccountType);
-            string[] sessions = DatabaseUtil.GetValues(Constants.DB_ROOT_SESSIONS);
-            
-
-            for(int i = 0; i < sessions.Length; i++)
-            {
-                string rawSession = sessions[i];
-                if (!JsonUtil.ValiditateJson(rawSession))
-                    continue;
-
-                Session cSession = JsonConvert.DeserializeObject<Session>(rawSession);
-                if (cSession.UserId == userId)
-                    DeleteSession(cSession.SessionId);
-            }
 
             long connectionTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             Session internalSession = new Session(sessionId, userId, sha256AuthToken, userData.AccountType)
@@ -42,12 +30,9 @@ namespace Server.ReNote.Management
                 RequestTimestamp = connectionTimestamp,
                 Connection       = connectionTimestamp
             };
-            DatabaseUtil.Set(Constants.DB_ROOT_SESSIONS, session.SessionId.ToString(), internalSession);
 
-            userData.LastConnection = connectionTimestamp;
-            DatabaseUtil.Set(Constants.DB_ROOT_USERS, userData.UserId.ToString(), userData);
-
-            return session;
+            DatabaseUtil.Set(Constants.DB_ROOT_SESSIONS, sessionId.ToString(), internalSession);
+            return new Session(sessionId, userId, authToken, userData.AccountType);
         }
 
         /// <summary>
@@ -94,6 +79,26 @@ namespace Server.ReNote.Management
         public static bool SessionExists(long sessionId)
         {
             return DatabaseUtil.ItemExists(Constants.DB_ROOT_SESSIONS, sessionId.ToString());
+        }
+
+        /// <summary>
+        /// Deletes sessions if they are expired.
+        /// </summary>
+        public static void Clean(bool checkExpiring = true)
+        {
+            string[] sessions = DatabaseUtil.GetValues(Constants.DB_ROOT_SESSIONS);
+            for (int i = 0; i < sessions.Length; i++)
+            {
+                string rawSession = sessions[i];
+                if (!JsonUtil.ValiditateJson(rawSession))
+                    continue;
+
+                Session session = JsonConvert.DeserializeObject<Session>(rawSession);
+                if (checkExpiring)
+                    session.HasExpired();
+                else
+                    DeleteSession(session.SessionId);
+            }
         }
 
         /// <summary>

@@ -3,65 +3,72 @@
 		<OutputType>Exe</OutputType>
 		<TargetFramework>net7.0</TargetFramework>
 		<Nullable>disable</Nullable>
-		<!--Avalonia doesen't support TrimMode=link currently,but we are working on that https://github.com/AvaloniaUI/Avalonia/issues/6892 -->
 		<TrimMode>copyused</TrimMode>
 		<BuiltInComInteropSupport>true</BuiltInComInteropSupport>
-		<FileVersion>1.0.0.0</FileVersion>
-		<AssemblyVersion>1.0.0.0</AssemblyVersion>
 		<Deterministic>false</Deterministic>
 		<RuntimeIdentifiers>win-x64;osx-x64;linux-x64</RuntimeIdentifiers>
 		<EnforceCodeStyleInBuild>False</EnforceCodeStyleInBuild>
 		<ImplicitUsings>disable</ImplicitUsings>
 		<Configurations>Debug;Release</Configurations>
+		<Title>ReNote Σ</Title>
+		<Company>ReNote EDU. NETW.</Company>
+		<Authors>ReNote EDU. NETW.</Authors>
+		<Product>ReNote</Product>
+		<Copyright>©️ ReNote EDU. NETW. All rights reserved.</Copyright>
+		<Description>ReNote Σ</Description>
+		<Version>0.5.78.0</Version>
 	</PropertyGroup>
+	
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 	  <DebugType>full</DebugType>
 	  <DefineConstants>METRICS_ANALYSIS</DefineConstants>
 	</PropertyGroup>
+	
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 	  <DebugType>full</DebugType>
 	</PropertyGroup>
+	
 	<ItemGroup>
 		<None Remove=".gitignore" />
-		<None Remove="Assets\de_DE.lang" />
-		<None Remove="Assets\en_GB.lang" />
-		<None Remove="Assets\en_US.lang" />
+		<None Remove="Assets\de-DE.lang" />
+		<None Remove="Assets\en-GB.lang" />
+		<None Remove="Assets\en-US.lang" />
 		<None Remove="Assets\error.png" />
-		<None Remove="Assets\es_ES.lang" />
-		<None Remove="Assets\fr_FR.lang" />
+		<None Remove="Assets\es-ES.lang" />
+		<None Remove="Assets\fr-FR.lang" />
 		<None Remove="Assets\info.png" />
 		<None Remove="Assets\question.png" />
 		<None Remove="Assets\ReNote_big_italic.png" />
 		<None Remove="Assets\renote_no_bg.png" />
 		<None Remove="Assets\user.bmp" />
 		<None Remove="Assets\warn.png" />
-		<None Remove="Assets\zh_CN.lang" />
+		<None Remove="Assets\zh-CN.lang" />
 	</ItemGroup>
+	
 	<ItemGroup>
-		<!--This helps with theme dll-s trimming.
-	If you will publish your application in self-contained mode with p:PublishTrimmed=true and it will use Fluent theme Default theme will be trimmed from the output and vice versa.
-	https://github.com/AvaloniaUI/Avalonia/issues/5593 -->
 		<TrimmableAssembly Include="Avalonia.Themes.Fluent" />
 		<TrimmableAssembly Include="Avalonia.Themes.Default" />
 	</ItemGroup>
+	
 	<ItemGroup>
 		<PackageReference Include="Avalonia" Version="0.10.19" />
 		<PackageReference Include="Avalonia.Desktop" Version="0.10.19" />
-		<!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
 		<PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="0.10.19" />
-		<PackageReference Include="Avalonia.Diagnostics" Condition="'$(Configuration)'=='SC Debug'">
-		  <Version>0.10.18</Version>
-		</PackageReference>
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="protobuf-net" Version="3.2.16" />
+		<PackageReference Include="protobuf-net.Core" Version="3.2.16" />
 		<PackageReference Include="XamlNameReferenceGenerator" Version="1.6.1" />
 	</ItemGroup>
+	
 	<ItemGroup>
 		<AvaloniaResource Include="Assets\**" />
 	</ItemGroup>
+	
 	<ItemGroup>
 	  <Folder Include="Plugins\" />
 	  <Folder Include="ReNote\Student\" />
 	</ItemGroup>
+	
 	<ItemGroup>
 	  <Compile Update="Layouts\LogonLayout.axaml.cs">
 	    <DependentUpon>LogonLayout.axaml</DependentUpon>
@@ -76,5 +83,4 @@
 	    <DependentUpon>AccountPage.axaml</DependentUpon>
 	  </Compile>
 	</ItemGroup>
-	
 </Project>

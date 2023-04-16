@@ -1,20 +1,21 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net7.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
+    <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>disable</Nullable>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <RootNamespace>Server</RootNamespace>
-    <Configurations>Debug;Release;SC Debug</Configurations>
+    <Configurations>Debug;Release</Configurations>
+    <Company>ReNote EDU. NETW.</Company>
+    <Copyright>©️ ReNote EDU. NETW. All rights reserved.</Copyright>
+    <Authors>ReNote EDU. NETW.</Authors>
+    <Product>ReNote</Product>
+    <Title>ReNote Ω</Title>
+    <Version>0.8.07.0</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DebugType>portable</DebugType>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='SC Debug|AnyCPU'">
     <DebugType>portable</DebugType>
   </PropertyGroup>
 
@@ -23,7 +24,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="protobuf-net" Version="3.2.16" />
+    <PackageReference Include="protobuf-net.Core" Version="3.2.16" />
   </ItemGroup>
 
   <ItemGroup>
@@ -31,5 +34,4 @@
     <ProjectReference Include="..\Server.Modules.ReNote\Server.Modules.ReNote.csproj" />
     <ProjectReference Include="..\Server.Modules.Web\Server.Modules.Web.csproj" />
   </ItemGroup>
-
 </Project>

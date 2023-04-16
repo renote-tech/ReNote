@@ -34,6 +34,7 @@ namespace Client.Api
 
             s_HttpClient = new HttpClient();
             s_HttpClient.BaseAddress = new Uri(Configuration.EndpointAddress);
+            s_HttpClient.Timeout = TimeSpan.FromSeconds(10);
 
             s_Initialized = true;
         }
@@ -64,7 +65,7 @@ namespace Client.Api
             {
                 response = await s_HttpClient.SendAsync(request);
             }
-            catch (HttpRequestException)
+            catch (Exception ex) when (ex is HttpRequestException || ex is TaskCanceledException)
             {
                 response.StatusCode = HttpStatusCode.InternalServerError;
             }

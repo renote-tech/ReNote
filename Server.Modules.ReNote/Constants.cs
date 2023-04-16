@@ -13,7 +13,7 @@ namespace Server.ReNote
         /// <summary>
         /// The interval between each <see cref="Database.SaveAsync(bool)"/> call.
         /// </summary>
-        public const int DB_SAVE_INTERVAL = 300000;
+        public const int WORKER_INTERVAL = 300000;
         /// <summary>
         /// The shared ID for static file authorization.
         /// </summary>
@@ -45,7 +45,7 @@ namespace Server.ReNote
         public const string DB_ROOT_TEAMS = "teams";
 
         /// <summary>
-        /// The <see cref="ReNoteSecureToken"/> base token pattern.
+        /// The <see cref="ReNoteToken"/> base token pattern.
         /// </summary>
         public const string TOKEN_BASE_PATTERN = "rst";
     }

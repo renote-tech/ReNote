@@ -13,8 +13,10 @@
 #endif
             }
         }
-        public static readonly string Version = $"{(IsDebug ? "Dev" : "Release")}-0.3.04";
-        public const string VersionName = "WhiteMoon";
+
+        public static readonly string Configuration = $"{(IsDebug ? "Dev" : "Release")}";
+        public static readonly string Version = $"0.5.78 ({Configuration})";
+        public const string VersionName = "SummerHeat";
 
         public static void Log(string message, LogLevel level = LogLevel.DEBUG)
         {

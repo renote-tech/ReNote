@@ -38,7 +38,7 @@ namespace Server.ReNote.Api
         {
             string contentBody = await StreamUtil.GetStringAsync(req.Body);
             if (string.IsNullOrWhiteSpace(contentBody))
-                return await ApiUtil.SendAsync(400, ApiMessages.NullOrEmpty("username", "password"));
+                return await ApiUtil.SendAsync(400, ApiMessages.EmptyUsernameOrPassword());
 
             if (!JsonUtil.ValiditateJson(contentBody))
                 return await ApiUtil.SendAsync(400, ApiMessages.InvalidJson());
@@ -46,13 +46,13 @@ namespace Server.ReNote.Api
             AuthRequest reqBody = JsonConvert.DeserializeObject<AuthRequest>(contentBody);
 
             if(string.IsNullOrWhiteSpace(reqBody.Username) || string.IsNullOrWhiteSpace(reqBody.Password))
-                return await ApiUtil.SendAsync(400, ApiMessages.NullOrEmpty("username", "password"));
+                return await ApiUtil.SendAsync(400, ApiMessages.EmptyUsernameOrPassword());
 
             if (UserManager.GetUserId(reqBody.Username) == -1)
                 return await ApiUtil.SendAsync(400, ApiMessages.InvalidUsernameOrPassword());
 
             User userData = UserManager.GetUser(reqBody.Username);
-            byte[] hashPassword = await EncryptionUtil.ComputeSha256Async(reqBody.Password);
+            byte[] hashPassword = await Sha256.ComputeAsync(reqBody.Password);
             AESObject aesObject = new AESObject(userData.SecurePassword, iv: userData.IVPassword, key: hashPassword);
 
             if (!AES.VerifyKey(reqBody.Password, aesObject))

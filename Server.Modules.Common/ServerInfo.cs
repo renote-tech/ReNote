@@ -1,6 +1,8 @@
-﻿namespace Server.Common
+﻿using System;
+
+namespace Server.Common
 {
-    public class ServerEnv
+    public class ServerInfo
     {
         /// <summary>
         /// Returns true if the build configuration is debug; otherwise false for release.
@@ -22,17 +24,21 @@
         /// </summary>
         public static readonly string ApplicationDirectory = AppDomain.CurrentDomain.BaseDirectory;
         /// <summary>
+        /// The configuration. Returns Release if IsDebug is false, otherwise Dev.
+        /// </summary>
+        public static readonly string Configuration = $"{(IsDebug ? "Dev" : "Release")}";
+        /// <summary>
         /// The server agent.
         /// </summary>
-        public static readonly string Agent = $"{VersionName}/{(IsDebug ? "Dev" : "Release")}";
+        public static readonly string Agent = $"{VersionName}/{Configuration}";
         /// <summary>
         /// The server version.
         /// </summary>
-        public static readonly string Version = $"{(IsDebug ? "Dev" : "Release")}-0.9.84";
+        public static readonly string Version = $"0.8.07 ({Configuration})";
         /// <summary>
         /// The server version name.
         /// </summary>
-        public const string VersionName = "BlackSun";
+        public const string VersionName = "SpringBloom";
         /// <summary>
         /// The server API version.
         /// </summary>

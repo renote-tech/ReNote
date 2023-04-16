@@ -145,12 +145,21 @@ namespace Server.Web.Api
         }
 
         /// <summary>
+        /// Returns an empty username or password message.
+        /// </summary>
+        /// <returns><see cref="string"/></returns>
+        public static string EmptyUsernameOrPassword()
+        {
+            return "LogonEmptyField";
+        }
+
+        /// <summary>
         /// Returns an invalid username or password message.
         /// </summary>
         /// <returns><see cref="string"/></returns>
         public static string InvalidUsernameOrPassword()
         {
-            return "Invalid username or password";
+            return "LogonInvalidField";
         }
 
         /// <summary>
@@ -177,18 +186,18 @@ namespace Server.Web.Api
         {
             ApiAtlas.RegisterEndpoints("Root", "/",
 
-                                       "Authenticate",  $"/global/{ServerEnv.ApiVersion}/auth",
-                                       "SchoolInfo",    $"/global/{ServerEnv.ApiVersion}/school/info",
-                                       "About",         $"/global/{ServerEnv.ApiVersion}/about",
-                                       "Quotation",     $"/global/{ServerEnv.ApiVersion}/quotation",
-                                       "ColorSchema",   $"/global/{ServerEnv.ApiVersion}/color/themes",
-                                       "Configuration", $"/global/{ServerEnv.ApiVersion}/client/config",
+                                       "Authenticate",  $"/global/{ServerInfo.ApiVersion}/auth",
+                                       "SchoolInfo",    $"/global/{ServerInfo.ApiVersion}/school/info",
+                                       "About",         $"/global/{ServerInfo.ApiVersion}/about",
+                                       "Quotation",     $"/global/{ServerInfo.ApiVersion}/quotation",
+                                       "ColorSchema",   $"/global/{ServerInfo.ApiVersion}/color/themes",
+                                       "Configuration", $"/global/{ServerInfo.ApiVersion}/client/config",
 
-                                       "Profile",       $"/user/{ServerEnv.ApiVersion}/profile",
-                                       "Preferences",   $"/user/{ServerEnv.ApiVersion}/preferences",
-                                       "Timetable",     $"/user/{ServerEnv.ApiVersion}/timetable",
-                                       "LogOut",        $"/user/{ServerEnv.ApiVersion}/session/delete",
-                                       "TeamProfile",   $"/user/{ServerEnv.ApiVersion}/team/profile");
+                                       "Profile",       $"/user/{ServerInfo.ApiVersion}/profile",
+                                       "Preferences",   $"/user/{ServerInfo.ApiVersion}/preferences",
+                                       "Timetable",     $"/user/{ServerInfo.ApiVersion}/timetable",
+                                       "LogOut",        $"/user/{ServerInfo.ApiVersion}/session/delete",
+                                       "TeamProfile",   $"/user/{ServerInfo.ApiVersion}/team/profile");
 
             Platform.Log($"Registered {ApiAtlas.GetEndpointsCount()} endpoints", LogLevel.INFO);
         }

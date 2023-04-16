@@ -43,7 +43,7 @@ namespace Server.Database.Management
                 return null;
 
             RNDatabase database = new RNDatabase();
-            database.SaveLocation = filePath;
+            database.FileLocation = filePath;
             database.Load();
 
             s_Databases.Add(dbName, database);
@@ -229,7 +229,7 @@ namespace Server.Database.Management
             if (!s_Databases.ContainsKey(dbName))
                 return;
 
-            s_Databases[dbName].SaveLocation = saveLocation;
+            s_Databases[dbName].FileLocation = saveLocation;
         }
 
         /// <summary>
@@ -242,7 +242,7 @@ namespace Server.Database.Management
             if (!s_Databases.ContainsKey(dbName))
                 return -1;
 
-            if (string.IsNullOrWhiteSpace(s_Databases[dbName].SaveLocation))
+            if (string.IsNullOrWhiteSpace(s_Databases[dbName].FileLocation))
                 return 1;
 
             if (s_Databases[dbName].IsEmpty())

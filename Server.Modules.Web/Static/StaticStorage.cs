@@ -27,7 +27,7 @@ namespace Server.Web.Static
         /// </summary>
         /// <param name="uri">The resource URI.</param>
         /// <returns><see cref="byte"/>[]</returns>
-        public static async Task<byte[]> GetResourceAsync(string uri, long userId)
+        public static async Task<byte[]> GetResourceAsync(string uri, long requesterId)
         {
             string resourcePath = GetResourcePath(uri);
             if (!File.Exists(resourcePath))
@@ -40,7 +40,7 @@ namespace Server.Web.Static
             long ownerId = GetIDAttribute(resource);
             byte[] newResource = GetOriginalResource(resource);
 
-            if (ownerId == Constants.PUBLIC_AUTH_ID || ownerId == Constants.SHARED_AUTH_ID && userId != Constants.PUBLIC_AUTH_ID || ownerId == userId)
+            if (ownerId == Constants.PUBLIC_AUTH_ID || ownerId == Constants.SHARED_AUTH_ID && requesterId != Constants.PUBLIC_AUTH_ID || ownerId == requesterId)
                 return newResource;
 
             return WebResources.NotFoundError;
@@ -63,11 +63,11 @@ namespace Server.Web.Static
         /// <returns><see cref="string"/></returns>
         private static string GetResourcePath(string uri)
         {
-            if (string.IsNullOrWhiteSpace(uri) || uri == "/")
+            if (GetPathExtension(uri) == "None")
                 return WebResources.Index;
-            else if (Configuration.WebConfig.WebNoDotHtml && GetPathExtension(uri) == "DotHtml")
+            else if (GetPathExtension(uri) == "DotHtml")
                 return PathUtil.NormalizeToOS($"{WebResources.WebRoot}/{uri}/index.html");
-            else if (Configuration.WebConfig.WebVueSupport && GetPathExtension(uri) == "VueHtml")
+            else if (GetPathExtension(uri) == "VueHtml")
                 return WebResources.Index;
             else
                 return PathUtil.NormalizeToOS($"{WebResources.WebRoot}/{uri}");
@@ -84,7 +84,7 @@ namespace Server.Web.Static
                 return "None";
             else if (Configuration.WebConfig.WebNoDotHtml && uri.LastIndexOf('.') == -1)
                 return "DotHtml";
-            else if (Configuration.WebConfig.WebVueSupport)
+            else if (Configuration.WebConfig.WebVueSupport && uri.LastIndexOf('.') == -1)
                 return "VueHtml";
             else
                 return "Other";

@@ -5,6 +5,7 @@ using Server.ReNote.Management;
 using Server.Web.Api;
 using Server.Web.Api.Responses;
 using Newtonsoft.Json;
+using Server.Common.Encryption;
 
 namespace Server.Web.Utilities
 {
@@ -98,7 +99,7 @@ namespace Server.Web.Utilities
             if (session.HasExpired())
                 return await SendAsync(ApiStatus.SESSION_EXPIRED, ApiMessages.InvalidSession(), 400);
 
-            string computedHash = await EncryptionUtil.ComputeStringSha256Async(authToken);
+            string computedHash = await Sha256.ComputeStringAsync(authToken);
             if (computedHash != session.AuthToken)
                 return await SendAsync(400, ApiMessages.InvalidSession());
 

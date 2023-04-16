@@ -1,0 +1,34 @@
+﻿SplashDeveloperInfo=Entirely developed by Alian DEAD.
+SplashCopyrightInfo=© ReNote NETW. All rights reserved.
+SplashErrorMessage=An error occurred. The application may not be configured properly.
+SplashTryAgain=Try again
+
+LogonMainTitle=Log in
+LogonWatermarkUsername=Username
+LogonWatermarkPassword=Password
+LogonSignInButton=Log in
+LogonEmptyField=Username or password may not be empty
+LogonUnexpectedError=An unexpected error occurred
+LogonContactAdmin=If this issue persists; contact your administrator
+LogonInvalidField=Invalid username or password
+LogonUnknownError=Unknown error\nContact your administrator
+LogonCopyrightText=© ReNote NETW.\nAll rights reserved.
+
+AccountProfile=Profile
+AccountContact=Contact
+AccountNoEmail=[No email available]
+AccountNoPhone=[No phone number available]
+AccountWelcome=That's the first time you are logged to this account. Welcome!
+AccountLastConnection=Last connection
+
+AccountSecurity=Security
+AccountPassword=Password
+AccountChangePassword=Change Password
+
+AccountPreferences=Preferences
+AccountThemes=Themes
+AccountLanguage=Language
+
+AccountMobile=Mobile Login
+
+AccountAbout=About

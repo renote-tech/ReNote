@@ -6,7 +6,13 @@
     <Nullable>disable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>disable</ImplicitUsings>
-    <Configurations>Debug;Release;SC Debug</Configurations>
+    <Configurations>Debug;Release</Configurations>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="protobuf-net" Version="3.2.16" />
+    <PackageReference Include="protobuf-net.Core" Version="3.2.16" />
+  </ItemGroup>
 
 </Project>

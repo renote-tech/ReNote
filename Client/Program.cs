@@ -10,26 +10,36 @@ namespace Client
         {
            InitializeProcessEvents();
 
-           AppBuilder.Configure<App>()
-                     .UsePlatformDetect()
-                     .LogToTrace()
-                     .StartWithClassicDesktopLifetime(args);
+            Platform.Log("Starting client", LogLevel.INFO);
+
+            AppBuilder.Configure<App>()
+                      .UsePlatformDetect()
+                      .StartWithClassicDesktopLifetime(args);
         }
 
         static void InitializeProcessEvents()
         {
             AppDomain.CurrentDomain.FirstChanceException += (sender, e) =>
             {
-                Platform.Log($"{e.Exception.Message}\n{e.Exception.StackTrace}\n", LogLevel.ERROR);
+                Platform.Log($"Caused by {e.Exception.Source} | {e.Exception.Message}\n{e.Exception.StackTrace}\n", LogLevel.ERROR);
             };
+
+            AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
+            {
+                Exception exception = (Exception)e.ExceptionObject;
+                Platform.Log($"{exception.Message}\n{exception.StackTrace}\n", LogLevel.FATAL);
+            };
+
+            Platform.Log("Initialized Process Events", LogLevel.INFO);
         }
 
-        // DEVELOPMENT ONLY
+#if DEBUG
         public static AppBuilder BuildAvaloniaApp()
         {
             return AppBuilder.Configure<App>()
                              .UsePlatformDetect()
                              .LogToTrace();
         }
+#endif
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace Server.Common
+﻿using System;
+
+namespace Server.Common
 {
     public class ServerConsole
     {

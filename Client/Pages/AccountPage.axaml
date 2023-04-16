@@ -39,11 +39,11 @@
 	</UserControl.Styles>
 	<Panel Background="{DynamicResource BaseBackground}">
 		<Panel Background="{DynamicResource	BaseSidebar}" Width="256" HorizontalAlignment="Left">
-			<Button VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0, 10" Width="240" Height="30" CornerRadius="0" HorizontalContentAlignment="Center" Content="Profile" Click="OnProfileButtonClicked"/>
-			<Button VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0, 45" Width="240" Height="30" CornerRadius="0" HorizontalContentAlignment="Center" Content="Security" Click="OnSecurityButtonClicked"/>
-			<Button VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0, 80" Width="240" Height="30" CornerRadius="0" HorizontalContentAlignment="Center" Content="Preferences" Click="OnPreferencesButtonClicked"/>
-			<Button VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0, 45" Width="240" Height="30" CornerRadius="0" HorizontalContentAlignment="Center" Content="Mobile Login" Click="OnMobileLoginButtonClicked"/>
-			<Button VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0, 10" Width="240" Height="30" CornerRadius="0" HorizontalContentAlignment="Center" Content="About" Click="OnAboutButtonClicked"/>
+			<Button VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0, 10" Width="240" Height="30" CornerRadius="0" HorizontalContentAlignment="Center" Content="{DynamicResource AccountProfile}" Click="OnProfileButtonClicked"/>
+			<Button VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0, 45" Width="240" Height="30" CornerRadius="0" HorizontalContentAlignment="Center" Content="{DynamicResource AccountSecurity}" Click="OnSecurityButtonClicked"/>
+			<Button VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0, 80" Width="240" Height="30" CornerRadius="0" HorizontalContentAlignment="Center"  Content="{DynamicResource AccountPreferences}" Click="OnPreferencesButtonClicked"/>
+			<Button VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0, 45" Width="240" Height="30" CornerRadius="0" HorizontalContentAlignment="Center" Content="{DynamicResource AccountMobile}" Click="OnMobileLoginButtonClicked"/>
+			<Button VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0, 10" Width="240" Height="30" CornerRadius="0" HorizontalContentAlignment="Center" Content="{DynamicResource AccountAbout}" Click="OnAboutButtonClicked"/>
 		</Panel>
 		<Panel x:Name="m_FragProfile" Margin="256, 0, 0, 0">
 			<Border x:Name="m_ProfilePicture" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="25, 35" CornerRadius="32" Width="64" Height="64">
@@ -53,19 +53,19 @@
 			</Border>
 			<TextBlock x:Name="m_UserName" FontSize="18" HorizontalAlignment="Left" Margin="100, 45"/>
 			<TextBlock x:Name="m_UserTeam" FontSize="18" HorizontalAlignment="Left" Margin="100, 70"/>
-			<TextBlock FontWeight="SemiBold" Margin="25, 125" Text="Contact"/>
-			<TextBlock x:Name="m_Email" FontWeight="Light" Margin="45, 155"/>
-			<TextBlock x:Name="m_PhoneNumber" FontWeight="Light" Margin="45, 180"/>
-			<TextBlock FontWeight="SemiBold" Margin="25, 215" Text="Last connection"/>
-			<TextBlock x:Name="m_LastConnection" VerticalAlignment="Top" FontWeight="Light" Margin="45, 255" Height="15"/>
+			<TextBlock FontWeight="SemiBold" Margin="25, 125" Text="{DynamicResource AccountContact}"/>
+			<TextBlock x:Name="m_Email" FontWeight="Light" Margin="45, 155" Text="{DynamicResource AccountNoEmail}"/>
+			<TextBlock x:Name="m_PhoneNumber" FontWeight="Light" Margin="45, 180" Text="{DynamicResource AccountNoPhone}"/>
+			<TextBlock FontWeight="SemiBold" Margin="25, 215" Text="{DynamicResource AccountLastConnection}"/>
+			<TextBlock x:Name="m_LastConnection" VerticalAlignment="Top" FontWeight="Light" Margin="45, 245" Height="20"/>
 			<TextBlock x:Name="m_UserId" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="10"/>
 		</Panel>
 		<Panel x:Name="m_FragSecurity" Margin="256, 0, 0, 0" IsVisible="False">
-			<TextBlock FontWeight="SemiBold" Margin="25" Text="Password"/>
-			<Button x:Name="m_ChangePasswordBtn" VerticalAlignment="Top" Margin="25, 55" Padding="10" CornerRadius="6" Content="Change Password"/>
+			<TextBlock FontWeight="SemiBold" Margin="25" Text="{DynamicResource	AccountPassword}"/>
+			<Button x:Name="m_ChangePasswordBtn" VerticalAlignment="Top" Margin="25, 55" Padding="10" CornerRadius="6" Content="{DynamicResource AccountChangePassword}"/>
 		</Panel>
 		<Panel x:Name="m_FragPreferences" Margin="256, 0, 0, 0" IsVisible="False">
-			<TextBlock Text="Themes" FontWeight="SemiBold" Margin="25"/>
+			<TextBlock Text="{DynamicResource AccountThemes}" FontWeight="SemiBold" Margin="25"/>
 			<ListBox x:Name="m_ThemeList" HorizontalAlignment="Left" VerticalAlignment="Top" Width="616" Height="170" Margin="30, 60" ScrollViewer.VerticalScrollBarVisibility="Hidden" SelectionChanged="OnThemeListSelectionChanged">
 				<ListBox.ItemsPanel>
 					<ItemsPanelTemplate>
@@ -74,7 +74,7 @@
 				</ListBox.ItemsPanel>
 				<ListBox.ItemTemplate>
 					<DataTemplate>
-						<Border CornerRadius="32" Width="64" Height="64" BorderBrush="MediumPurple" ToolTip.Tip="{Binding Name}">
+						<Border CornerRadius="32" Width="64" Height="64" ToolTip.Tip="{Binding Name}">
 							<Border.Background>
 								<LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
 									<GradientStop Color="{Binding Primary}" Offset="0"/>
@@ -87,8 +87,8 @@
 					</DataTemplate>
 				</ListBox.ItemTemplate>
 			</ListBox>
-			<TextBlock Text="Language" FontWeight="SemiBold" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="25, 250" Height="20"/>
-			<ComboBox x:Name="m_LanguageSelector" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="30, 285" Width="145" Height="30">
+			<TextBlock Text="{DynamicResource AccountLanguage}" FontWeight="SemiBold" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="25, 250" Height="20"/>
+			<ComboBox x:Name="m_LanguageSelector" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="30, 285" Width="145" Height="30" SelectionChanged="OnLanguageChanged">
 				<ComboBox.ItemTemplate>
 					<DataTemplate>
 						<StackPanel Orientation="Horizontal">
@@ -107,8 +107,8 @@
 			</Border>
 			<TextBlock Text="ReNote &#x03a3;" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" Margin="150"/>
 			<TextBlock x:Name="m_Version" FontSize="20" FontWeight="Light" HorizontalAlignment="Center" Margin="180"/>
-			<TextBlock Text="Entirely developped by Alian DEAD." HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="50"/>
-			<TextBlock Text="© ReNote NETW. All rights reserved." FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="20"/>
+			<TextBlock Text="{DynamicResource SplashDeveloperInfo}" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="50"/>
+			<TextBlock Text="{DynamicResource SplashCopyrightInfo}" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="20"/>
 		</Panel>
 	</Panel>
 </UserControl>

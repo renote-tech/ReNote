@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using System.IO;
+using Newtonsoft.Json;
 using Server.Common.Utilities;
 
 namespace Server.Common
@@ -144,11 +146,11 @@ namespace Server.Common
         /// <summary>
         /// The location of the database file.
         /// </summary>
-        [JsonProperty("dbSaveLocation")]
-        public string DBSaveLocation { get; set; }
+        [JsonProperty("dbLocation")]
+        public string DBLocation { get; set; }
 
         /// <summary>
-        /// The location of the database's backup files.
+        /// The folder location that stores backups of the database.
         /// </summary>
         [JsonProperty("dbBackupLocation")]
         public string DBBackupLocation { get; set; }

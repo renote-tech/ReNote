@@ -1,6 +1,8 @@
-﻿namespace Server.Common.Encryption
+﻿using System;
+
+namespace Server.Common.Encryption
 {
-    public class Base64Url
+    public class Base64
     {
         /// <summary>
         /// Encodes a <see cref="byte"/>[].
@@ -23,9 +25,9 @@
         }
 
         /// <summary>
-        /// Decodes a <see cref="Base64Url"/> <see cref="string"/>.
+        /// Decodes a <see cref="Base64"/> string.
         /// </summary>
-        /// <param name="content">The <see cref="Base64Url"/> string to be decoded.</param>
+        /// <param name="content">The <see cref="Base64"/> string to be decoded.</param>
         /// <returns><see cref="byte"/>[]</returns>
         public static byte[] Decode(string content)
         {

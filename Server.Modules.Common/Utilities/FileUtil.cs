@@ -1,4 +1,6 @@
-﻿namespace Server.Common.Utilities
+﻿using System.IO;
+
+namespace Server.Common.Utilities
 {
     public class FileUtil
     {

@@ -1,4 +1,5 @@
-﻿using Server.Common.Utilities;
+﻿using System.Collections.Generic;
+using Server.Common.Utilities;
 using Server.ReNote.Data;
 using Server.ReNote.Utilities;
 
@@ -45,6 +46,9 @@ namespace Server.ReNote.Management
 
             Dictionary<string, string> items = DatabaseUtil.GetItems(Constants.DB_ROOT_USERS);
             if (items.Count == 0)
+                return -1;
+
+            if (!items.ContainsKey(username))
                 return -1;
 
             string stringUserId = items[username];

@@ -1,4 +1,6 @@
-﻿namespace Server.Common.Exceptions
+﻿using System;
+
+namespace Server.Common.Exceptions
 {
     public class UninitializedException : Exception
     {

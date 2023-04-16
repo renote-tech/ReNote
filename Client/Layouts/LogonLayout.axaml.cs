@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Net;
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Data;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Markup.Xaml.MarkupExtensions;
 using Client.Api;
 using Client.Api.Responses;
 using Client.Builders;
@@ -20,7 +23,7 @@ namespace Client.Layouts
         {
             InitializeComponent();
 
-            m_LanguageSelector.Items = Language.LanguageList;
+            m_LanguageSelector.Items = LanguageManager.LanguageList;
 
             ThemeManager.RestoreDefault();
 
@@ -32,22 +35,13 @@ namespace Client.Layouts
 #endif
         }
 
-        public override void InitializeLanguage()
-        {
-            m_SignInLabel.Text      = Language.GetString("logon_main_title");
-            m_UsernameBox.Watermark = Language.GetString("logon_watermark_username");
-            m_PasswordBox.Watermark = Language.GetString("logon_watermark_password");
-            m_LoginButton.Content   = Language.GetString("logon_sign_in_button");
-            m_CopyrightLabel.Text   = Language.GetString("logon_copyright_text");
-        }
-
         private async void PerformLogin()
         {
             LockLogin();
 
             if (string.IsNullOrWhiteSpace(m_UsernameBox.Text) || string.IsNullOrWhiteSpace(m_PasswordBox.Text))
             {
-                UnlockLogin("Username or password may not be empty");
+                UnlockLogin("LogonEmptyField");
                 return;
             }
 
@@ -55,7 +49,7 @@ namespace Client.Layouts
             {
                 if (statusCode == HttpStatusCode.InternalServerError)
                 {
-                    UnlockLogin("An unexpected error occurred");
+                    UnlockLogin("LogonUnexpectedError");
                     return;
                 }
 
@@ -66,10 +60,9 @@ namespace Client.Layouts
                 }
 
                 UserSession session = await UserSession.GetAsync(response.GetData());
-
                 if (session == null)
                 {
-                    UnlockLogin("Session is null");
+                    UnlockLogin("LogonContactAdmin");
                     return;
                 }
 
@@ -94,13 +87,13 @@ namespace Client.Layouts
             m_IsLoginLocked = true;
         }
 
-        private void UnlockLogin(string error)
+        private void UnlockLogin(string errorType)
         {
             m_LoginButton.IsEnabled = true;
             m_UsernameBox.IsEnabled = true;
             m_PasswordBox.IsEnabled = true;
 
-            m_LoginErrorLabel.Text = error;
+            m_LoginErrorLabel[!TextBlock.TextProperty] = new DynamicResourceExtension(errorType);
 
             m_LoginErrorLabel.IsVisible = true;
             m_LoadingRing.IsVisible = false;
@@ -110,9 +103,9 @@ namespace Client.Layouts
 
         private async void OnLayoutInitialized(object sender, EventArgs e)
         {
-            for (int i = 0; i < Language.LanguageList.Count; i++)
+            for (int i = 0; i < LanguageManager.LanguageList.Count; i++)
             {
-                if (Language.GetCurrentLanguage() == Language.LanguageList[i].LangCode)
+                if (LanguageManager.GetCurrentLanguage() == LanguageManager.LanguageList[i].LangCode)
                 {
                     m_LanguageSelector.SelectedIndex = i;
                     break;
@@ -121,6 +114,9 @@ namespace Client.Layouts
 
             await ApiService.GetQuotationAsync((HttpStatusCode statusCode, QuotationResponse response) =>
             {
+                if (statusCode != HttpStatusCode.OK)
+                    return;
+
                 QuotationData quotationData = response.GetData();
 
                 m_QuotationContentLabel.Text = $"\"{quotationData.GetContent()}\"";
@@ -155,9 +151,7 @@ namespace Client.Layouts
         private void OnLanguageChanged(object sender, SelectionChangedEventArgs e)
         {
             Language selectedLanguage = (Language)m_LanguageSelector.SelectedItem;
-            Language.SetLanguage(selectedLanguage.LangCode);
-
-            InitializeLanguage();
+            LanguageManager.SetLanguage(selectedLanguage.LangCode);
 
             // save setting locally (%APPDATA%\ReNote)
         }
