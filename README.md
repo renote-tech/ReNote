@@ -47,7 +47,7 @@ Download <a href="https://dotnet.microsoft.com/en-us/download/dotnet/7.0#runtime
  - Full support for static websites & Vue.js
  - Integrated API server
  - Integrated socket server
- - Custom Database system
+ - Dedicated database system
  
 ### → Client
  - Easy-to-use interface
