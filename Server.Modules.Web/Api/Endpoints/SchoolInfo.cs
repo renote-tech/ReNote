@@ -13,7 +13,7 @@ namespace Server.ReNote.Api
         /// <returns><see cref="ApiResponse"/></returns>
         public static async Task<ApiResponse> OperateRequest(ApiRequest req)
         {
-            switch (req.Method.ToUpper())
+            switch (req.Method)
             {
                 case "GET":
                     return await Get(req);
@@ -29,8 +29,8 @@ namespace Server.ReNote.Api
         /// <returns><see cref="ApiResponse"/></returns>
         private static async Task<ApiResponse> Get(ApiRequest req)
         {
-            School response = ReNote.Server.Instance.SchoolInformation;
-            return await ApiUtil.SendWithDataAsync(200, "Success", response);
+            School response = Server.Instance.SchoolInformation;
+            return await ApiUtil.SendWithDataAsync(200, ApiMessages.Success(), response);
         }
     }
 }

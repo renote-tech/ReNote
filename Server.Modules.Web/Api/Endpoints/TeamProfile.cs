@@ -18,7 +18,7 @@ namespace Server.ReNote.Api
         /// <returns><see cref="ApiResponse"/></returns>
         public static async Task<ApiResponse> OperateRequest(ApiRequest req)
         {
-            switch (req.Method.ToUpper())
+            switch (req.Method)
             {
                 case "GET":
                     return await Get(req);

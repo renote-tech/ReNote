@@ -1,7 +1,8 @@
 using System.Net;
-using Avalonia.Interactivity;
+using Avalonia.Controls;
 using Client.Api;
 using Client.Api.Responses;
+using Client.Managers;
 using Client.ReNote;
 using Client.Windows;
 
@@ -12,7 +13,14 @@ namespace Client.Layouts
         public SplashLayout()
         {
             InitializeComponent();
-            Initialized += (sender, e) => Initialize();
+
+#if DEBUG
+            if (Design.IsDesignMode)
+                return;
+#endif
+
+            Initialize();
+            InitializeEvents();
         }
 
         private async void Initialize()
@@ -24,42 +32,44 @@ namespace Client.Layouts
                 if (statusCode != HttpStatusCode.OK)
                     return;
 
-                School schoolData = response.GetData();
-                ReNote.Client.Instance.SchoolInformation = schoolData;
+                ReNote.Client.Instance.SchoolInformation = response.Data;
             });
 
-            await ApiService.GetConfigurationAsync(null);
+            await ApiService.GetConfigurationAsync((HttpStatusCode statusCode, ConfigResponse response) =>
+            {
+                if (statusCode != HttpStatusCode.OK)
+                    return;
 
-            InvokeLoginState();
-        }
+                PluginManager.Initialize(response.Data.Features);
+                ToolbarManager.Initialize(response.Data.ToolbarsInfo);
+            });
 
-        private void InvokeLoginState()
-        {
             School schoolInfo = ReNote.Client.Instance.SchoolInformation;
             if (schoolInfo == null)
             {
-                InvokeErrorState();
+                m_LoadingRing.IsVisible = false;
+                m_TryAgainButton.IsVisible = true;
+                m_ErrorMessage.IsVisible = true;
                 return;
             }
 
-            MainWindow.Instance.Title = $"ReNote \u03a3 - {ReNote.Client.Instance.SchoolInformation.SchoolName}";
-            MainWindow.Instance.SetWindowContent(new LogonLayout());
+            ThemeManager.Initialize();
+
+            MainWindow.Instance.Title = $"ReNote \u03a3 - {schoolInfo.SchoolName}";
+            MainWindow.Instance.SetLayout(new LogonLayout());
         }
 
-        private void InvokeErrorState()
+        private void InitializeEvents()
         {
-            m_LoadingRing.IsVisible = false;
-            m_TryAgainButton.IsVisible = true;
-            m_ErrorMessage.IsVisible = true;
+            m_TryAgainButton.Click += (sender, e) =>
+            {
+                m_LoadingRing.IsVisible = true;
+                m_TryAgainButton.IsVisible = false;
+                m_ErrorMessage.IsVisible = false;
+
+                Initialize();
+            };
         }
 
-        private void OnTryAgainButtonClicked(object sender, RoutedEventArgs e)
-        {
-            m_LoadingRing.IsVisible = true;
-            m_TryAgainButton.IsVisible = false;
-            m_ErrorMessage.IsVisible = false;
-
-            Initialize();
-        }
     }
 }

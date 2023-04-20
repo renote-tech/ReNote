@@ -1,33 +1,55 @@
 ﻿using System;
+using System.Net;
 using Avalonia;
 using Avalonia.Media;
+using Client.Api.Responses;
+using Client.Api;
 using Client.ReNote;
 
 namespace Client.Managers
 {
     internal class ThemeManager
     {
+        public const string DefaultTheme = "Dark";
+
+        private static Theme[] s_Themes;
         private static Theme s_CurrentTheme;
 
-        private readonly static Color s_BaseBackground = new Color(255, 20, 20, 20);
-        private readonly static Color s_BaseButton = new Color(255, 75, 75, 75);
+        private readonly static Color s_BaseBackground  = new Color(255, 20, 20, 20);
+        private readonly static Color s_BaseButton      = new Color(255, 75, 75, 75);
         private readonly static Color s_BaseButtonHover = new Color(255, 55, 55, 55);
         private readonly static Color s_BaseButtonPress = new Color(255, 120, 120, 120);
-        private readonly static Color s_BaseSidebar = new Color(255, 30, 30, 30);
-        private readonly static Color s_BaseTopBar = new Color(255, 21, 21, 21);
-        private readonly static Color s_BaseToolBar = new Color(255, 70, 70, 70);
+        private readonly static Color s_BaseSidebar     = new Color(255, 30, 30, 30);
+        private readonly static Color s_BaseTopBar      = new Color(255, 21, 21, 21);
+        private readonly static Color s_BaseToolBar     = new Color(255, 70, 70, 70);
 
         private readonly static Color s_BaseSelectionHover = new Color(255, 85, 85, 85);
-        private readonly static Color s_BaseAccent = new Color(255, 147, 112, 219);
-        private readonly static Color s_BaseAccentHover = new Color(255, 137, 91, 233);
-        private readonly static Color s_BaseAccentPress = new Color(255, 122, 70, 231);
-        private readonly static Color s_BaseForeground = new Color(255, 255, 255, 255);
-        private readonly static Color s_BaseForegroundError = new Color(255, 219, 112, 147);
-        private readonly static Color s_BaseForegroundTitle = new Color(255, 210, 210, 210);
-        private readonly static Color s_BaseForegroundLight = new Color(255, 0, 0, 0);
+        
+        private readonly static Color s_BaseAccent         = new Color(255, 147, 112, 219);
+        private readonly static Color s_BaseAccentHover    = new Color(255, 137, 91, 233);
+        private readonly static Color s_BaseAccentPress    = new Color(255, 122, 70, 231);
+        
+        private readonly static Color s_BaseForeground           = new Color(255, 255, 255, 255);
+        private readonly static Color s_BaseForegroundError      = new Color(255, 219, 112, 147);
+        private readonly static Color s_BaseForegroundTitle      = new Color(255, 210, 210, 210);
+        private readonly static Color s_BaseForegroundLight      = new Color(255, 0, 0, 0);
         private readonly static Color s_BaseForegroundTitleLight = new Color(255, 45, 45, 45);
 
         private readonly static Color s_ThemeSelectionHover = new Color(255, 25, 25, 25);
+
+        public static async void Initialize()
+        {
+            await ApiService.GetThemeList((HttpStatusCode statusCode, ThemeResponse response) =>
+            {
+                if (statusCode != HttpStatusCode.OK)
+                    return;
+
+                s_Themes = response.Data;
+
+                for (int i = 0; i < s_Themes.Length; i++)
+                    s_Themes[i].Id = i;
+            });
+        }
 
         public static void RestoreDefault()
         {
@@ -53,6 +75,21 @@ namespace Client.Managers
             Application.Current.Resources["BaseForeground"] = new SolidColorBrush(s_BaseForeground);
         }
 
+        public static void SetThemeByName(string themeName)
+        {
+            if (string.IsNullOrWhiteSpace(themeName))
+                return;
+
+            for (int i = 0; i < s_Themes.Length; i++)
+            {
+                if (s_Themes[i].Name == themeName)
+                {
+                    SetTheme(s_Themes[i]);
+                    break;
+                }
+            }
+        }
+
         public static void SetTheme(Theme theme)
         {
             if (theme == null)
@@ -69,17 +106,17 @@ namespace Client.Managers
                 return;
             }
 
-            Application.Current.Resources["BaseBackground"] = GetThemedColor(s_BaseBackground, s_CurrentTheme.Accent, s_CurrentTheme.IsDarkTheme);
-            Application.Current.Resources["BaseButton"] = GetThemedColor(s_BaseButton, s_CurrentTheme.Accent, s_CurrentTheme.IsDarkTheme);
+            Application.Current.Resources["BaseBackground"]  = GetThemedColor(s_BaseBackground, s_CurrentTheme.Accent, s_CurrentTheme.IsDarkTheme);
+            Application.Current.Resources["BaseButton"]      = GetThemedColor(s_BaseButton, s_CurrentTheme.Accent, s_CurrentTheme.IsDarkTheme);
             Application.Current.Resources["BaseButtonHover"] = GetThemedColor(s_BaseButtonHover, s_CurrentTheme.Accent, s_CurrentTheme.IsDarkTheme);
             Application.Current.Resources["BaseButtonPress"] = GetThemedColor(s_BaseButtonPress, s_CurrentTheme.Accent, s_CurrentTheme.IsDarkTheme);
-            Application.Current.Resources["BaseSidebar"] = GetThemedColor(s_BaseSidebar, s_CurrentTheme.Accent, s_CurrentTheme.IsDarkTheme);
-            Application.Current.Resources["BaseTopBar"] = GetThemedColor(s_BaseTopBar, s_CurrentTheme.Accent, s_CurrentTheme.IsDarkTheme);
-            Application.Current.Resources["BaseToolBar"] = GetThemedColor(s_BaseToolBar, s_CurrentTheme.Accent, s_CurrentTheme.IsDarkTheme);
+            Application.Current.Resources["BaseSidebar"]     = GetThemedColor(s_BaseSidebar, s_CurrentTheme.Accent, s_CurrentTheme.IsDarkTheme);
+            Application.Current.Resources["BaseTopBar"]      = GetThemedColor(s_BaseTopBar, s_CurrentTheme.Accent, s_CurrentTheme.IsDarkTheme);
+            Application.Current.Resources["BaseToolBar"]     = GetThemedColor(s_BaseToolBar, s_CurrentTheme.Accent, s_CurrentTheme.IsDarkTheme);
 
             Application.Current.Resources["BaseSelectionHover"] = GetThemedColor(s_ThemeSelectionHover, s_CurrentTheme.Accent, false);
 
-            Application.Current.Resources["BaseAccent"] = s_CurrentTheme.Accent;
+            Application.Current.Resources["BaseAccent"]      = s_CurrentTheme.Accent;
             Application.Current.Resources["BaseAccentHover"] = GetThemedColor(s_BaseAccentHover, s_CurrentTheme.Accent, false);
             Application.Current.Resources["BaseAccentPress"] = GetThemedColor(s_BaseAccentPress, s_CurrentTheme.Accent, false);
 
@@ -95,9 +132,39 @@ namespace Client.Managers
             }
         }
 
+        public static Theme GetThemeByName(string themeName)
+        {
+            if (string.IsNullOrWhiteSpace(themeName))
+                return null;
+
+            for (int i = 0; i < s_Themes.Length; i++)
+            {
+                if (s_Themes[i].Name == themeName)
+                {
+                    return s_Themes[i];
+                }
+            }
+
+            return null;
+        }
+ 
         public static Theme GetCurrentTheme()
         {
-            return s_CurrentTheme;
+            if (s_CurrentTheme != null)
+                return s_CurrentTheme;
+
+            for (int i = 0; i < s_Themes.Length; i++)
+            {
+                if (s_Themes[i].Name.ToLower() == "dark")
+                    return s_Themes[i];
+            }
+
+            return null;
+        }
+
+        public static Theme[] GetAllThemes()
+        {
+            return s_Themes;
         }
 
         private static SolidColorBrush GetThemedColor(Color baseColor, Color targetColor, bool isDarkMode)

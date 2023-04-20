@@ -1,8 +1,6 @@
 using System;
-using System.ComponentModel;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Interactivity;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Client.Builders;
@@ -13,60 +11,74 @@ namespace Client.Windows
     {
         public MessageBoxCode ExitCode { get; set; }
 
-        private bool isButtonExit = false;
-        
+
+        private static Bitmap s_QuestionIcon;
+        private static Bitmap s_WarnIcon;
+        private static Bitmap s_ErrorIcon;
+        private static Bitmap s_InfoIcon;
+        private bool m_HasExited = false;
+
+#if DEBUG
         public MessageBox()
         {
             InitializeComponent();
         }
+#endif
 
-        public MessageBox(string title, string message, MessageBoxType style, MessageBoxIcon icon)
+        public MessageBox(string title, string message, MessageBoxType boxType, MessageBoxIcon boxIcon)
         {
             InitializeComponent();
+            InitializeWindow();
 
             Title = title;
-            boxMessage.Text = message;
-            
-            switch(style)
-            {
-                case MessageBoxType.OK:
-                    boxCancel.IsVisible = false;
-                    boxConfirm.Content = "OK";
-                    break;
-                case MessageBoxType.YES_CANCEL:
-                default:
-                    boxCancel.IsVisible = true;
-                    boxCancel.Content = "Cancel";
-                    break;
-            }
+            m_MessageLabel.Text = message;
+            m_CancelButton.IsVisible = boxType == MessageBoxType.YES_CANCEL;
 
-            IAssetLoader loader = AvaloniaLocator.Current.GetService<IAssetLoader>();
-
-            switch(icon)
+            switch (boxIcon)
             {
                 case MessageBoxIcon.QUESTION:
-                    boxIcon.Source = new Bitmap(loader.Open(new Uri("avares://Client/Assets/question.png")));
+                    m_IconImage.Source = s_QuestionIcon;
                     break;
                 case MessageBoxIcon.WARN:
-                    boxIcon.Source = new Bitmap(loader.Open(new Uri("avares://Client/Assets/warn.png")));
+                    m_IconImage.Source = s_WarnIcon;
                     break;
                 case MessageBoxIcon.ERROR:
-                    boxIcon.Source = new Bitmap(loader.Open(new Uri("avares://Client/Assets/error.png")));
+                    m_IconImage.Source = s_ErrorIcon;
                     break;
                 case MessageBoxIcon.INFO:
                 default:
-                    boxIcon.Source = new Bitmap(loader.Open(new Uri("avares://Client/Assets/info.png")));
+                    m_IconImage.Source = s_InfoIcon;
                     break;
             }
         }
 
-        private void OnConfirmClicked(object sender, RoutedEventArgs e)
+        private void InitializeWindow()
         {
-            if (sender is not Button)
-                return;
+            base.OnInitialized();
 
-            isButtonExit = true;
-            switch(((Button)sender).Tag)
+            Closing += (sender, e) =>
+            {
+                if (!m_HasExited)
+                {
+                    ExitCode = MessageBoxCode.CLOSED;
+                    m_HasExited = true;
+                }
+            };
+
+            m_ConfirmButton.Click += (sender, e) => CloseDialog("CONFIRM");
+            m_CancelButton.Click += (sender, e) => CloseDialog("CANCEL");
+
+            IAssetLoader loader = AvaloniaLocator.Current.GetService<IAssetLoader>();
+
+            s_QuestionIcon ??= new Bitmap(loader.Open(new Uri("avares://Client/Assets/question.png")));
+            s_WarnIcon ??= new Bitmap(loader.Open(new Uri("avares://Client/Assets/warn.png")));
+            s_ErrorIcon ??= new Bitmap(loader.Open(new Uri("avares://Client/Assets/error.png")));
+            s_InfoIcon ??= new Bitmap(loader.Open(new Uri("avares://Client/Assets/info.png")));
+        }
+
+        private void CloseDialog(string closeType)
+        {
+            switch (closeType)
             {
                 case "CONFIRM":
                     ExitCode = MessageBoxCode.OK;
@@ -79,13 +91,8 @@ namespace Client.Windows
                     break;
             }
 
+            m_HasExited = true;
             Close();
-        }
-
-        private void OnWindowClosing(object sender, CancelEventArgs e)
-        {
-            if(!isButtonExit)
-                ExitCode = MessageBoxCode.CLOSED;
         }
     }
 }

@@ -21,7 +21,7 @@ namespace Server
         static void Main()
         {
             Platform.Initialize();
-            Configuration.LoadAllConfigurations();
+            Configuration.LoadAll();
 
             InitializeProcessEvents();
 
@@ -49,6 +49,9 @@ namespace Server
             Console.CancelKeyPress += (sender, e) => EndService();
         }
 
+        /// <summary>
+        /// Saves data and shut down the server.
+        /// </summary>
         static void EndService()
         {
             if (isTerminating)
@@ -56,10 +59,9 @@ namespace Server
 
             isTerminating = true;
 
-            Platform.Log("Saving data and closing server", LogLevel.INFO);
+            Platform.Log("Shutting down", LogLevel.INFO);
 
             SessionManager.Clean(false);
-            ReNote.Server.Database.ClearContainerContent(Constants.DB_ROOT_SESSIONS);
             ReNote.Server.Database.Save();
 
             Environment.Exit(0);

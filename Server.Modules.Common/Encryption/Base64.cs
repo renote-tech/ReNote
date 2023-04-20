@@ -9,14 +9,14 @@ namespace Server.Common.Encryption
         /// </summary>
         /// <param name="data">The <see cref="byte"/>[] to be encoded.</param>
         /// <returns><see cref="string"/></returns>
-        public static string Encode(byte[] data, bool usePadding = true)
+        public static string Encode(byte[] data, bool padding = true)
         {
             if (data == null)
                 return string.Empty;
 
             string base64 = Convert.ToBase64String(data);
 
-            if(usePadding)
+            if (padding)
                 return base64;
 
             return base64.Replace("=", "")

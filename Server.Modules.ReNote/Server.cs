@@ -1,4 +1,5 @@
-﻿using Server.Common;
+﻿using System.Timers;
+using Server.Common;
 using Server.ReNote.Data;
 using Server.ReNote.Management;
 
@@ -7,14 +8,14 @@ namespace Server.ReNote
     public class Server
     {
         /// <summary>
-        /// The current instance of the <see cref="Server"/> class; creates a new one if <see cref="instance"/> is null.
+        /// The current instance of the <see cref="Server"/> class; creates a new one if <see cref="s_Instance"/> is null.
         /// </summary>
         public static Server Instance
         {
             get
             {
-                instance ??= new Server();
-                return instance;
+                s_Instance ??= new Server();
+                return s_Instance;
             }
         }
 
@@ -25,7 +26,7 @@ namespace Server.ReNote
         {
             get
             {
-                return dbInstance;
+                return s_DatabaseInstance;
             }
         }
 
@@ -36,24 +37,24 @@ namespace Server.ReNote
         /// <summary>
         /// The server worker timer.
         /// </summary>
-        public System.Timers.Timer ServerWorker { get; private set; }
+        public Timer ServerWorker { get; private set; }
 
         /// <summary>
         /// The private instance of the <see cref="Instance"/> field.
         /// </summary>
-        private static Server instance;
+        private static Server s_Instance;
         /// <summary>
         /// The private <see cref="Database"/> instance.
         /// </summary>
-        private static Database dbInstance;
+        private static Database s_DatabaseInstance;
         /// <summary>
         /// True if the <see cref="Server"/>'s instance is initialized; otherwise false.
         /// </summary>
-        private bool initialized;
+        private bool m_Initialized;
 
         public Server()
         {
-            ServerWorker = new System.Timers.Timer(Constants.WORKER_INTERVAL);
+            ServerWorker = new Timer(Constants.WORKER_INTERVAL);
         }
 
         /// <summary>
@@ -61,10 +62,10 @@ namespace Server.ReNote
         /// </summary>
         public void Initialize()
         {
-            if (initialized)
+            if (m_Initialized)
                 return;
 
-            dbInstance = new Database();
+            s_DatabaseInstance = new Database();
 
             SchoolInformation = new School()
             {
@@ -73,9 +74,9 @@ namespace Server.ReNote
                 SchoolType     = (SchoolType)Configuration.ReNoteConfig.SchoolType
             };
 
-            dbInstance.FileLocation = Configuration.ReNoteConfig.DBLocation;
-            bool isLoaded = dbInstance.Load();
-            if (!isLoaded)
+            s_DatabaseInstance.FileLocation = Configuration.ReNoteConfig.DBLocation;
+            bool loaded = s_DatabaseInstance.Load();
+            if (!loaded)
                 Platform.Log("Coudln't load the database", LogLevel.WARN);
 
             ServerWorker.Elapsed += OnWorkerServiceInvoked;
@@ -84,7 +85,7 @@ namespace Server.ReNote
 
             Platform.Log("Initialized ReNote Server", LogLevel.INFO);
 
-            initialized = true;
+            m_Initialized = true;
         }
 
         /// <summary>
@@ -97,7 +98,7 @@ namespace Server.ReNote
             Platform.Log("[Worker] Cleaning and saving data", LogLevel.INFO);
 
             SessionManager.Clean();
-            await dbInstance.SaveAsync(true);
+            await s_DatabaseInstance.SaveAsync(true);
         }
     }
 }

@@ -38,11 +38,19 @@ namespace Server.ReNote
         /// <summary>
         /// The name of the <see cref="Container"/> for storing a list of themes.
         /// </summary>
-        public const string DB_ROOT_COLOR_SCHEMAS = "themes";
+        public const string DB_ROOT_COLOR_THEMES = "themes";
         /// <summary>
         /// The name of the <see cref="Container"/> for storing the teams' data.
         /// </summary>
         public const string DB_ROOT_TEAMS = "teams";
+        /// <summary>
+        /// The name of the <see cref="Container"/> for storing configurations.
+        /// </summary>
+        public const string DB_ROOT_CONFIGS = "configurations";
+        /// <summary>
+        /// The name of the <see cref="Container"/> for storing users' preferences.
+        /// </summary>
+        public const string DB_ROOT_PREFERENCES = "preferences";
 
         /// <summary>
         /// The <see cref="ReNoteToken"/> base token pattern.

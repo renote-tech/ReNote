@@ -30,7 +30,7 @@ namespace Client
                 Platform.Log($"{exception.Message}\n{exception.StackTrace}\n", LogLevel.FATAL);
             };
 
-            Platform.Log("Initialized Process Events", LogLevel.INFO);
+            Platform.Log("Initialized process events", LogLevel.INFO);
         }
 
 #if DEBUG

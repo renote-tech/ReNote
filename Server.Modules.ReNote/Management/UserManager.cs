@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Server.Common.Utilities;
 using Server.ReNote.Data;
 using Server.ReNote.Utilities;
 
@@ -38,14 +37,14 @@ namespace Server.ReNote.Management
         /// <returns><see cref="long"/>/returns>
         public static long GetUserId(string username)
         {
-            if (StringUtil.ContainsDigitsOnly(username) && NumberUtil.IsSafeLong(username))
+            if (ValidateUserId(username))
             {
                 long userId = long.Parse(username);
                 return UserExists(userId) ? userId : -1;
             }
 
             Dictionary<string, string> items = DatabaseUtil.GetItems(Constants.DB_ROOT_USERS);
-            if (items.Count == 0)
+            if (items == null || items.Count == 0)
                 return -1;
 
             if (!items.ContainsKey(username))
@@ -69,6 +68,22 @@ namespace Server.ReNote.Management
                 return true;
 
             return false;
+        }
+
+        /// <summary>
+        /// Returns whether the <see cref="string"/> is a valid <see cref="long"/> value.
+        /// </summary>
+        /// <param name="data">The <see cref="string"/> to be proceeded.</param>
+        /// <returns><see cref="bool"/></returns>
+        private static bool ValidateUserId(string data)
+        {
+            for (int i = 0; i < data.Length; i++)
+            {
+                if (!char.IsDigit(data[i]))
+                    return false;
+            }
+
+            return long.TryParse(data, out _);
         }
     }
 }

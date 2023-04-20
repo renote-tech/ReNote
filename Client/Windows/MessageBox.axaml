@@ -5,11 +5,11 @@
         mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="175"
         x:Class="Client.Windows.MessageBox"
         Title="Information" Width="400" Height="175" Background="{DynamicResource BaseBackground}"
-		WindowStartupLocation="CenterOwner" CanResize="False" Closing="OnWindowClosing">
+		WindowStartupLocation="CenterOwner" CanResize="False">
 	<Panel>
-		<Image x:Name="boxIcon" Source="/Assets/info.png" Width="64" Height="64" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="30, 0, 0, 20"/>
-		<TextBlock x:Name="boxMessage" Text="Are you sure you want to log out &#x0a;from your account?" Margin="105, 0, 0, 20" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="16"/>
-	    <Button x:Name="boxConfirm" Click="OnConfirmClicked" Tag="CONFIRM" Content="Yes" HorizontalAlignment="Right" HorizontalContentAlignment="Center" VerticalAlignment="Bottom" FontSize="11" Margin="10" Width="75" Height="25"/>
-		<Button x:Name="boxCancel" Click="OnConfirmClicked"  Tag="CANCEL" Content="Cancel" HorizontalContentAlignment="Center" VerticalAlignment="Bottom" FontSize="11" Margin="10" Width="75" Height="25"/>
+		<Image x:Name="m_IconImage" Width="64" Height="64" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="30, 0, 0, 20"/>
+		<TextBlock x:Name="m_MessageLabel" Margin="105, 0, 0, 20" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="16"/>
+	    <Button x:Name="m_ConfirmButton" Content="{DynamicResource DialogConfirm}" HorizontalContentAlignment="Center" VerticalAlignment="Bottom" FontSize="11" Margin="10" Width="75" Height="25" HorizontalAlignment="Right"/>
+		<Button x:Name="m_CancelButton" Content="{DynamicResource DialogCancel}" HorizontalContentAlignment="Center" VerticalAlignment="Bottom" FontSize="11" Margin="10" Width="75" Height="25"/>
 	</Panel>
 </Window>

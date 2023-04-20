@@ -6,15 +6,16 @@
         {
             get
             {
-                return instance ??= new Client();
+                return s_Instance ??= new Client();
             }
             set
             {
-                instance = value;
+                s_Instance = value;
             }
         }
+
         public School SchoolInformation { get; set; }
 
-        private static Client instance;
+        private static Client s_Instance;
     }
 }

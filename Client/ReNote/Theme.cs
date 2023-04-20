@@ -7,6 +7,7 @@ namespace Client.ReNote
         public string Name { get; set; }
         public string ColorAccent { get; set; }
         public bool IsDarkTheme { get; set; }
+        public int Id { get; set; }
 
         public Color Accent
         {

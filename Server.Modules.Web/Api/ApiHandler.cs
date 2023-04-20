@@ -30,6 +30,9 @@ namespace Server.Web.Api
 
                 ApiResponse apiResponse;
                 ApiEndpoint apiEndpoint = ApiAtlas.GetEndpoint(apiContext.Request.RawUrl);
+                if (apiEndpoint == null)
+                    continue;
+
                 ApiRequest apiRequest = new ApiRequest()
                 {
                     Method  = apiContext.Request.HttpMethod,

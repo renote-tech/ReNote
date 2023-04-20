@@ -13,7 +13,7 @@ namespace Server.ReNote.Api
         /// <returns><see cref="ApiResponse"/></returns>
         public static async Task<ApiResponse> OperateRequest(ApiRequest req)
         {
-            return await ApiUtil.SendAsync(200, "Server is running");
+            return await ApiUtil.SendAsync(200, ApiMessages.ServerRunning());
         }
     }
 }

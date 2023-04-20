@@ -21,7 +21,7 @@ namespace Server.ReNote.Encryption
         }
 
         /// <summary>
-        /// Returns a randomized salt.
+        /// Returns a random salt.
         /// </summary>
         /// <param name="size">The size of the salt.</param>
         /// <returns><see cref="string"/></returns>

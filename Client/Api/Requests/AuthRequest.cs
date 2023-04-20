@@ -9,5 +9,11 @@ namespace Client.Api.Requests
 
         [JsonProperty("password")]
         public string Password { get; set; }
+
+        public AuthRequest(string username, string password)
+        {
+            Username = username;
+            Password = password;
+        }
     }
 }

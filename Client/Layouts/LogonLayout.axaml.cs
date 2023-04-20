@@ -1,12 +1,9 @@
-﻿using System;
-using System.Net;
-using Avalonia;
+﻿using System.Net;
 using Avalonia.Controls;
-using Avalonia.Data;
 using Avalonia.Input;
-using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml.MarkupExtensions;
 using Client.Api;
+using Client.Api.Requests;
 using Client.Api.Responses;
 using Client.Builders;
 using Client.Managers;
@@ -23,16 +20,67 @@ namespace Client.Layouts
         {
             InitializeComponent();
 
-            m_LanguageSelector.Items = LanguageManager.LanguageList;
-
-            ThemeManager.RestoreDefault();
-
 #if DEBUG
-            if(!Design.IsDesignMode)
-                Initialized += OnLayoutInitialized;
-#else
-            Initialized += OnLayoutInitialized;
+            if (Design.IsDesignMode)
+                return;
 #endif
+
+            InitializeLayout();
+            InitializeEvents();
+        }
+
+        private async void InitializeLayout()
+        {
+            ThemeManager.RestoreDefault();
+            int index = LanguageManager.RestoreDefault();
+
+            m_LanguageSelector.Items = LanguageManager.Languages;
+            m_LanguageSelector.SelectedIndex = index;
+
+            await ApiService.GetQuotationAsync((HttpStatusCode statusCode, QuotationResponse response) =>
+            {
+                if (statusCode != HttpStatusCode.OK)
+                    return;
+
+                m_QuotationContentLabel.Text = $"\"{response.Data.Content}\"";
+                m_QuotationAuthorLabel.Text = $"- {response.Data.Author}";
+            });
+        }
+
+        private void InitializeEvents()
+        {
+            m_ReNoteIcon.DoubleTapped += (sender, e) =>
+            {
+                MessageBoxBuilder.Create()
+                             .SetTitle("About ReNote \u03A3")
+                             .SetMessage($"Entirely developed by Alian/DEAD \ud83d\udc7b\n" +
+                                         $"Ver. {Platform.Version}\n" +
+                                         $"Code name \"{Platform.VersionName}\"")
+                             .SetType(MessageBoxType.OK)
+                             .SetIcon(MessageBoxIcon.INFO)
+                             .Show();
+            };
+
+            m_PasswordBox.KeyUp += (sender, e) =>
+            {
+                if (m_IsLoginLocked)
+                    return;
+
+                if (e.Key == Key.Enter)
+                    PerformLogin();
+            };
+
+            m_LoginButton.Click += (sender, e) =>
+            {
+                PerformLogin();
+            };
+
+            m_LanguageSelector.SelectionChanged += (sender, e) =>
+            {
+                Language language = (Language)m_LanguageSelector.SelectedItem;
+                LanguageManager.SetLanguage(language.LangCode);
+                Configuration.Save("Local", language.LangCode);
+            };
         }
 
         private async void PerformLogin()
@@ -45,37 +93,35 @@ namespace Client.Layouts
                 return;
             }
 
-            await ApiService.AuthenticateAsync(m_UsernameBox.Text, m_PasswordBox.Text, async (HttpStatusCode statusCode, AuthResponse response) =>
+            AuthRequest authRequest = new AuthRequest(m_UsernameBox.Text, m_PasswordBox.Text);
+            await ApiService.AuthenticateAsync(authRequest, async (HttpStatusCode statusCode, AuthResponse response) =>
             {
                 if (statusCode == HttpStatusCode.InternalServerError)
                 {
-                    UnlockLogin("LogonUnexpectedError");
+                    UnlockLogin("UnexpectedError");
                     return;
                 }
 
-                if (response.GetStatus() != 200)
+                if (response.Status != 200)
                 {
-                    UnlockLogin(response.GetMessage());
+                    UnlockLogin(response.Message);
                     return;
                 }
 
-                UserSession session = await UserSession.GetAsync(response.GetData());
-                if (session == null)
+                await User.GetAsync(response.Data);
+                if (User.Current == null)
                 {
                     UnlockLogin("LogonContactAdmin");
                     return;
                 }
 
-                UserLayout userLayout = new UserLayout();
-                userLayout.Session = session;
-
-                MainWindow.Instance.SetWindowContent(userLayout);
+                MainWindow.Instance.SetLayout(new UserLayout());
             });
         }
 
         private void LockLogin()
         {
-            m_LoginButton.Focus();
+            m_IsLoginLocked = true;
 
             m_LoginButton.IsEnabled = false;
             m_UsernameBox.IsEnabled = false;
@@ -84,7 +130,7 @@ namespace Client.Layouts
             m_LoginErrorLabel.IsVisible = false;
             m_LoadingRing.IsVisible = true;
 
-            m_IsLoginLocked = true;
+            m_LoginButton.Focus();
         }
 
         private void UnlockLogin(string errorType)
@@ -99,61 +145,6 @@ namespace Client.Layouts
             m_LoadingRing.IsVisible = false;
 
             m_IsLoginLocked = false;
-        }
-
-        private async void OnLayoutInitialized(object sender, EventArgs e)
-        {
-            for (int i = 0; i < LanguageManager.LanguageList.Count; i++)
-            {
-                if (LanguageManager.GetCurrentLanguage() == LanguageManager.LanguageList[i].LangCode)
-                {
-                    m_LanguageSelector.SelectedIndex = i;
-                    break;
-                }
-            }
-
-            await ApiService.GetQuotationAsync((HttpStatusCode statusCode, QuotationResponse response) =>
-            {
-                if (statusCode != HttpStatusCode.OK)
-                    return;
-
-                QuotationData quotationData = response.GetData();
-
-                m_QuotationContentLabel.Text = $"\"{quotationData.GetContent()}\"";
-                m_QuotationAuthorLabel.Text = $"- {quotationData.GetAuthor()}";
-            });
-        }
-
-        private void OnPasswordBoxKeyUp(object sender, KeyEventArgs e)
-        {
-            if (m_IsLoginLocked)
-                return;
-
-            if (e.Key == Key.Enter)
-                PerformLogin();
-        }
-
-        private void OnLoginButtonClicked(object sender, RoutedEventArgs e)
-        {
-            PerformLogin();
-        }
-
-        private void OnLogoClicked(object sender, PointerReleasedEventArgs e)
-        {
-            MessageBoxBuilder.Create()
-                             .SetTitle("About ReNote \u03A3")
-                             .SetMessage($"Entirely developed by Alian/DEAD \ud83d\udc7b\nVersion {Platform.VersionName}/{Platform.Version}")
-                             .SetType(MessageBoxType.OK)
-                             .SetIcon(MessageBoxIcon.INFO)
-                             .Show();
-        }
-
-        private void OnLanguageChanged(object sender, SelectionChangedEventArgs e)
-        {
-            Language selectedLanguage = (Language)m_LanguageSelector.SelectedItem;
-            LanguageManager.SetLanguage(selectedLanguage.LangCode);
-
-            // save setting locally (%APPDATA%\ReNote)
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Specialized;
 using System.Threading.Tasks;
-using Server.Common.Utilities;
 using Server.ReNote.Management;
 using Server.Web.Api;
 using Server.Web.Api.Responses;
@@ -85,12 +84,12 @@ namespace Server.Web.Utilities
             string authToken = GetHeaderValue(headers["authToken"]);
 
             if (string.IsNullOrWhiteSpace(sessionId) || string.IsNullOrWhiteSpace(authToken))
-                return await SendAsync(400, ApiMessages.NullOrEmpty("sessionId", "authToken"));
+                return await SendAsync(400, ApiMessages.EmptySessionIdOrAuthToken());
 
-            if (!NumberUtil.IsSafeLong(sessionId))
+            bool validId = long.TryParse(sessionId, out long realSessionId);
+            if (!validId)
                 return await SendAsync(400, ApiMessages.InvalidSession());
 
-            long realSessionId = long.Parse(sessionId);
             Session session = SessionManager.GetSession(realSessionId);
 
             if (session == null)
@@ -103,7 +102,7 @@ namespace Server.Web.Utilities
             if (computedHash != session.AuthToken)
                 return await SendAsync(400, ApiMessages.InvalidSession());
 
-            SessionManager.UpdateRequestTimestamp(session.SessionId);
+            SessionManager.UpdateTimestamp(session.SessionId);
 
             return await SendWithDataAsync(200, ApiMessages.Success(), session.UserId);
         }

@@ -42,8 +42,7 @@ namespace Server.Database.Management
             if (s_Databases.ContainsKey(dbName))
                 return null;
 
-            RNDatabase database = new RNDatabase();
-            database.FileLocation = filePath;
+            RNDatabase database = new RNDatabase { FileLocation = filePath };
             database.Load();
 
             s_Databases.Add(dbName, database);
@@ -57,8 +56,7 @@ namespace Server.Database.Management
         /// <param name="dbName">The database's name.</param>
         public static void RemoveDatabase(string dbName)
         {
-            if (s_Databases.ContainsKey(dbName))
-                s_Databases.Remove(dbName);
+            s_Databases.Remove(dbName);
         }
 
         /// <summary>
@@ -72,7 +70,7 @@ namespace Server.Database.Management
             if (!s_Databases.ContainsKey(dbName))
                 return null;
 
-            if (!s_Databases[dbName].IsContainerExists(containerName))
+            if (!s_Databases[dbName].ContainerExists(containerName))
                 return null;
 
             return s_Databases[dbName][containerName].GetItems();
@@ -89,7 +87,7 @@ namespace Server.Database.Management
             if (!s_Databases.ContainsKey(dbName))
                 return -1;
 
-            if (s_Databases[dbName].IsContainerExists(containerName))
+            if (s_Databases[dbName].ContainerExists(containerName))
                 return 1;
 
             s_Databases[dbName].AddContainer(containerName);
@@ -110,7 +108,7 @@ namespace Server.Database.Management
             if (!s_Databases.ContainsKey(dbName))
                 return -1;
 
-            if (!s_Databases[dbName].IsContainerExists(containerName))
+            if (!s_Databases[dbName].ContainerExists(containerName))
                 return -1;
 
             s_Databases[dbName][containerName].Name = newContainerName;
@@ -128,7 +126,7 @@ namespace Server.Database.Management
             if (!s_Databases.ContainsKey(dbName))
                 return;
 
-            if (!s_Databases[dbName].IsContainerExists(containerName))
+            if (!s_Databases[dbName].ContainerExists(containerName))
                 return;
 
             s_Databases[dbName].RemoveContainer(containerName);
@@ -148,7 +146,7 @@ namespace Server.Database.Management
             if (!s_Databases.ContainsKey(dbName))
                 return -1;
 
-            if (!s_Databases[dbName].IsContainerExists(containerName))
+            if (!s_Databases[dbName].ContainerExists(containerName))
                 return -1;
 
             bool itemExists = s_Databases[dbName][containerName].ContainsItem(itemName);
@@ -159,7 +157,7 @@ namespace Server.Database.Management
             s_Databases[dbName].NeedSave = true;
 
             return 0;
-        }
+            }
 
         /// <summary>
         /// Edits an item from a specified container.
@@ -175,7 +173,7 @@ namespace Server.Database.Management
             if (!s_Databases.ContainsKey(dbName))
                 return -1;
 
-            if (!s_Databases[dbName].IsContainerExists(containerName))
+            if (!s_Databases[dbName].ContainerExists(containerName))
                 return -1;
 
             bool itemExists = s_Databases[dbName][containerName].ContainsItem(oldItemName);
@@ -199,7 +197,7 @@ namespace Server.Database.Management
             if (!s_Databases.ContainsKey(dbName))
                 return;
 
-            if (!s_Databases[dbName].IsContainerExists(containerName))
+            if (!s_Databases[dbName].ContainerExists(containerName))
                 return;
 
             s_Databases[dbName][containerName].RemoveItem(itemName);
@@ -244,9 +242,6 @@ namespace Server.Database.Management
 
             if (string.IsNullOrWhiteSpace(s_Databases[dbName].FileLocation))
                 return 1;
-
-            if (s_Databases[dbName].IsEmpty())
-                return 2;
 
             //TODO: Sort containers and items
             await s_Databases[dbName].SaveAsync();

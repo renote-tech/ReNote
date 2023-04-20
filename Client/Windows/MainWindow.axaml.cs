@@ -1,4 +1,3 @@
-using Avalonia;
 using Avalonia.Controls;
 using Client.Layouts;
 using Client.Managers;
@@ -18,15 +17,24 @@ namespace Client.Windows
         {
             Instance = this;
 
-            Configuration.Load();
+            Configuration.LoadAll();
             LanguageManager.Initialize();
 
-            SetWindowContent(new SplashLayout());
+            SetLayout(new SplashLayout());
         }
 
-        public void SetWindowContent(Layout layout)
+        public void SetLayout(Layout layout)
         {
             Content = layout;
+        }
+
+        public Panel GetMainContent()
+        {
+            Layout layout = (Layout)Content;
+            if (layout == null)
+                return null;
+
+            return (Panel)layout.Content;
         }
     }
 }

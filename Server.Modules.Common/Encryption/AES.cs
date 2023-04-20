@@ -84,7 +84,7 @@ namespace Server.Common.Encryption
         /// </summary>
         public byte[] IV { get; set; }
         /// <summary>
-        /// The decryption key; it shall not be stored in a database or file.
+        /// The decryption key; it shall not be stored within a database or file.
         /// </summary>
         public byte[] Key { get; set; }
 

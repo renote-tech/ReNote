@@ -616,18 +616,8 @@ namespace Server.Database.Windows
                 return;
 
             int code = await DatabaseManager.SaveDatabaseAsync(dbName);
-            switch (code)
-            {
-                case 1:
-                    saveDatabaseDialog.ShowDialog();
-                    break;
-                case 2:
-                    MessageBox.Show("In order to save it, please add at least one container.",
-                                    "Uh Oh!",
-                                    MessageBoxButtons.OK,
-                                    MessageBoxIcon.Information);
-                    break;
-            }
+            if (code == 1)
+                saveDatabaseDialog.ShowDialog();
         }
 
         /// <summary>

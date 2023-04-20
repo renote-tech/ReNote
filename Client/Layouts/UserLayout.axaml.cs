@@ -1,12 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Markup.Xaml.MarkupExtensions;
 using Avalonia.Media;
 using Client.Api;
+using Client.Api.Responses;
+using Client.Managers;
 using Client.Pages;
+using Client.Popups;
 using Client.ReNote;
 using Client.Windows;
 
@@ -14,123 +19,139 @@ namespace Client.Layouts
 {
     public partial class UserLayout : Layout
     {
-        public UserSession Session { get; set; }
-
-        private string m_ToolBarName;
+        private string m_ToolbarId;
 
         public UserLayout()
         {
             InitializeComponent();
 
 #if DEBUG
-            if (!Design.IsDesignMode)
-                Initialized += OnLayoutInitialized;
-#else
-                Initialized += OnLayoutInitialized;
-#endif
-        }
-
-        private void SetPage(Page page)
-        {
-            if (!string.IsNullOrWhiteSpace(m_ToolBarName) && m_ToolBarName == page.ToolBar.Name)
+            if (Design.IsDesignMode)
                 return;
+#endif
 
-            ClearToolbar(page.ToolBar);
-
-            double lastButtonWidth = 0;
-            FormattedText formatter = new FormattedText();
-            for (int i = 0; i < page.ToolBar.Buttons.Count; i++)
-            {
-                KeyValuePair<string, UserControl> keyValuePair = page.ToolBar.Buttons.ElementAt(i);
-
-                Button toolBarButton = new Button()
-                {
-                    Content      = keyValuePair.Key,
-                    Background   = Brushes.Transparent,
-                    Margin       = new Thickness(lastButtonWidth, 0),
-                    Height       = 30,
-                    FontSize     = 13,
-                    CornerRadius = new CornerRadius(0)
-                };
-
-                formatter.Typeface = new Typeface(toolBarButton.FontFamily, toolBarButton.FontStyle, toolBarButton.FontWeight);
-                formatter.FontSize = toolBarButton.FontSize;
-                formatter.Text     = toolBarButton.Content.ToString();
-
-                lastButtonWidth = formatter.Bounds.Width + 22;
-
-                m_ToolBar.Children.Add(toolBarButton);
-            }
-
-            m_Page.Children.Add(page);
+            InitializeLayout();
+            InitializeEvents();
         }
 
-        private void GoToHome()
-        {
-            if (HomePage.Instance == null)
-                HomePage.Instance = new HomePage();
-
-            SetPage(HomePage.Instance);
-        }
-
-        private void ClearToolbar(ToolBar toolbar)
-        {
-            m_Page.Children.Clear();
-            m_ToolBar.Children.Clear();
-
-            m_ToolBarName = toolbar.Name;
-            m_PageName.Text = m_ToolBarName;
-        }
-
-        private void OnLayoutInitialized(object sender, EventArgs e)
+        private void InitializeLayout()
         {
             School schoolInfo = ReNote.Client.Instance.SchoolInformation;
-            if (schoolInfo == null || Session == null)
+            User user = User.Current;
+
+            if (schoolInfo == null || user == null)
                 return;
 
             m_SchoolName.Text = schoolInfo.SchoolName;
 
-            if (!string.IsNullOrWhiteSpace(Session.Team.TeamName))
-                m_RealName.Text = $"{Session.RealName} ({Session.Team.TeamName})";
+            if (!string.IsNullOrWhiteSpace(user.Team.TeamName))
+                m_RealName.Text = $"{user.RealName} ({user.Team.TeamName})";
             else
-                m_RealName.Text = Session.RealName;
+                m_RealName.Text = user.RealName;
 
-            GoToHome();
+            ThemeManager.SetThemeByName(user.Theme);
+            LanguageManager.SetLanguage(user.Language);
+
+            Navigate("Home");
         }
-
-        private void OnMenuButtonClicked(object sender, PointerReleasedEventArgs e)
+        
+        private void InitializeEvents()
         {
-            m_MenuSelector.IsVisible = !m_MenuSelector.IsVisible;
-        }
+            m_MenuButton.PointerReleased += (sender, e) =>
+            {
+                m_MenuSelector.IsVisible = !m_MenuSelector.IsVisible;
+            };
 
-        private void OnHomeButtonClicked(object sender, PointerReleasedEventArgs e)
-        {
-            if (m_MenuSelector.IsVisible)
+            m_MenuMask.PointerReleased += (sender, e) =>
+            {
                 m_MenuSelector.IsVisible = false;
+            };
 
-            GoToHome();
+            m_HomeButton.PointerReleased += (sender, e) => Navigate("Home");
+            m_ProfileButton.PointerReleased += (sender, e) => Navigate("User");
+
+            m_LogOutButton.PointerReleased += async (sender, e) =>
+            {
+                await ApiService.LogoutAsync(User.Current.SessionId, User.Current.AuthToken, (HttpStatusCode statusCode, Response response) =>
+                {
+                    User.Delete();
+                    MainWindow.Instance.SetLayout(new LogonLayout());
+                });
+            };
         }
 
-        private void OnProfilePictureClicked(object sender, PointerReleasedEventArgs e)
+        public void Navigate(string toolbarId)
         {
-            if (m_MenuSelector.IsVisible)
-                m_MenuSelector.IsVisible = false;
+            Toolbar toolbar = ToolbarManager.GetToolbar(toolbarId);
+            if (toolbar == null || toolbar.DefaultPage == null)
+                return;
 
-            if (AccountPage.Instance == null)
-                AccountPage.Instance = new AccountPage();
+            Page page = (Page)Activator.CreateInstance(toolbar.DefaultPage);
+            m_Page.Children.Clear();
+            m_Page.Children.Add(page);
 
-            AccountPage.Instance.SetSession(Session);
-            SetPage(AccountPage.Instance);
+            SetToolbar(toolbar);
         }
 
-        private async void OnLogoutButtonClicked(object sender, PointerReleasedEventArgs e)
+        public void Navigate(Page page)
         {
-            await ApiService.SendLogoutAsync(Session.SessionId, Session.AuthToken, null);
+            if (m_Page.Children.Count > 0 && m_Page.Children[0].GetType() == page.GetType())
+                return;
 
-            HomePage.Instance = null;
-            AccountPage.Instance = null;
+            m_Page.Children.Clear();
+            m_Page.Children.Add(page);
 
-            MainWindow.Instance.SetWindowContent(new LogonLayout());
+            Toolbar toolbar = ToolbarManager.GetToolbar(page.GetToolbarId());
+            if (toolbar == null || m_ToolbarId == toolbar.Id)
+                return;
+
+            SetToolbar(toolbar);
+        }
+
+        private void SetToolbar(Toolbar toolbar)
+        {
+            m_Toolbar.Children.Clear();
+
+            double lastButtonWidth = 0;
+            FormattedText formatter = new FormattedText();
+            for (int i = 0; i < toolbar.Buttons.Count; i++)
+            {
+                KeyValuePair<string, Type> buttonArgs = toolbar.Buttons.ElementAt(i);
+
+                Button barButton = new Button()
+                {
+                    Background = Brushes.Transparent,
+                    Margin = new Thickness(lastButtonWidth, 0),
+                    Height = 30,
+                    FontSize = 13,
+                    CornerRadius = new CornerRadius(0)
+                };
+
+                barButton[!ContentProperty] = new DynamicResourceExtension(buttonArgs.Key);
+
+                barButton.GetObservable(ContentProperty).Subscribe(value =>
+                {
+                    formatter.Typeface = new Typeface(barButton.FontFamily, barButton.FontStyle, barButton.FontWeight);
+                    formatter.FontSize = barButton.FontSize;
+                    formatter.Text = (string)value;
+
+                    lastButtonWidth = formatter.Bounds.Width + 16;
+                });
+
+                barButton.Click += (sender, e) =>
+                {
+                    if (buttonArgs.Value == null)
+                        return;
+
+                    Page page = (Page)Activator.CreateInstance(buttonArgs.Value);
+                    Navigate(page);
+                };
+
+                m_Toolbar.Children.Add(barButton);
+            }
+
+            m_ToolbarId = toolbar.Id;
+            m_PageName[!TextBlock.TextProperty] = new DynamicResourceExtension(toolbar.Name);
         }
     }
 }

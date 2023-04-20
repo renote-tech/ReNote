@@ -6,10 +6,10 @@ namespace Client.Builders
 {
     internal class MessageBoxBuilder
     {
-        private string Title { get; set; }
-        private string Message { get; set; }
-        private MessageBoxType MessageBoxType { get; set; }
-        private MessageBoxIcon MessageBoxIcon { get; set; }
+        private string m_Title;
+        private string m_Message;
+        private MessageBoxType m_MessageBoxType;
+        private MessageBoxIcon m_MessageBoxIcon;
 
         public static MessageBoxBuilder Create()
         {
@@ -18,31 +18,31 @@ namespace Client.Builders
 
         public MessageBoxBuilder SetTitle(string title)
         {
-            Title = title;
+            m_Title = title;
             return this;
         }
 
         public MessageBoxBuilder SetMessage(string message)
         {
-            Message = message; 
+            m_Message = message; 
             return this;
         }
 
         public MessageBoxBuilder SetType(MessageBoxType style)
         {
-            MessageBoxType = style;
+            m_MessageBoxType = style;
             return this;
         }
 
         public MessageBoxBuilder SetIcon(MessageBoxIcon icon)
         {
-            MessageBoxIcon = icon;
+            m_MessageBoxIcon = icon;
             return this;
         }
 
         public MessageBox GetWindow()
         {
-            return new MessageBox(Title, Message, MessageBoxType, MessageBoxIcon)
+            return new MessageBox(m_Title, m_Message, m_MessageBoxType, m_MessageBoxIcon)
             {
                 WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
@@ -53,7 +53,7 @@ namespace Client.Builders
             if (owner == default)
                 owner = MainWindow.Instance;
 
-            MessageBox dialog = new MessageBox(Title, Message, MessageBoxType, MessageBoxIcon);
+            MessageBox dialog = new MessageBox(m_Title, m_Message, m_MessageBoxType, m_MessageBoxIcon);
             dialog.ShowDialog(owner);
         }
 
@@ -62,7 +62,7 @@ namespace Client.Builders
             if (owner == default)
                 owner = MainWindow.Instance;
 
-            MessageBox dialog = new MessageBox(Title, Message, MessageBoxType, MessageBoxIcon);
+            MessageBox dialog = new MessageBox(m_Title, m_Message, m_MessageBoxType, m_MessageBoxIcon);
             await dialog.ShowDialog(owner);
 
             return dialog.ExitCode;

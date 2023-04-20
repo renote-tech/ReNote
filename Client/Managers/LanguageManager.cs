@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Avalonia;
 using Avalonia.Platform;
 
@@ -8,19 +9,22 @@ namespace Client.Managers
 {
     internal class LanguageManager
     {
-        public static List<Language> LanguageList;
+        public static Language[] Languages;
 
-        private static string s_CurrentLanguage;
+        private static Language s_CurrentLanguage;
         private static Dictionary<string, string[]> s_Languages = new Dictionary<string, string[]>();
 
         public static void Initialize()
         {
-            LanguageList = new List<Language>() { new Language("en-GB", "\ud83c\uddec\ud83c\udde7", "English (UK)"),
+            Languages = new Language[] { new Language("en-GB", "\ud83c\uddec\ud83c\udde7", "English (UK)"),
                                                   new Language("en-US", "\ud83c\uddfa\ud83c\uddf8", "English (US)"),
                                                   new Language("fr-FR", "\ud83c\uddeb\ud83c\uddf7", "Français"),
                                                   new Language("zh-CN", "\ud83c\udde8\ud83c\uddf3", "\u4e2d\u6587"),
                                                   new Language("es-ES", "\ud83c\uddea\ud83c\uddf8", "Español"),
                                                   new Language("de-DE", "\ud83c\udde9\ud83c\uddea", "Deutsch") };
+            
+            for (int i = 0; i < Languages.Length; i++)
+                Languages[i].Id = i;
 
             IAssetLoader loader = AvaloniaLocator.Current.GetService<IAssetLoader>();
 
@@ -38,21 +42,31 @@ namespace Client.Managers
             s_Languages["fr-FR"] = frFRReader.ReadToEnd().Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
             s_Languages["de-DE"] = deDEReader.ReadToEnd().Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
+
             SetLanguage(Configuration.Language);
         }
 
-
-        public static void SetLanguage(string langCode = "en-GB")
+        public static int RestoreDefault()
         {
-            if (string.IsNullOrWhiteSpace(langCode))
-                s_CurrentLanguage = "en_GB";
-            else
-                s_CurrentLanguage = langCode;
+            return SetLanguage(Configuration.Language);
+        }
 
-            if (!s_Languages.ContainsKey(s_CurrentLanguage))
-                return;
+        public static int SetLanguage(string langCode)
+        {
+            string actualLangCode = string.IsNullOrWhiteSpace(langCode) ? Configuration.Language : langCode;
+            for (int i = 0; i < Languages.Length; i++)
+            {
+                if (Languages[i].LangCode == actualLangCode)
+                    s_CurrentLanguage = Languages[i];
+            }
 
-            string[] languageData = s_Languages[s_CurrentLanguage];
+            if (s_CurrentLanguage == null)
+                return -1;
+
+            if (!s_Languages.ContainsKey(actualLangCode))
+                return -1;
+
+            string[] languageData = s_Languages[actualLangCode];
             for (int i = 0; i < languageData.Length; i++)
             {
                 string[] keyValuePair = languageData[i].Split('=');
@@ -61,9 +75,25 @@ namespace Client.Managers
 
                 Application.Current.Resources[keyValuePair[0]] = keyValuePair[1].Replace(@"\n", "\n");
             }
+
+            return s_CurrentLanguage.Id;
         }
 
-        public static string GetCurrentLanguage()
+        public static Language GetLanguageByName(string langCode)
+        {
+            if (string.IsNullOrWhiteSpace(langCode))
+                return null;
+
+            for (int i = 0; i < Languages.Length; i++)
+            {
+                if (Languages[i].LangCode == langCode)
+                    return Languages[i];
+            }
+
+            return null;
+        }
+
+        public static Language GetCurrentLanguage()
         {
             return s_CurrentLanguage;
         }
@@ -74,6 +104,7 @@ namespace Client.Managers
         public string LangCode { get; set; }
         public string LangSymbol { get; set; }
         public string DisplayName { get; set; }
+        public int Id { get; set; }
 
         public Language(string langCode, string langSymbol, string displayName)
         {

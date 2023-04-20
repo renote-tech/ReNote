@@ -12,7 +12,7 @@
 </p>
 
 # Build ReNote
-Use the `cd` command to navigate to one of the following directories: `Client`, `Server`, `Server.Database.CLI` or `Server.Resource.GUI`. 
+Use the `cd` command to navigate to one of the following directories: `Client` or `Server`. 
 Next run the command below for the corresponding platform.
 
 ### Windows
@@ -47,8 +47,7 @@ Download <a href="https://dotnet.microsoft.com/en-us/download/dotnet/7.0#runtime
  - Full support for static websites & Vue.js
  - Integrated API server
  - Integrated socket server
- - Database system
- - Database editor
+ - Custom Database system
  
 ### → Client
  - Easy-to-use interface

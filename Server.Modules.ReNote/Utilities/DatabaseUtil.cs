@@ -14,8 +14,11 @@ namespace Server.ReNote.Utilities
         /// <param name="root">The name of the <see cref="Container"/>.</param>
         /// <param name="key">The key of the item.</param>
         /// <param name="value">The value of the item.</param>
-        public static void Set(string root, string key, object valueData, string secondaryKey = default)
+        public static void Set(string root, string key, object valueData, string secondKey = default)
         {
+            if (string.IsNullOrWhiteSpace(root) || string.IsNullOrWhiteSpace(key))
+                return;
+
             if (Server.Database[root] == null)
                 Server.Database.AddContainer(root);
 
@@ -27,8 +30,8 @@ namespace Server.ReNote.Utilities
             else
                 Server.Database[root].AddItem(key, value);
 
-            if (secondaryKey != default)
-                Server.Database[root].AddItem(secondaryKey, key);
+            if (secondKey != default)
+                Server.Database[root].AddItem(secondKey, key);
         }
 
         /// <summary>
@@ -39,6 +42,9 @@ namespace Server.ReNote.Utilities
         /// <returns><see cref="bool"/></returns>
         public static bool Remove(string root, string key)
         {
+            if (string.IsNullOrWhiteSpace(root) || string.IsNullOrWhiteSpace(key))
+                return false;
+
             if (Server.Database[root] == null)
                 return false;
 
@@ -53,6 +59,9 @@ namespace Server.ReNote.Utilities
         /// <returns><see cref="string"/></returns>
         public static string Get(string root, string key)
         {
+            if (string.IsNullOrWhiteSpace(root) || string.IsNullOrWhiteSpace(key))
+                return null;
+
             if (Server.Database[root] == null)
                 return null;
 
@@ -71,6 +80,9 @@ namespace Server.ReNote.Utilities
         /// <returns><typeparamref name="T"/></returns>
         public static T GetAs<T>(string root, string key) where T : class
         {
+            if (string.IsNullOrWhiteSpace(root) || string.IsNullOrWhiteSpace(key))
+                return null;
+
             if (Server.Database[root] == null)
                 return null;
 
@@ -91,8 +103,11 @@ namespace Server.ReNote.Utilities
         /// <returns>Dictionary[<see cref="string"/>, <see cref="string"/>]</returns>
         public static Dictionary<string, string> GetItems(string root)
         {
+            if (string.IsNullOrWhiteSpace(root))
+                return null;
+
             if (Server.Database[root] == null)
-                return new Dictionary<string, string>();
+                return null;
 
             return Server.Database[root].GetItems();
         }
@@ -104,6 +119,9 @@ namespace Server.ReNote.Utilities
         /// <returns></returns>
         public static string[] GetValues(string root)
         {
+            if (string.IsNullOrWhiteSpace(root))
+                return Array.Empty<string>();
+
             if (Server.Database[root] == null)
                 return Array.Empty<string>();
 
@@ -118,6 +136,9 @@ namespace Server.ReNote.Utilities
         /// <returns><see cref="bool"/></returns>
         public static bool ItemExists(string root, string key)
         {
+            if (string.IsNullOrWhiteSpace(root) || string.IsNullOrWhiteSpace(key))
+                return false;
+
             if (Server.Database[root] == null)
                 return false;
 

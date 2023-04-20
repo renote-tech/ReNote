@@ -3,16 +3,27 @@ SplashCopyrightInfo=© ReNote NETW. All rights reserved.
 SplashErrorMessage=An error occurred. The application may not be configured properly.
 SplashTryAgain=Try again
 
+UnexpectedError=An unexpected error occurred
+
 LogonMainTitle=Sign in
 LogonWatermarkUsername=Username
 LogonWatermarkPassword=Password
 LogonSignInButton=Sign in
 LogonEmptyField=Username or password may not be empty
-LogonUnexpectedError=An unexpected error occurred
 LogonContactAdmin=If this issue persists; contact your administrator
 LogonInvalidField=Invalid username or password
 LogonUnknownError=Unknown error\nContact your administrator
 LogonCopyrightText=© ReNote NETW.\nAll rights reserved.
+
+DialogConfirm=OK
+DialogCancel=Cancel
+
+HomeTitle=Home
+UserTitle=Profile
+
+WidgetTitle=Edit widgets
+AccountTitle=Account
+DocumentTitle=Documents
 
 AccountProfile=Profile
 AccountContact=Contact
@@ -28,6 +39,8 @@ AccountChangePassword=Change Password
 AccountPreferences=Preferences
 AccountThemes=Themes
 AccountLanguage=Language
+AccountResetPreferences=Reset
+AccountApplyPreferences=Apply
 
 AccountMobile=Mobile Login
 

@@ -6,8 +6,8 @@ using Server.ReNote.Management;
 using Server.Web.Api;
 using Server.Web.Api.Requests;
 using Server.Web.Api.Responses;
-using Newtonsoft.Json;
 using Server.Web.Utilities;
+using Newtonsoft.Json;
 
 namespace Server.ReNote.Api
 {
@@ -20,7 +20,7 @@ namespace Server.ReNote.Api
         /// <returns><see cref="ApiResponse"/></returns>
         public static async Task<ApiResponse> OperateRequest(ApiRequest req)
         {
-            switch(req.Method.ToUpper())
+            switch(req.Method)
             {
                 case "POST":
                     return await Post(req);
@@ -36,26 +36,26 @@ namespace Server.ReNote.Api
         /// <returns><see cref="ApiResponse"/></returns>
         private static async Task<ApiResponse> Post(ApiRequest req)
         {
-            string contentBody = await StreamUtil.GetStringAsync(req.Body);
-            if (string.IsNullOrWhiteSpace(contentBody))
+            string requestBody = await StreamUtil.GetStringAsync(req.Body);
+            if (string.IsNullOrWhiteSpace(requestBody))
                 return await ApiUtil.SendAsync(400, ApiMessages.EmptyUsernameOrPassword());
 
-            if (!JsonUtil.ValiditateJson(contentBody))
+            if (!JsonUtil.ValiditateJson(requestBody))
                 return await ApiUtil.SendAsync(400, ApiMessages.InvalidJson());
 
-            AuthRequest reqBody = JsonConvert.DeserializeObject<AuthRequest>(contentBody);
+            AuthRequest requestData = JsonConvert.DeserializeObject<AuthRequest>(requestBody);
 
-            if(string.IsNullOrWhiteSpace(reqBody.Username) || string.IsNullOrWhiteSpace(reqBody.Password))
+            if(string.IsNullOrWhiteSpace(requestData.Username) || string.IsNullOrWhiteSpace(requestData.Password))
                 return await ApiUtil.SendAsync(400, ApiMessages.EmptyUsernameOrPassword());
 
-            if (UserManager.GetUserId(reqBody.Username) == -1)
+            if (UserManager.GetUserId(requestData.Username) == -1)
                 return await ApiUtil.SendAsync(400, ApiMessages.InvalidUsernameOrPassword());
 
-            User userData = UserManager.GetUser(reqBody.Username);
-            byte[] hashPassword = await Sha256.ComputeAsync(reqBody.Password);
+            User userData = UserManager.GetUser(requestData.Username);
+            byte[] hashPassword = await Sha256.ComputeAsync(requestData.Password);
             AESObject aesObject = new AESObject(userData.SecurePassword, iv: userData.IVPassword, key: hashPassword);
 
-            if (!AES.VerifyKey(reqBody.Password, aesObject))
+            if (!AES.VerifyKey(requestData.Password, aesObject))
                 return await ApiUtil.SendAsync(401, ApiMessages.InvalidUsernameOrPassword());
 
             Session session = await SessionManager.CreateSessionAsync(userData.UserId);

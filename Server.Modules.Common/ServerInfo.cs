@@ -39,10 +39,6 @@ namespace Server.Common
         /// The server version name.
         /// </summary>
         public const string VersionName = "SpringBloom";
-        /// <summary>
-        /// The server API version.
-        /// </summary>
-        public const string ApiVersion = "v1";
 
         /// <summary>
         /// Returns whether the environment is running Windows or Unix.

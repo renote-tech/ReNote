@@ -39,7 +39,7 @@ namespace Server.ReNote.Management
         /// Updates the request timestamp.
         /// </summary>
         /// <param name="sessionId">The session id.</param>
-        public static void UpdateRequestTimestamp(long sessionId)
+        public static void UpdateTimestamp(long sessionId)
         {
             Session session = GetSession(sessionId);
             session.RequestTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
@@ -112,7 +112,7 @@ namespace Server.ReNote.Management
             long sId    = new Random().NextInt64(minSid, maxSid);
             
             if (SessionExists(sId))
-                return CreateSessionId();
+                return CreateSessionId(); 
 
             return sId;
         }
@@ -174,17 +174,17 @@ namespace Server.ReNote.Management
         /// <returns><see cref="bool"/></returns>
         public bool HasExpired()
         {
-            bool isExpiredSession = false;
+            bool expired = false;
             if ((RequestTimestamp + 600000) < DateTimeOffset.Now.ToUnixTimeMilliseconds())
-                isExpiredSession = true;
+                expired = true;
 
             if ((Connection + 1800000) < DateTimeOffset.Now.ToUnixTimeMilliseconds())
-                isExpiredSession = true;
+                expired = true;
 
-            if (isExpiredSession)
+            if (expired)
                 SessionManager.DeleteSession(SessionId);
 
-            return isExpiredSession;
+            return expired;
         }
     }
 }

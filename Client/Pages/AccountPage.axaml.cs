@@ -1,158 +1,208 @@
 using System;
-using System.Net;
-using Avalonia.Controls;
-using Avalonia.Interactivity;
-using Client.Api.Responses;
-using Client.Api;
-using Client.ReNote;
-using Client.Managers;
-using Avalonia.Markup.Xaml.MarkupExtensions;
 using System.Globalization;
+using System.Linq;
+using System.Net;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Markup.Xaml.MarkupExtensions;
+using Avalonia.Media;
+using Client.Api;
+using Client.Api.Requests;
+using Client.Api.Responses;
+using Client.Managers;
+using Client.Popups;
+using Client.ReNote;
 
 namespace Client.Pages
 {
     public partial class AccountPage : Page
     {
-        public static AccountPage Instance { get; set; }
-        public UserSession Session { get; set; }
+        private string m_SelectedTheme;
+        private string m_SelectedLanguage;
+        private readonly Panel[] m_Fragments;
 
         public AccountPage()
         {
             InitializeComponent();
-            ToolBar = new ToolBar("My Profile");
-            ToolBar.Buttons.Add("Account", null);
-            ToolBar.Buttons.Add("Documents", null);
+
+            m_Fragments = new Panel[]
+            {
+                m_FragProfile,
+                m_FragSecurity,
+                m_FragPreferences,
+                m_FragMobileLogin,
+                m_FragAbout
+            };
 
 #if DEBUG
-            if(!Design.IsDesignMode)
-                Initialized += OnLayoutInitialized;
-#else
-            Initialized += OnLayoutInitialized;
+            if (Design.IsDesignMode)
+                return;
 #endif
+
+            InitializeLayout();
+            InitializeEvents();
         }
 
-        public void SetSession(UserSession session)
+        private void InitializeLayout()
         {
-            if (session == null)
-                return;
-
-            Session = session;
-
-            m_UserName.Text = Session.RealName;
-            if (!string.IsNullOrWhiteSpace(Session.Team.TeamName))
-                m_UserTeam.Text = $"({Session.Team.TeamName})";
-
-            if (!string.IsNullOrWhiteSpace(Session.Email))
-                m_Email.Text = Session.Email;
-
-            if (!string.IsNullOrWhiteSpace(Session.PhoneNumber))
-                m_PhoneNumber.Text = Session.PhoneNumber;
-
-            m_UserId.Text = $"ID: {Session.UserId}";
-
-            if (Session.LastConnection == 0)
+            FormattedText formatter = new FormattedText()
             {
-                m_LastConnection[!TextBlock.TextProperty] = new DynamicResourceExtension("AccountWelcome");
-                return;
-            }
+                Typeface = new Typeface(m_SaveButton.FontFamily, m_SaveButton.FontStyle, m_SaveButton.FontWeight),
+                FontSize = m_SaveButton.FontSize
+            };
 
-            DateTimeOffset lastConnection = DateTimeOffset.FromUnixTimeMilliseconds(Session.LastConnection).ToLocalTime();
-            CultureInfo cultureInfo = new CultureInfo(LanguageManager.GetCurrentLanguage());
-            m_LastConnection.Text = lastConnection.ToString("F", cultureInfo);
-        }
+            m_SaveButton.GetObservable(ContentProperty).Subscribe(value =>
+            {
+                formatter.Text = (string)value;
 
-        private async void OnLayoutInitialized(object sender, EventArgs e)
-        {
-            m_LanguageSelector.Items = LanguageManager.LanguageList;
+                double width = formatter.Bounds.Width;
+                m_SaveButton.Width = width + 24;
+                m_ResetButton.Margin = new Thickness(width + 56, 16);
+            });
+
+            User user = User.Current;
+
+            m_UserName.Text = user.RealName;
+            m_UserId.Text = $"ID: {user.UserId}";
             m_Version.Text = $"Ver. {Platform.Version}";
 
-            await ApiService.GetThemeList((HttpStatusCode statusCode, ThemeResponse response) =>
+            if (!string.IsNullOrWhiteSpace(user.Team.TeamName))
+                m_UserTeam.Text = $"({user.Team.TeamName})";
+
+            if (!string.IsNullOrWhiteSpace(user.Email))
+                m_Email.Text = user.Email;
+
+            if (!string.IsNullOrWhiteSpace(user.PhoneNumber))
+                m_PhoneNumber.Text = user.PhoneNumber;
+
+            if (user.LastConnection == 0)
+                m_LastConnection[!TextBlock.TextProperty] = new DynamicResourceExtension("AccountWelcome");
+            else
+                SetLanguageDataFormat();
+
+            Theme[] themes = ThemeManager.GetAllThemes();
+            Language[] languages = LanguageManager.Languages;
+
+            m_ThemeList.Items = themes;
+            m_LanguageList.Items = languages;
+
+            Theme theme = ThemeManager.GetCurrentTheme();
+            if (theme != null)
+                m_ThemeList.SelectedIndex = theme.Id;
+
+            Language language = LanguageManager.GetCurrentLanguage();
+            if (language != null)
+                m_LanguageList.SelectedIndex = language.Id;
+        }
+
+        private void InitializeEvents()
+        {
+            m_ThemeList.SelectionChanged += (sender, e) =>
+            {
+                Theme theme = (Theme)m_ThemeList.SelectedItem;
+                ThemeManager.SetTheme(theme);
+
+                m_SelectedTheme = theme.Name;
+
+                bool isSelected = IsPreferenceSelected();
+                m_SaveButton.IsEnabled = isSelected;
+                m_ResetButton.IsEnabled = isSelected;
+            };
+
+            m_LanguageList.SelectionChanged += (sender, e) =>
+            {
+                Language language = (Language)m_LanguageList.SelectedItem;
+                LanguageManager.SetLanguage(language.LangCode);
+                SetLanguageDataFormat();
+
+                m_SelectedLanguage = language.LangCode;
+
+                bool isSelected = IsPreferenceSelected();
+                m_SaveButton.IsEnabled = isSelected;
+                m_ResetButton.IsEnabled = isSelected;
+            };
+
+            m_ProfileButton.Click += (sender, e) => SwitchFragment(m_FragProfile);
+            m_SecurityButton.Click += (sender, e) => SwitchFragment(m_FragSecurity);
+            m_PreferencesButton.Click += (sender, e) => SwitchFragment(m_FragPreferences);
+            m_MobileLoginButton.Click += (sender, e) => SwitchFragment(m_FragMobileLogin);
+            m_AboutButton.Click += (sender, e) => SwitchFragment(m_FragAbout);
+
+            m_SaveButton.Click += (sender, e) => SavePreferences();
+            m_ResetButton.Click += (sender, e) => ResetPreferences();
+        }
+
+        private void SwitchFragment(Panel targetFragment)
+        {
+            if (!m_Fragments.Contains(targetFragment))
+                return;
+
+            for (int i = 0; i < m_Fragments.Length; i++)
+                m_Fragments[i].IsVisible = m_Fragments[i] == targetFragment;
+        }
+
+        private void SetLanguageDataFormat()
+        {
+            DateTimeOffset lastConnection = DateTimeOffset.FromUnixTimeMilliseconds(User.Current.LastConnection).ToLocalTime();
+            CultureInfo language = new CultureInfo(LanguageManager.GetCurrentLanguage().LangCode);
+            m_LastConnection.Text = lastConnection.ToString("F", language);
+        }
+
+        private async void SavePreferences()
+        {
+            if (m_SelectedTheme == null && m_SelectedLanguage == null)
+                return;
+
+            if (User.Current.Theme == m_SelectedTheme && User.Current.Language == m_SelectedLanguage)
+                return;
+
+            PreferenceRequest request = new PreferenceRequest() { Theme = m_SelectedTheme, Language = m_SelectedLanguage };
+            await ApiService.UpdatePreferencesAsync(User.Current.SessionId, User.Current.AuthToken, request, (HttpStatusCode statusCode, Response response) =>
             {
                 if (statusCode != HttpStatusCode.OK)
-                    return;
+                {
+                    ResetPreferences();
+                    PopupMessage.Show("UnexpectedError", null);
 
-                m_ThemeList.Items = response.GetData();
+                    return;
+                }
+                if (m_SelectedTheme != null)
+                    User.Current.Theme = m_SelectedTheme;
+                
+                if (m_SelectedLanguage != null)
+                    User.Current.Language = m_SelectedLanguage;
+
+                m_SaveButton.IsEnabled = false;
+                m_ResetButton.IsEnabled = false;
             });
         }
 
-        private void OnProfileButtonClicked(object sender, RoutedEventArgs e)
+        private void ResetPreferences()
         {
-            if (m_FragProfile.IsVisible)
-                return;
+            Theme theme = ThemeManager.GetThemeByName(User.Current.Theme);
+            Language language = LanguageManager.GetLanguageByName(User.Current.Language);
 
-            m_FragProfile.IsVisible = true;
-            m_FragSecurity.IsVisible = false;
-            m_FragPreferences.IsVisible = false;
-            m_FragMobileLogin.IsVisible = false;
-            m_FragAbout.IsVisible = false;
+            m_ThemeList.SelectedIndex = theme.Id;
+            m_LanguageList.SelectedIndex = language.Id;
+
+            m_SelectedTheme = theme.Name;
+            m_SelectedLanguage = language.LangCode;
+
+            m_SaveButton.IsEnabled = false;
+            m_ResetButton.IsEnabled = false;
         }
 
-        private void OnSecurityButtonClicked(object sender, RoutedEventArgs e)
+        private bool IsPreferenceSelected()
         {
-            if (m_FragSecurity.IsVisible)
-                return;
+            bool isThemeSelected = (m_SelectedTheme != null && m_SelectedTheme != User.Current.Theme);
+            bool isLangSelected = (m_SelectedLanguage != null && m_SelectedLanguage != User.Current.Language);
 
-            m_FragSecurity.IsVisible = true;
-            m_FragProfile.IsVisible = false;
-            m_FragPreferences.IsVisible = false;
-            m_FragMobileLogin.IsVisible = false;
-            m_FragAbout.IsVisible = false;
+            return isThemeSelected || isLangSelected;
         }
 
-        private void OnPreferencesButtonClicked(object sender, RoutedEventArgs e)
+        public override string GetToolbarId()
         {
-            if (m_FragPreferences.IsVisible)
-                return;
-
-            m_FragPreferences.IsVisible = true;
-            m_FragProfile.IsVisible = false;
-            m_FragSecurity.IsVisible = false;
-            m_FragMobileLogin.IsVisible = false;
-            m_FragAbout.IsVisible = false;
-        }
-
-        private void OnMobileLoginButtonClicked(object sender, RoutedEventArgs e)
-        {
-            if (m_FragMobileLogin.IsVisible)
-                return;
-
-            m_FragMobileLogin.IsVisible = true;
-            m_FragProfile.IsVisible = false;
-            m_FragSecurity.IsVisible = false;
-            m_FragPreferences.IsVisible = false;
-            m_FragAbout.IsVisible = false;
-        }
-
-        private void OnAboutButtonClicked(object sender, RoutedEventArgs e)
-        {
-            if (m_FragAbout.IsVisible)
-                return;
-
-            m_FragAbout.IsVisible = true;
-            m_FragProfile.IsVisible = false;
-            m_FragSecurity.IsVisible = false;
-            m_FragPreferences.IsVisible = false;
-            m_FragMobileLogin.IsVisible = false;
-        }
-
-        private void OnThemeListSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            Theme theme = (Theme)m_ThemeList.SelectedItem;
-            ThemeManager.SetTheme(theme);
-
-            m_ThemeList.SelectedItems.Clear();
-        }
-
-        private void OnLanguageChanged(object sender, SelectionChangedEventArgs e)
-        {
-            Language selectedLanguage = (Language)m_LanguageSelector.SelectedItem;
-            LanguageManager.SetLanguage(selectedLanguage.LangCode);
-
-            DateTimeOffset lastConnection = DateTimeOffset.FromUnixTimeMilliseconds(Session.LastConnection).ToLocalTime();
-            CultureInfo cultureInfo = new CultureInfo(LanguageManager.GetCurrentLanguage());
-            m_LastConnection.Text = lastConnection.ToString("F", cultureInfo);
-
-            // save setting via API
+            return "User";  
         }
     }
 }

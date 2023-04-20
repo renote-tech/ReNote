@@ -8,7 +8,7 @@ namespace Server.Common
     public class Configuration
     {
         /// <summary>
-        /// True if the <see cref="LoadAllConfigurations"/> method has been called; otherwise false.
+        /// True if the <see cref="LoadAll"/> method has been called; otherwise false.
         /// </summary>
         public static bool IsConfigurationsLoaded { get; private set; }
         /// <summary>
@@ -27,7 +27,7 @@ namespace Server.Common
         /// <summary>
         /// Loads all of the specified configurations.
         /// </summary>
-        public static void LoadAllConfigurations()
+        public static void LoadAll()
         {
             if (IsConfigurationsLoaded)
                 return;

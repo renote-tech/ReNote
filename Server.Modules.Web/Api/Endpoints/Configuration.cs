@@ -1,13 +1,15 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Server.ReNote.Data;
 using Server.ReNote.Utilities;
 using Server.Web.Api;
+using Server.Web.Api.Responses;
 using Server.Web.Utilities;
-using Newtonsoft.Json;
 
-namespace Server.ReNote.Api 
+namespace Server.ReNote.Api
 {
-    internal class ColorSchema
+    internal class Configuration
     {
         /// <summary>
         /// Operates a request.
@@ -16,7 +18,7 @@ namespace Server.ReNote.Api
         /// <returns><see cref="ApiResponse"/></returns>
         public static async Task<ApiResponse> OperateRequest(ApiRequest req)
         {
-            switch (req.Method.ToUpper())
+            switch (req.Method)
             {
                 case "GET":
                     return await Get(req);
@@ -32,12 +34,19 @@ namespace Server.ReNote.Api
         /// <returns><see cref="ApiResponse"/></returns>
         private static async Task<ApiResponse> Get(ApiRequest req)
         {
-            string[] rawThemes = DatabaseUtil.GetValues(Constants.DB_ROOT_COLOR_SCHEMAS);
-            Theme[] themes = new Theme[rawThemes.Length];
-            for (int i = 0; i < themes.Length; i++)
-                themes[i] = JsonConvert.DeserializeObject<Theme>(rawThemes[i]);
+            string rawFeatures = DatabaseUtil.Get(Constants.DB_ROOT_CONFIGS, "plugins");
+            Dictionary<string, bool> features = JsonConvert.DeserializeObject<Dictionary<string, bool>>(rawFeatures);
 
-            return await ApiUtil.SendWithDataAsync(200, ApiMessages.Success(), themes);
+            string rawToolbars = DatabaseUtil.Get(Constants.DB_ROOT_CONFIGS, "toolbars");
+            ToolbarInfo[] toolbars = JsonConvert.DeserializeObject<ToolbarInfo[]>(rawToolbars);
+
+            ConfigResponse response = new ConfigResponse()
+            {
+                Features = features,
+                ToolbarsInfo = toolbars
+            };
+
+            return await ApiUtil.SendWithDataAsync(200, ApiMessages.Success(), response);
         }
     }
 }

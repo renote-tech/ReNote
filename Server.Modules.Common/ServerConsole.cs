@@ -5,6 +5,11 @@ namespace Server.Common
     public class ServerConsole
     {
         /// <summary>
+        /// Locker object. Used to queue Write() calls.
+        /// </summary>
+        private static readonly object s_Locker = new object();
+
+        /// <summary>
         /// Outputs a debugging message to the console.
         /// </summary>
         /// <param name="message">The message to be shown.</param>
@@ -46,21 +51,24 @@ namespace Server.Common
         /// <param name="addLine">If true; adds a line.</param>
         public static void Write(string message, bool addLine = true)
         {
-            string[] arguments = message.Split('<', '>');
-            for (int i = 0; i < arguments.Length; i++)
+            lock (s_Locker)
             {
-                if (arguments[i].StartsWith("/"))
-                    Console.ResetColor();
-                else if (arguments[i].StartsWith("$") && Enum.TryParse(arguments[i].Substring(1), out ConsoleColor color))
-                    Console.ForegroundColor = color;
-                else if (arguments[i].StartsWith("#") && Enum.TryParse(arguments[i].Substring(1), out color))
-                    Console.BackgroundColor = color;
-                else
-                    Console.Write(arguments[i]);
-            }
+                string[] arguments = message.Split('<', '>');
+                for (int i = 0; i < arguments.Length; i++)
+                {
+                    if (arguments[i].StartsWith("/"))
+                        Console.ResetColor();
+                    else if (arguments[i].StartsWith("$") && Enum.TryParse(arguments[i].Substring(1), out ConsoleColor color))
+                        Console.ForegroundColor = color;
+                    else if (arguments[i].StartsWith("#") && Enum.TryParse(arguments[i].Substring(1), out color))
+                        Console.BackgroundColor = color;
+                    else
+                        Console.Write(arguments[i]);
+                }
 
-            if (addLine)
-                Console.Write("\n");
+                if (addLine)
+                    Console.Write("\n");
+            }
         }
     }
 

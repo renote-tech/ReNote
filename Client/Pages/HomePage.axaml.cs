@@ -7,8 +7,11 @@ namespace Client.Pages
         public HomePage()
         {
             InitializeComponent();
-            ToolBar = new ToolBar("Home");
-            ToolBar.Buttons.Add("Edit Widgets", null);
+        }
+
+        public override string GetToolbarId()
+        {
+            return "Home";
         }
     }
 }

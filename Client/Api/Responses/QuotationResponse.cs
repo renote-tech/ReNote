@@ -5,45 +5,15 @@ namespace Client.Api.Responses
     internal class QuotationResponse : Response
     {
         [JsonProperty("data", Order = 10)]
-        private QuotationData m_Data;
-
-        public void SetData(QuotationData data)
-        {
-            m_Data = data;
-        }
-
-        public QuotationData GetData()
-        {
-            return m_Data;
-        }
+        public QuotationData Data { get; set; }
     }
 
     internal class QuotationData
     {
         [JsonProperty("author")]
-        private string m_Author;
+        public string Author { get; set; }
 
         [JsonProperty("content")]
-        private string m_Content;
-
-        public void SetAuthor(string author)
-        {
-            m_Author = author;
-        }
-
-        public string GetAuthor()
-        {
-            return m_Author;
-        }
-
-        public void SetContent(string content)
-        {
-            m_Content = content;
-        }
-
-        public string GetContent()
-        {
-            return m_Content;
-        }
+        public string Content { get; set; }
     }
 }

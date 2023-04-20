@@ -59,9 +59,7 @@ namespace Server.Web.Api
         public string Body { get; set; }
 
         public ApiResponse()
-        {
-
-        }
+        { }
 
         public ApiResponse(int status, string contentType, string body)
         {
@@ -74,7 +72,7 @@ namespace Server.Web.Api
     public class ApiMessages
     {
         /// <summary>
-        /// Returns an endpoint not found message.
+        /// Returns an "endpoint not found" message.
         /// </summary>
         /// <returns><see cref="string"/></returns>
         public static string EndpointNotFound()
@@ -83,7 +81,7 @@ namespace Server.Web.Api
         }
 
         /// <summary>
-        /// Returns an endpoint method not found message.
+        /// Returns an "endpoint method not found" message.
         /// </summary>
         /// <returns><see cref="string"/></returns>
         public static string EndpointMethodNotFound()
@@ -92,7 +90,7 @@ namespace Server.Web.Api
         }
 
         /// <summary>
-        /// Returns a success message.
+        /// Returns a "success" message.
         /// </summary>
         /// <returns><see cref="string"/></returns>
         public static string Success()
@@ -101,7 +99,7 @@ namespace Server.Web.Api
         }
 
         /// <summary>
-        /// Returns a method not allowed message.
+        /// Returns a "method not allowed" message.
         /// </summary>
         /// <returns><see cref="string"/></returns>
         public static string MethodNotAllowed()
@@ -110,7 +108,7 @@ namespace Server.Web.Api
         }
 
         /// <summary>
-        /// Returns an invalid json message.
+        /// Returns an "invalid json" message.
         /// </summary>
         /// <returns><see cref="string"/></returns>
         public static string InvalidJson()
@@ -119,33 +117,16 @@ namespace Server.Web.Api
         }
 
         /// <summary>
-        /// Returns a null or empty message.
+        /// Returns an "empty sessionId or authToken" message.
         /// </summary>
-        /// <param name="properties">The list of <see cref="string"/>.</param>
-        /// <returns><see cref="string"/></returns>
-        public static string NullOrEmpty(params string[] properties)
+        /// <returns></returns>
+        public static string EmptySessionIdOrAuthToken()
         {
-            if (properties.Length == 0)
-                return string.Empty;
-            else if (properties.Length == 1)
-                return $"{properties[0]} may not be empty";
-
-            StringBuilder baseMessage = new StringBuilder(); 
-            for(int i = 0; i < properties.Length; i++)
-            {
-                if (i > 0 && i == properties.Length - 1)
-                    baseMessage.Append(" and ");
-                else if (i > 0 && i < properties.Length - 2)
-                    baseMessage.Append(", ");
-
-                baseMessage.Append($"{properties[i]}");
-            }
-            baseMessage.Append(" may not be empty");
-            return baseMessage.ToString();
+            return "Session ID and auth token may not be empty";
         }
 
         /// <summary>
-        /// Returns an empty username or password message.
+        /// Returns an "empty username or password" message.
         /// </summary>
         /// <returns><see cref="string"/></returns>
         public static string EmptyUsernameOrPassword()
@@ -154,7 +135,7 @@ namespace Server.Web.Api
         }
 
         /// <summary>
-        /// Returns an invalid username or password message.
+        /// Returns an "invalid username or password" message.
         /// </summary>
         /// <returns><see cref="string"/></returns>
         public static string InvalidUsernameOrPassword()
@@ -163,12 +144,26 @@ namespace Server.Web.Api
         }
 
         /// <summary>
-        /// Returns a session not exists or expired message.
+        /// Returns a "session not exists or expired" message.
         /// </summary>
         /// <returns><see cref="string"/></returns>
         public static string InvalidSession()
         {
             return "Session either doesn't exist, is expired or provided token is invalid";
+        }
+
+        /// <summary>
+        /// Returns a "server is running" message.
+        /// </summary>
+        /// <returns></returns>
+        public static string ServerRunning()
+        {
+            return "Server is running";
+        }
+
+        public static string EmptyLanguageOrTheme()
+        {
+            return "Language or theme may not be empty";
         }
     }
 
@@ -186,18 +181,18 @@ namespace Server.Web.Api
         {
             ApiAtlas.RegisterEndpoints("Root", "/",
 
-                                       "Authenticate",  $"/global/{ServerInfo.ApiVersion}/auth",
-                                       "SchoolInfo",    $"/global/{ServerInfo.ApiVersion}/school/info",
-                                       "About",         $"/global/{ServerInfo.ApiVersion}/about",
-                                       "Quotation",     $"/global/{ServerInfo.ApiVersion}/quotation",
-                                       "ColorSchema",   $"/global/{ServerInfo.ApiVersion}/color/themes",
-                                       "Configuration", $"/global/{ServerInfo.ApiVersion}/client/config",
+                                       "Authenticate",  "/global/auth",
+                                       "SchoolInfo",    "/global/school/info",
+                                       "About",         "/global/about",
+                                       "Quotation",     "/global/quotation",
+                                       "ColorTheme",    "/global/color/themes",
+                                       "Configuration", "/global/client/config",
 
-                                       "Profile",       $"/user/{ServerInfo.ApiVersion}/profile",
-                                       "Preferences",   $"/user/{ServerInfo.ApiVersion}/preferences",
-                                       "Timetable",     $"/user/{ServerInfo.ApiVersion}/timetable",
-                                       "LogOut",        $"/user/{ServerInfo.ApiVersion}/session/delete",
-                                       "TeamProfile",   $"/user/{ServerInfo.ApiVersion}/team/profile");
+                                       "Profile",       "/user/profile",
+                                       "Preferences",   "/user/preferences",
+                                       "Timetable",     "/user/timetable",
+                                       "LogOut",        "/user/session/delete",
+                                       "TeamProfile",   "/user/team/profile");
 
             Platform.Log($"Registered {ApiAtlas.GetEndpointsCount()} endpoints", LogLevel.INFO);
         }

@@ -13,14 +13,15 @@ namespace Client.Api
 {
     internal class ApiService
     {
-        public const string GLOBAL_AUTH   = "/global/v1/auth";
-        public const string SCHOOL_DATA   = "/global/v1/school/info";
-        public const string QUOTATION     = "/global/v1/quotation";
-        public const string COLOR_SCHEMAS = "/global/v1/color/themes";
-        public const string CONFIGURATION = "/global/v1/client/config";
-        public const string USER_PROFILE  = "/user/v1/profile";
-        public const string USER_LOGOUT   = "/user/v1/session/delete";
-        public const string TEAM_PROFILE  = "/user/v1/team/profile";
+        public const string GLOBAL_AUTH   = "/global/auth";
+        public const string SCHOOL_DATA   = "/global/school/info";
+        public const string QUOTATION     = "/global/quotation";
+        public const string COLOR_SCHEMAS = "/global/color/themes";
+        public const string CONFIGURATION = "/global/client/config";
+        public const string USER_PROFILE  = "/user/profile";
+        public const string USER_LOGOUT   = "/user/session/delete";
+        public const string TEAM_PROFILE  = "/user/team/profile";
+        public const string PREFERENCES   = "/user/preferences";
 
         public delegate void RequestCallback<T>(HttpStatusCode statusCode, T response) where T : Response;
 
@@ -32,9 +33,11 @@ namespace Client.Api
             if (s_Initialized)
                 return;
 
-            s_HttpClient = new HttpClient();
-            s_HttpClient.BaseAddress = new Uri(Configuration.EndpointAddress);
-            s_HttpClient.Timeout = TimeSpan.FromSeconds(10);
+            s_HttpClient = new HttpClient
+            {
+                BaseAddress = new Uri(Configuration.EndpointAddress),
+                Timeout = TimeSpan.FromSeconds(10)
+            };
 
             s_Initialized = true;
         }
@@ -98,14 +101,8 @@ namespace Client.Api
             await SendRequestAsync(SCHOOL_DATA, HttpMethod.Get, null, null, callback);
         }
 
-        public static async Task AuthenticateAsync(string username, string password, RequestCallback<AuthResponse> callback)
+        public static async Task AuthenticateAsync(AuthRequest request, RequestCallback<AuthResponse> callback)
         {
-            AuthRequest request = new AuthRequest() 
-            { 
-                Username = username,
-                Password = password
-            };
-
             StringContent requestBody = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
             await SendRequestAsync(GLOBAL_AUTH, HttpMethod.Post, null, requestBody, callback);
         }
@@ -126,7 +123,7 @@ namespace Client.Api
             await SendRequestAsync(USER_PROFILE, HttpMethod.Get, headers, null, callback);
         }
 
-        public static async Task SendLogoutAsync(long sessionId, string authToken, RequestCallback<Response> callback)
+        public static async Task LogoutAsync(long sessionId, string authToken, RequestCallback<Response> callback)
         {
             Dictionary<string, string> headers = new Dictionary<string, string>()
             {
@@ -153,9 +150,32 @@ namespace Client.Api
             await SendRequestAsync(TEAM_PROFILE, HttpMethod.Get, headers, null, callback);
         }
 
-        public static async Task GetConfigurationAsync(RequestCallback<Response> callback)
+        public static async Task GetConfigurationAsync(RequestCallback<ConfigResponse> callback)
         {
             await SendRequestAsync(CONFIGURATION, HttpMethod.Get, null, null, callback);
+        }
+
+        public static async Task GetPreferencesAsync(long sessionId, string authToken, RequestCallback<PreferenceResponse> callback)
+        {
+            Dictionary<string, string> headers = new Dictionary<string, string>()
+            {
+                { "sessionId", sessionId.ToString() },
+                { "authToken", authToken }
+            };
+
+            await SendRequestAsync(PREFERENCES, HttpMethod.Get, headers, null, callback);
+        }
+
+        public static async Task UpdatePreferencesAsync(long sessionId, string authToken, PreferenceRequest request, RequestCallback<Response> callback)
+        {
+            Dictionary<string, string> headers = new Dictionary<string, string>()
+            {
+                { "sessionId", sessionId.ToString() },
+                { "authToken", authToken }
+            };
+
+            StringContent requestBody = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
+            await SendRequestAsync(PREFERENCES, HttpMethod.Post, headers, requestBody, callback);
         }
     }
 }

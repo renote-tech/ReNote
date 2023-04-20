@@ -72,18 +72,6 @@ namespace Server.ReNote.Data
         }
 
         /// <summary>
-        /// Sets the container list.
-        /// </summary>
-        /// <param name="containerList">The container list.</param>
-        public void SetContainerList(Container[] containerList)
-        {
-            lock (Locker)
-            {
-                m_Containers = containerList.ToList();
-            }
-        }
-
-        /// <summary>
         /// Creates and adds a <see cref="Container"/> to the <see cref="m_Containers"/> list.
         /// </summary>
         /// <param name="containerName">The <see cref="Container"/> name.</param>
@@ -91,7 +79,7 @@ namespace Server.ReNote.Data
         {
             lock (Locker)
             {
-                if (!string.IsNullOrWhiteSpace(containerName))
+                if (string.IsNullOrWhiteSpace(containerName))
                     return;
 
                 m_Containers.Add(new Container(this, containerName));
@@ -121,26 +109,7 @@ namespace Server.ReNote.Data
             }
         }
 
-        /// <summary>
-        /// Clears the content from a specified <see cref="Container"/>.
-        /// </summary>
-        /// <param name="containerName">The container name.</param>
-        public void ClearContainerContent(string containerName)
-        {
-            lock (Locker)
-            {
-                if (string.IsNullOrWhiteSpace(containerName))
-                    return;
-
-                for (int i = 0; i < m_Containers.Count; i++)
-                {
-                    if (m_Containers[i].Name == containerName)
-                        m_Containers[i].Clear();
-                }
-            }
-        }
-
-        public bool IsContainerExists(string containerName)
+        public bool ContainerExists(string containerName)
         {
             lock (Locker) 
             {
@@ -167,29 +136,6 @@ namespace Server.ReNote.Data
         }
 
         /// <summary>
-        /// Clears the <see cref="m_Containers"/> list.
-        /// </summary>
-        public void Clear()
-        {
-            lock (Locker)
-            {
-                m_Containers.Clear();
-            }
-        }
-
-        /// <summary>
-        /// Returns whether the <see cref="m_Containers"/> list is empty;
-        /// </summary>
-        /// <returns><see cref="bool"/></returns>
-        public bool IsEmpty()
-        {
-            lock (Locker)
-            {
-                return m_Containers.Count == 0;
-            }
-        }
-
-        /// <summary>
         /// Loads the <see cref="m_Containers"/> list from a database file.
         /// Returns whether the file was actually loaded.
         /// </summary>
@@ -199,9 +145,6 @@ namespace Server.ReNote.Data
             lock (Locker)
             {
                 if (string.IsNullOrWhiteSpace(FileLocation))
-                    return false;
-
-                if (FileUtil.IsFileBeingUsed(FileLocation))
                     return false;
 
                 if (!File.Exists(FileLocation))
@@ -219,17 +162,10 @@ namespace Server.ReNote.Data
                     for (int i = 0; i < m_Containers.Count; i++)
                         m_Containers.ElementAt(i).SetParent(this);
 #else
-
-                    byte[] data = File.ReadAllBytes(FileLocation);
-                    using MemoryStream stream = new MemoryStream(data);
+                    byte[] encryptedData = File.ReadAllBytes(FileLocation);
+                    byte[] decryptedData = ByteShifting.Decrypt(encryptedData);
+                    using MemoryStream stream = new MemoryStream(decryptedData);
                     Database database = Serializer.Deserialize<Database>(stream);
-
-                    /*
-                     * byte[] encryptedData = File.ReadAllBytes(SaveLocation);
-                     * byte[] decryptedData = ByteShifting.Decrypt(encryptedData);
-                     * using MemoryStream stream = new MemoryStream(decryptedData);
-                     * Database database = Serializer.Deserialize<Database>(stream);
-                    */
 
                     m_Containers = database.m_Containers;
 
@@ -281,41 +217,48 @@ namespace Server.ReNote.Data
         /// <param name="saveLocation">The file location to save the <see cref="Database"/>.</param>
         public bool Save()
         {
-            if (IsEmpty())
-                return false;
-
-            if (FileUtil.IsFileBeingUsed(FileLocation))
-                return false;
-
-            using MemoryStream stream = new MemoryStream();
-            Serializer.Serialize(stream, this);
+            try
+            {
+                using MemoryStream stream = new MemoryStream();
+                Serializer.Serialize(stream, this);
 #if DEBUG
-            File.WriteAllBytes(FileLocation, stream.ToArray());
+                File.WriteAllBytes(FileLocation, stream.ToArray());
 #else
-            ByteShifting.Encrypt(stream.ToArray(), saveLocation);
+                byte[] data = ByteShifting.Encrypt(stream.ToArray());
+                File.WriteAllBytes(FileLocation, data);
 #endif
+            }
+            catch 
+            {
+                return false;
+            }
+
             return true;
         }
 
         /// <summary>
         /// Saves the <see cref="Database"/> to a database file asynchronously.
+        /// Returns whether the file has actually been saved.
         /// </summary>
         /// <param name="saveLocation">The file location to save the <see cref="Database"/>.</param>
         private async Task<bool> SaveAsync(string saveLocation)
         {
-            if (IsEmpty())
-                return false;
-
-            if (FileUtil.IsFileBeingUsed(saveLocation))
-                return false;
-
-            using MemoryStream stream = new MemoryStream();
-            Serializer.Serialize(stream, this);
+            try
+            {
+                using MemoryStream stream = new MemoryStream();
+                Serializer.Serialize(stream, this);
 #if DEBUG
-            await File.WriteAllBytesAsync(saveLocation, stream.ToArray());
+                await File.WriteAllBytesAsync(saveLocation, stream.ToArray());
 #else
-                await ByteShifting.EncryptAsync(stream.ToArray(), saveLocation);
+                byte[] data = ByteShifting.Encrypt(stream.ToArray());
+                await File.WriteAllBytesAsync(saveLocation, data);
 #endif
+            }
+            catch 
+            { 
+                return false; 
+            }
+
             return true;
         }
     }
@@ -469,29 +412,6 @@ namespace Server.ReNote.Data
                     docsValues[i] = m_Items.ElementAt(i).Value;
 
                 return docsValues;
-            }
-        }
-
-        /// <summary>
-        /// Clears all the content from the <see cref="m_Items"/> dictionary.
-        /// </summary>
-        public void Clear()
-        {
-            lock (m_Parent.Locker)
-            {
-                m_Items.Clear();
-            }
-        }
-
-        /// <summary>
-        /// Returns whether the <see cref="m_Items"/> list is empty.
-        /// </summary>
-        /// <returns><see cref="bool"/></returns>
-        public bool IsEmpty()
-        {
-            lock (m_Parent.Locker)
-            {
-                return m_Items.Count == 0;
             }
         }
 
