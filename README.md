@@ -17,17 +17,24 @@ Next run the command below for the corresponding platform.
 
 ### Windows
 ```bash
-dotnet build --runtime win-x64
+dotnet build <projectName.csproj> --runtime win-x64
 ```
 
 ### Linux
 ```bash
-dotnet build --runtime linux-x64
+dotnet build <projectName.csproj> --runtime linux-x64
 ```
 
 ### macOS
 ```bash
-dotnet build --runtime osx-x64
+dotnet build <projectName.csproj> --runtime osx-x64
+```
+
+<br/>
+
+### Example for the Client on Windows x64
+```bash
+dotnet build Client.csproj --runtime win-x64
 ```
 
 Important: macOS is **not** officialy supported for the `Server`, you may want to use Linux Server or Windows Server.
