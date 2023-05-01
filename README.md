@@ -1,7 +1,7 @@
 <h1 align="center">
   <b>ReNote</b>
   <br>
-  <sub><sup><b><i>Beyond limitations</i></b></sup></sub>
+  <sub><sup><b><i>Goes Beyond Limitations</i></b></sup></sub>
 </h1>
 
 <p align="center">
