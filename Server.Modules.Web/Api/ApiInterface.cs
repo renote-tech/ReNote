@@ -59,7 +59,7 @@ namespace Server.Web.Api
         public ApiInterface()
         {
             Listener = new HttpListener();
-            requestHandler = new Thread(ApiHandler.Handle);
+            requestHandler = new Thread(() => ApiHandler.Handle().Wait());
         }
 
         /// <summary>

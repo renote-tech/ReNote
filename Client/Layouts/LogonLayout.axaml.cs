@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml.MarkupExtensions;
@@ -7,7 +8,7 @@ using Client.Api.Requests;
 using Client.Api.Responses;
 using Client.Builders;
 using Client.Managers;
-using Client.ReNote;
+using Client.ReNote.Data;
 using Client.Windows;
 
 namespace Client.Layouts
@@ -34,8 +35,10 @@ namespace Client.Layouts
             ThemeManager.RestoreDefault();
             int index = LanguageManager.RestoreDefault();
 
-            m_LanguageSelector.Items = LanguageManager.Languages;
-            m_LanguageSelector.SelectedIndex = index;
+            m_LanguageList.Items = LanguageManager.Languages;
+            m_LanguageList.SelectedIndex = index;
+
+            m_FullVersionLabel.Text = ClientInfo.GetFullVersion();
 
             await ApiService.GetQuotationAsync((HttpStatusCode statusCode, QuotationResponse response) =>
             {
@@ -54,8 +57,8 @@ namespace Client.Layouts
                 MessageBoxBuilder.Create()
                              .SetTitle("About ReNote \u03A3")
                              .SetMessage($"Entirely developed by Alian/DEAD \ud83d\udc7b\n" +
-                                         $"Ver. {Platform.Version}\n" +
-                                         $"Code name \"{Platform.VersionName}\"")
+                                         $"Ver. {ClientInfo.Version} ({ClientInfo.Configuration})\n" +
+                                         $"Code name \"{ClientInfo.VersionName}\"")
                              .SetType(MessageBoxType.OK)
                              .SetIcon(MessageBoxIcon.INFO)
                              .Show();
@@ -75,9 +78,9 @@ namespace Client.Layouts
                 PerformLogin();
             };
 
-            m_LanguageSelector.SelectionChanged += (sender, e) =>
+            m_LanguageList.SelectionChanged += (sender, e) =>
             {
-                Language language = (Language)m_LanguageSelector.SelectedItem;
+                Language language = (Language)m_LanguageList.SelectedItem;
                 LanguageManager.SetLanguage(language.LangCode);
                 Configuration.Save("Local", language.LangCode);
             };

@@ -1,12 +1,12 @@
 ﻿using Newtonsoft.Json;
 
-namespace Client.ReNote
+namespace Client.ReNote.Data
 {
     internal class School
     {
         [JsonProperty("schoolName")]
         public string SchoolName { get; set; }
-        
+
         [JsonProperty("schoolType")]
         public SchoolType SchoolType { get; set; }
 
@@ -16,8 +16,8 @@ namespace Client.ReNote
 
     public enum SchoolType
     {
-        HIGH_SCHOOL    = 0,
-        MIDDLE_SCHOOL  = 1,
+        HIGH_SCHOOL = 0,
+        MIDDLE_SCHOOL = 1,
         PRIMARY_SCHOOL = 2
     }
 }

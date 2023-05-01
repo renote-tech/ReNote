@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Server.Common;
 
 namespace Server
@@ -8,14 +9,14 @@ namespace Server
         /// <summary>
         /// True if the <see cref="Platform"/> class is initialized; otherwise false.
         /// </summary>
-        private static bool initialized;
+        private static bool s_Initialized;
 
         /// <summary>
         /// Initializes the <see cref="Platform"/> class.
         /// </summary>
         public static void Initialize()
         {
-            if (initialized)
+            if (s_Initialized)
                 return;
 
             Console.Title = "ReNote \u03a9 2023";
@@ -25,12 +26,12 @@ namespace Server
                                @"   / _, _/  __/ /|  / /_/ / /_/  __/ " + "\n" +
                                @"  /_/ |_|\___/_/ |_/\____/\__/\___/  ";
 
-            Console.WriteLine($"{watermark} Version {ServerInfo.Version}\n");
+            Console.WriteLine($"{watermark} Version {ServerInfo.Version} ({ServerInfo.Configuration})\n");
 
             Log("Thanks for choosing ReNote!", LogLevel.INFO);
             Log($"Running on {ServerInfo.GetPlatformName()}", LogLevel.INFO);
 
-            initialized = true;
+            s_Initialized = true;
         }
 
         /// <summary>

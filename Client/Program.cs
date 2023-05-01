@@ -1,5 +1,6 @@
 using System;
 using Avalonia;
+using Client.Logging;
 
 namespace Client
 {
@@ -8,9 +9,10 @@ namespace Client
         [STAThread]
         public static void Main(string[] args)
         {
-           InitializeProcessEvents();
+            Platform.Initialize();
+            Configuration.LoadAll();
 
-            Platform.Log("Starting client", LogLevel.INFO);
+            InitializeProcessEvents();
 
             AppBuilder.Configure<App>()
                       .UsePlatformDetect()
@@ -29,8 +31,6 @@ namespace Client
                 Exception exception = (Exception)e.ExceptionObject;
                 Platform.Log($"{exception.Message}\n{exception.StackTrace}\n", LogLevel.FATAL);
             };
-
-            Platform.Log("Initialized process events", LogLevel.INFO);
         }
 
 #if DEBUG

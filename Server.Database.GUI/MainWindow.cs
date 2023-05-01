@@ -4,6 +4,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Server.Database.Management;
 using Server.ReNote.Data;
@@ -108,14 +109,14 @@ namespace Server.Database.Windows
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">The event arguments.</param>
-        private void OnSelectedSaveDBFile(object sender, System.ComponentModel.CancelEventArgs e)
+        private async void OnSelectedSaveDBFile(object sender, System.ComponentModel.CancelEventArgs e)
         {
             string dbName = GetCurrentDBName();
             if (dbName == null)
                 return;
 
             DatabaseManager.SetSaveLocation(dbName, saveDatabaseDialog.FileName);
-            SaveAsync();
+            await SaveAsync();
         }
 
         /// <summary>
@@ -179,9 +180,9 @@ namespace Server.Database.Windows
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">The event arguments.</param>
-        private void OnSaveTreeItemClicked(object sender, EventArgs e)
+        private async void OnSaveTreeItemClicked(object sender, EventArgs e)
         {
-            SaveAsync();
+            await SaveAsync();
         }
 
         /// <summary>
@@ -609,7 +610,7 @@ namespace Server.Database.Windows
         /// <summary>
         /// Saves asynchronously the database.
         /// </summary>
-        private async void SaveAsync()
+        private async Task SaveAsync()
         {
             string dbName = GetCurrentDBName();
             if (string.IsNullOrWhiteSpace(dbName))

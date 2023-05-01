@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Client.ReNote
+namespace Client.ReNote.Data
 {
     public class Team
     {

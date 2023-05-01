@@ -1,6 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<OutputType>Exe</OutputType>
 		<TargetFramework>net7.0</TargetFramework>
 		<Nullable>disable</Nullable>
 		<TrimMode>copyused</TrimMode>
@@ -16,15 +15,16 @@
 		<Product>ReNote</Product>
 		<Copyright>©️ ReNote EDU. NETW. All rights reserved.</Copyright>
 		<Description>ReNote Σ</Description>
-		<Version>0.5.78.0</Version>
 	</PropertyGroup>
 	
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	  <OutputType>Exe</OutputType>
 	  <DebugType>full</DebugType>
 	  <DefineConstants>METRICS_ANALYSIS</DefineConstants>
 	</PropertyGroup>
 	
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+	  <OutputType>WinExe</OutputType>
 	  <DebugType>full</DebugType>
 	</PropertyGroup>
 	
@@ -37,8 +37,8 @@
 		<None Remove="Assets\es-ES.lang" />
 		<None Remove="Assets\fr-FR.lang" />
 		<None Remove="Assets\info.png" />
+		<None Remove="Assets\logo.png" />
 		<None Remove="Assets\question.png" />
-		<None Remove="Assets\renote_no_bg.png" />
 		<None Remove="Assets\user.bmp" />
 		<None Remove="Assets\warn.png" />
 		<None Remove="Assets\zh-CN.lang" />

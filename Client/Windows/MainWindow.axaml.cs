@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using Client.Layouts;
+using Client.Logging;
 using Client.Managers;
 
 namespace Client.Windows
@@ -11,16 +12,26 @@ namespace Client.Windows
         {
             InitializeComponent();
             InitializeClient();
+            InitializeEvents();
+
+            Platform.Log("Initialized MainWindow", LogLevel.INFO);
         }
 
         private void InitializeClient()
         {
             Instance = this;
-
-            Configuration.LoadAll();
             LanguageManager.Initialize();
+        }
 
-            SetLayout(new SplashLayout());
+        private void InitializeEvents()
+        {
+            Opened += (sender, e) =>
+            {
+                Platform.Log("Initialized ReNote Client", LogLevel.INFO);
+
+                SplashLayout splashLayout = new SplashLayout();
+                SetLayout(splashLayout);
+            };
         }
 
         public void SetLayout(Layout layout)

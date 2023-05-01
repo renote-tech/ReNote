@@ -2,6 +2,7 @@ using System;
 using System.Globalization;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml.MarkupExtensions;
@@ -11,7 +12,7 @@ using Client.Api.Requests;
 using Client.Api.Responses;
 using Client.Managers;
 using Client.Popups;
-using Client.ReNote;
+using Client.ReNote.Data;
 
 namespace Client.Pages
 {
@@ -36,7 +37,15 @@ namespace Client.Pages
 
 #if DEBUG
             if (Design.IsDesignMode)
+            {
+                m_ProfileButton.Click += (sender, e) => SwitchFragment(m_FragProfile);
+                m_SecurityButton.Click += (sender, e) => SwitchFragment(m_FragSecurity);
+                m_PreferencesButton.Click += (sender, e) => SwitchFragment(m_FragPreferences);
+                m_MobileLoginButton.Click += (sender, e) => SwitchFragment(m_FragMobileLogin);
+                m_AboutButton.Click += (sender, e) => SwitchFragment(m_FragAbout);
+
                 return;
+            }
 #endif
 
             InitializeLayout();
@@ -56,15 +65,15 @@ namespace Client.Pages
                 formatter.Text = (string)value;
 
                 double width = formatter.Bounds.Width;
-                m_SaveButton.Width = width + 24;
-                m_ResetButton.Margin = new Thickness(width + 56, 16);
+                m_SaveButton.Width = width + 32;
+                m_ResetButton.Margin = new Thickness(width + 64, 16);
             });
 
             User user = User.Current;
 
             m_UserName.Text = user.RealName;
             m_UserId.Text = $"ID: {user.UserId}";
-            m_Version.Text = $"Ver. {Platform.Version}";
+            m_Version.Text = $"Ver. {ClientInfo.Version} ({ClientInfo.Configuration})";
 
             if (!string.IsNullOrWhiteSpace(user.Team.TeamName))
                 m_UserTeam.Text = $"({user.Team.TeamName})";
@@ -104,7 +113,7 @@ namespace Client.Pages
 
                 m_SelectedTheme = theme.Name;
 
-                bool isSelected = IsPreferenceSelected();
+                bool isSelected = IsSaveAllowed();
                 m_SaveButton.IsEnabled = isSelected;
                 m_ResetButton.IsEnabled = isSelected;
             };
@@ -117,7 +126,7 @@ namespace Client.Pages
 
                 m_SelectedLanguage = language.LangCode;
 
-                bool isSelected = IsPreferenceSelected();
+                bool isSelected = IsSaveAllowed();
                 m_SaveButton.IsEnabled = isSelected;
                 m_ResetButton.IsEnabled = isSelected;
             };
@@ -128,7 +137,7 @@ namespace Client.Pages
             m_MobileLoginButton.Click += (sender, e) => SwitchFragment(m_FragMobileLogin);
             m_AboutButton.Click += (sender, e) => SwitchFragment(m_FragAbout);
 
-            m_SaveButton.Click += (sender, e) => SavePreferences();
+            m_SaveButton.Click += async (sender, e) => await SavePreferencesAsync();
             m_ResetButton.Click += (sender, e) => ResetPreferences();
         }
 
@@ -136,6 +145,9 @@ namespace Client.Pages
         {
             if (!m_Fragments.Contains(targetFragment))
                 return;
+
+            if (IsSaveAllowed())
+                ResetPreferences();
 
             for (int i = 0; i < m_Fragments.Length; i++)
                 m_Fragments[i].IsVisible = m_Fragments[i] == targetFragment;
@@ -148,7 +160,7 @@ namespace Client.Pages
             m_LastConnection.Text = lastConnection.ToString("F", language);
         }
 
-        private async void SavePreferences()
+        private async Task SavePreferencesAsync()
         {
             if (m_SelectedTheme == null && m_SelectedLanguage == null)
                 return;
@@ -157,7 +169,7 @@ namespace Client.Pages
                 return;
 
             PreferenceRequest request = new PreferenceRequest() { Theme = m_SelectedTheme, Language = m_SelectedLanguage };
-            await ApiService.UpdatePreferencesAsync(User.Current.SessionId, User.Current.AuthToken, request, (HttpStatusCode statusCode, Response response) =>
+            await ApiService.SetPreferencesAsync(request, (HttpStatusCode statusCode, Response response) =>
             {
                 if (statusCode != HttpStatusCode.OK)
                 {
@@ -166,6 +178,7 @@ namespace Client.Pages
 
                     return;
                 }
+
                 if (m_SelectedTheme != null)
                     User.Current.Theme = m_SelectedTheme;
                 
@@ -192,12 +205,18 @@ namespace Client.Pages
             m_ResetButton.IsEnabled = false;
         }
 
-        private bool IsPreferenceSelected()
+        private bool IsSaveAllowed()
         {
             bool isThemeSelected = (m_SelectedTheme != null && m_SelectedTheme != User.Current.Theme);
             bool isLangSelected = (m_SelectedLanguage != null && m_SelectedLanguage != User.Current.Language);
 
             return isThemeSelected || isLangSelected;
+        }
+
+        public override void Destroy()
+        {
+            if (IsSaveAllowed())
+                ResetPreferences();
         }
 
         public override string GetToolbarId()

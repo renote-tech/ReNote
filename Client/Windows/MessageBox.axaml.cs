@@ -18,12 +18,10 @@ namespace Client.Windows
         private static Bitmap s_InfoIcon;
         private bool m_HasExited = false;
 
-#if DEBUG
         public MessageBox()
         {
             InitializeComponent();
         }
-#endif
 
         public MessageBox(string title, string message, MessageBoxType boxType, MessageBoxIcon boxIcon)
         {

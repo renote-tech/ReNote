@@ -2,7 +2,7 @@
 
 namespace Client.Api.Requests
 {
-    internal class AuthRequest
+    internal class AuthRequest : Request
     {
         [JsonProperty("username")]
         public string Username { get; set; }

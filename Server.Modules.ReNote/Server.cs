@@ -1,4 +1,5 @@
-﻿using System.Timers;
+﻿using System.Threading.Tasks;
+using System.Timers;
 using Server.Common;
 using Server.ReNote.Data;
 using Server.ReNote.Management;
@@ -93,7 +94,7 @@ namespace Server.ReNote
         /// </summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
-        private async void OnWorkerServiceInvoked(object sender, System.Timers.ElapsedEventArgs e)
+        private async void OnWorkerServiceInvoked(object sender, ElapsedEventArgs e)
         {
             Platform.Log("[Worker] Cleaning and saving data", LogLevel.INFO);
 

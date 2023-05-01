@@ -15,7 +15,7 @@
 	<SolidColorBrush x:Key="BaseForegroundError" Color="#db7093"/>
 	<SolidColorBrush x:Key="BaseForegroundTitle" Color="#d2d2d2"/>
 	<SolidColorBrush x:Key="BaseForeground"      Color="#ffffff"/>
-	
+
 	<Thickness x:Key="ComboBoxDropdownBorderThickness">0</Thickness>
 
 	<Color x:Key="SystemAccentColor">#9370db</Color>

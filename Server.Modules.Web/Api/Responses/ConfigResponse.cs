@@ -17,5 +17,11 @@ namespace Server.Web.Api.Responses
         /// </summary>
         [JsonProperty("toolbarsInfo")]
         public ToolbarInfo[] ToolbarsInfo { get; set; }
+
+        /// <summary>
+        /// The themes of the <see cref="ConfigResponse"/>.
+        /// </summary>
+        [JsonProperty("themes")]
+        public Theme[] Themes { get; set; }
     }
 }

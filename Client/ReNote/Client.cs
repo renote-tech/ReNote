@@ -1,4 +1,6 @@
-﻿namespace Client.ReNote
+﻿using Client.ReNote.Data;
+
+namespace Client.ReNote
 {
     internal class Client
     {

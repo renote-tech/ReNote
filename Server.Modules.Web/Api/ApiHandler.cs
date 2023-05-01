@@ -13,7 +13,7 @@ namespace Server.Web.Api
         /// <summary>
         /// Handles an incoming API request.
         /// </summary>
-        public static async void Handle()
+        public static async Task Handle()
         {
             while(ApiInterface.Instance.IsRunning)
             {

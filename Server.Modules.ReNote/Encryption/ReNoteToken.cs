@@ -7,7 +7,7 @@ namespace Server.ReNote.Encryption
     public class ReNoteToken
     {
         /// <summary>
-        /// Returns a ReNote secure token.
+        /// Returns a ReNote token.
         /// </summary>
         /// <param name="sessionId">The session id.</param>
         /// <returns><see cref="string"/></returns>
@@ -30,11 +30,14 @@ namespace Server.ReNote.Encryption
             if (size < 8)
                 size = 8;
 
-            char[] saltChars = @"0123456789ABCDEF&-~#{}[]()|@$*./\!?".ToLower()
-                                                                     .ToCharArray();
+            char[] saltChars = @"0123456789ABCDEF~!@#$€£%^&*()_+-={}|[]\:;'<>?,./".ToLower()
+                                                                                  .ToCharArray();
             string salt = string.Empty;
             for (int i = 0; i < size; i++)
-                salt += saltChars[new Random().Next(0, saltChars.Length - 1)];
+            {
+                int charIndex = new Random().Next(0, saltChars.Length - 1);
+                salt += saltChars[charIndex];
+            }
 
             return salt;
         }

@@ -34,7 +34,7 @@ namespace Server.Common
         /// <summary>
         /// The server version.
         /// </summary>
-        public static readonly string Version = $"0.8.07 ({Configuration})";
+        public static readonly string Version = $"0.8.37";
         /// <summary>
         /// The server version name.
         /// </summary>

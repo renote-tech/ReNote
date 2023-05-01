@@ -1,6 +1,6 @@
 ﻿using Avalonia.Media;
 
-namespace Client.ReNote
+namespace Client.ReNote.Data
 {
     internal class Theme
     {

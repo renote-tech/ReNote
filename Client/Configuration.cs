@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Client.Logging;
 using Newtonsoft.Json;
 
 namespace Client
@@ -16,6 +17,9 @@ namespace Client
         {
             [JsonProperty("endpointAddr")]
             public string EndpointAddress { get; set; }
+
+            [JsonProperty("super_duper_not_secret_backup_endpoint_address")]
+            public string BackupEndpointAddress { get; set; }
 
             [JsonProperty("language")]
             public string Language { get; set; }
@@ -51,7 +55,11 @@ namespace Client
             try
             {
                 ClientConfig config = JsonConvert.DeserializeObject<ClientConfig>(content);
-                EndpointAddress = config.EndpointAddress;
+                if (!localConfig)
+                    EndpointAddress = config.EndpointAddress;
+                else if (localConfig && config.BackupEndpointAddress != null)
+                    EndpointAddress = config.BackupEndpointAddress;
+
                 Language = config.Language;
 
                 Platform.Log($"Loaded {name} configuration", LogLevel.INFO);
@@ -60,15 +68,14 @@ namespace Client
 
         public static void Save(string name, string langCode)
         {
-            string content = JsonConvert.SerializeObject(new ClientConfig()
-            {
-                EndpointAddress = EndpointAddress,
-                Language = langCode ?? Language
-            });
+            string content = JsonConvert.SerializeObject(new ClientConfig() { Language = langCode ?? Language },
+                                                         new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore });
 
-            string configFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                                                "ReNote", $"{name.ToLower()}.config.json");
+            string renoteDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ReNote");
+            if (!Directory.Exists(renoteDirectory))
+                Directory.CreateDirectory(renoteDirectory);
 
+            string configFilePath = Path.Combine(renoteDirectory, $"{name.ToLower()}.config.json");
             File.WriteAllTextAsync(configFilePath, content);
         }
     }

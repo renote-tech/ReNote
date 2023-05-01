@@ -4,21 +4,37 @@ using System.Linq;
 using System.Net;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Input;
 using Avalonia.Markup.Xaml.MarkupExtensions;
 using Avalonia.Media;
 using Client.Api;
 using Client.Api.Responses;
 using Client.Managers;
 using Client.Pages;
-using Client.Popups;
-using Client.ReNote;
+using Client.ReNote.Data;
 using Client.Windows;
 
 namespace Client.Layouts
 {
     public partial class UserLayout : Layout
     {
+        private Page m_CurrentPage
+        {
+            get
+            {
+                if (m_Page.Children.Count == 0)
+                    return null;
+
+                if (m_Page.Children[0] is not Page)
+                    return null;
+
+                return (Page)m_Page.Children[0];
+            }
+            set
+            {
+                m_Page.Children.Clear();
+                m_Page.Children.Add(value);
+            }
+        }
         private string m_ToolbarId;
 
         public UserLayout()
@@ -59,20 +75,50 @@ namespace Client.Layouts
         {
             m_MenuButton.PointerReleased += (sender, e) =>
             {
-                m_MenuSelector.IsVisible = !m_MenuSelector.IsVisible;
+                if (e.InitialPressMouseButton != Avalonia.Input.MouseButton.Left)
+                    return;
+
+                m_MenuSelector.IsVisible = true;
             };
 
             m_MenuMask.PointerReleased += (sender, e) =>
             {
+                if (e.InitialPressMouseButton != Avalonia.Input.MouseButton.Left)
+                    return;
+
                 m_MenuSelector.IsVisible = false;
             };
 
-            m_HomeButton.PointerReleased += (sender, e) => Navigate("Home");
-            m_ProfileButton.PointerReleased += (sender, e) => Navigate("User");
+            m_CloseButton.PointerReleased += (sender, e) =>
+            {
+                if (e.InitialPressMouseButton != Avalonia.Input.MouseButton.Left)
+                    return;
+
+                m_MenuSelector.IsVisible = false;
+            };
+
+            m_HomeButton.PointerReleased += (sender, e) => 
+            {
+                if (e.InitialPressMouseButton != Avalonia.Input.MouseButton.Left)
+                    return;
+                
+                Navigate("Home");
+            };
+
+            m_ProfileButton.PointerReleased += (sender, e) =>
+            {
+                if (e.InitialPressMouseButton != Avalonia.Input.MouseButton.Left)
+                    return;
+
+                Navigate("User");
+            };
 
             m_LogOutButton.PointerReleased += async (sender, e) =>
             {
-                await ApiService.LogoutAsync(User.Current.SessionId, User.Current.AuthToken, (HttpStatusCode statusCode, Response response) =>
+                if (e.InitialPressMouseButton != Avalonia.Input.MouseButton.Left)
+                    return;
+
+                await ApiService.LogoutAsync((HttpStatusCode statusCode, Response response) =>
                 {
                     User.Delete();
                     MainWindow.Instance.SetLayout(new LogonLayout());
@@ -86,9 +132,11 @@ namespace Client.Layouts
             if (toolbar == null || toolbar.DefaultPage == null)
                 return;
 
+            if (m_CurrentPage != null)
+                m_CurrentPage.Destroy();
+
             Page page = (Page)Activator.CreateInstance(toolbar.DefaultPage);
-            m_Page.Children.Clear();
-            m_Page.Children.Add(page);
+            m_CurrentPage = page;
 
             SetToolbar(toolbar);
         }
@@ -98,8 +146,10 @@ namespace Client.Layouts
             if (m_Page.Children.Count > 0 && m_Page.Children[0].GetType() == page.GetType())
                 return;
 
-            m_Page.Children.Clear();
-            m_Page.Children.Add(page);
+            if (m_CurrentPage != null)
+                m_CurrentPage.Destroy();
+
+            m_CurrentPage = page;
 
             Toolbar toolbar = ToolbarManager.GetToolbar(page.GetToolbarId());
             if (toolbar == null || m_ToolbarId == toolbar.Id)
@@ -120,10 +170,10 @@ namespace Client.Layouts
 
                 Button barButton = new Button()
                 {
-                    Background = Brushes.Transparent,
-                    Margin = new Thickness(lastButtonWidth, 0),
-                    Height = 30,
-                    FontSize = 13,
+                    Background   = Brushes.Transparent,
+                    Margin       = new Thickness(lastButtonWidth, 0),
+                    Height       = 30,
+                    FontSize     = 13,
                     CornerRadius = new CornerRadius(0)
                 };
 

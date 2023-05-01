@@ -2,7 +2,7 @@
 
 namespace Client.Api.Requests
 {
-    internal class PreferenceRequest
+    internal class PreferenceRequest : Request
     {
         [JsonProperty("language")]
         public string Language { get; set; }

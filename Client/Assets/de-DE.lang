@@ -47,3 +47,8 @@ AccountApplyPreferences=Apply
 AccountMobile=Mobile Anmeldung
 
 AccountAbout=Um
+AboutCredits=Credits
+AboutThirdParties=Third parties
+AboutThirdPartiesLicense1=Newtonsoft.Json is licensed under the MIT License.
+AboutThirdPartiesLicense2=ProtoBuf is licensed under the BSD License.
+AboutThirdPartiesLicense3=ProtoBuf.NET is licensed under the Apache License.

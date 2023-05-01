@@ -4,7 +4,7 @@ using Avalonia;
 using Avalonia.Media;
 using Client.Api.Responses;
 using Client.Api;
-using Client.ReNote;
+using Client.ReNote.Data;
 
 namespace Client.Managers
 {
@@ -37,18 +37,11 @@ namespace Client.Managers
 
         private readonly static Color s_ThemeSelectionHover = new Color(255, 25, 25, 25);
 
-        public static async void Initialize()
+        public static void Initialize(Theme[] themes)
         {
-            await ApiService.GetThemeList((HttpStatusCode statusCode, ThemeResponse response) =>
-            {
-                if (statusCode != HttpStatusCode.OK)
-                    return;
-
-                s_Themes = response.Data;
-
-                for (int i = 0; i < s_Themes.Length; i++)
-                    s_Themes[i].Id = i;
-            });
+            s_Themes = themes;
+            for (int i = 0; i < s_Themes.Length; i++)
+                s_Themes[i].Id = i;
         }
 
         public static void RestoreDefault()

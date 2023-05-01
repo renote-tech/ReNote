@@ -5,20 +5,15 @@
              mc:Ignorable="d" d:DesignWidth="960" d:DesignHeight="540"
              x:Class="Client.Layouts.UserLayout">
 	<UserControl.Styles>
-		<Style Selector="TextBlock">
-			<Setter Property="Foreground" Value="{DynamicResource BaseForeground}"/>
-		</Style>
 		<Style Selector="Grid.toolbar">
 			<Setter Property="Background" Value="{DynamicResource BaseToolBar}"/>
 		</Style>
 		<Style Selector="Button">
+			<Setter Property="Background" Value="{DynamicResource BaseButton}"/>
 			<Setter Property="Foreground" Value="{DynamicResource BaseForeground}"/>
 		</Style>
 		<Style Selector="Button:pointerover /template/ ContentPresenter">
 			<Setter Property="TextBlock.Foreground" Value="{DynamicResource BaseForeground}"/>
-		</Style>
-		<Style Selector="Button">
-			<Setter Property="Background" Value="{DynamicResource BaseButton}"/>
 		</Style>
 		<Style Selector="Button:pointerover /template/ ContentPresenter">
 			<Setter Property="Background" Value="{DynamicResource BaseButtonHover}"/>
@@ -26,19 +21,37 @@
 		<Style Selector="Button:pressed /template/ ContentPresenter">
 			<Setter Property="Background" Value="{DynamicResource BaseButtonPress}"/>
 		</Style>
-		<Style Selector="Border.topBarButton">
+		<Style Selector="Border.BUTTON_STYLE">
 			<Setter Property="Background" Value="{DynamicResource BaseButton}"/>
 		</Style>
-		<Style Selector="Border.topBarButton:pointerover">
+		<Style Selector="Border.BUTTON_STYLE:pointerover">
 			<Setter Property="Background" Value="{DynamicResource BaseButtonHover}"/>
+		</Style>
+		<Style Selector="TextBlock">
+			<Setter Property="Foreground" Value="{DynamicResource BaseForeground}"/>
+		</Style>
+		<Style Selector="TextBlock.FORE_HOVER:pointerover">
+			<Setter Property="Foreground" Value="{DynamicResource BaseForegroundTitle}"/>
+			<Style.Animations>
+				<Animation Duration="0:0:1">
+					<KeyFrame Cue="0%">
+						<Setter Property="Opacity" Value="0.0"/>
+						<Setter Property="RotateTransform.Angle" Value="0.0"/>
+					</KeyFrame>
+					<KeyFrame Cue="100%">
+						<Setter Property="Opacity" Value="1.0"/>
+						<Setter Property="RotateTransform.Angle" Value="90.0"/>
+					</KeyFrame>
+				</Animation>
+			</Style.Animations>
 		</Style>
 	</UserControl.Styles>
 	<Panel>
 		<Panel VerticalAlignment="Top" Background="{DynamicResource BaseTopBar}" Height="60">
-			<Border Classes="topBarButton" x:Name="m_MenuButton" HorizontalAlignment="Left" Margin="10, 10, 10, 10" CornerRadius="32" Width="48" Height="48">
+			<Border Classes="BUTTON_STYLE" x:Name="m_MenuButton" HorizontalAlignment="Left" Margin="10" CornerRadius="32" Width="48" Height="48">
 				<TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="avares://Client/Assets/segfluicons.ttf#Segoe Fluent Icons" FontSize="24" Text="&#xE700;"/>
 			</Border>
-			<Border Classes="topBarButton" x:Name="m_HomeButton" HorizontalAlignment="Left" Margin="70, 10, 10, 10" CornerRadius="32" Width="48" Height="48">
+			<Border Classes="BUTTON_STYLE" x:Name="m_HomeButton" HorizontalAlignment="Left" Margin="70, 10, 10, 10" CornerRadius="32" Width="48" Height="48">
 				<TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="avares://Client/Assets/segfluicons.ttf#Segoe Fluent Icons" FontSize="24" Text="&#xE80F;"/>
 			</Border>
 			<Border x:Name="m_ProfileButton" HorizontalAlignment="Right" Margin="0, 0, 70, 0" CornerRadius="32" Width="48" Height="48">
@@ -46,7 +59,7 @@
 					<ImageBrush Stretch="Fill" Source="/Assets/user.bmp"/>
 				</Border.Background>
 			</Border>
-			<Border Classes="topBarButton" x:Name="m_LogOutButton" HorizontalAlignment="Right" Margin="10, 10, 10, 10" CornerRadius="32" Width="48" Height="48">
+			<Border Classes="BUTTON_STYLE" x:Name="m_LogOutButton" HorizontalAlignment="Right" Margin="10" CornerRadius="32" Width="48" Height="48">
 				<TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="avares://Client/Assets/segfluicons.ttf#Segoe Fluent Icons" FontSize="24" Text="&#xE7e8;"/>
 			</Border>
 			<TextBlock x:Name="m_SchoolName" HorizontalAlignment="Center" TextAlignment="Center" Margin="10"/>
@@ -55,9 +68,19 @@
 		<Grid x:Name="m_Toolbar" Classes="toolbar" VerticalAlignment="Top" Margin="0, 60, 0, 0" Height="30"/>
 		<TextBlock x:Name="m_PageName" HorizontalAlignment="Right" Margin="0, 67, 8, 0" Foreground="{DynamicResource BaseForegroundTitle}"/>
 		<Panel x:Name="m_Page" VerticalAlignment="Stretch" Background="#1f1f1f" Margin="0, 90, 0, 0"/>
-		<Panel x:Name="m_MenuSelector" IsVisible="False">
-			<Panel x:Name="m_MenuMask" VerticalAlignment="Top" Margin="0, 60" HorizontalAlignment="Left" Background="#7f000000" Width="{Binding $parent.Bounds.Width}" Height="{Binding $parent.Bounds.Height}"/>
-			<Border VerticalAlignment="Center" Margin="0, 30, 0, 0" HorizontalAlignment="Center" Background="#323232" Width="550" Height="425" CornerRadius="16"/>
+		<Panel x:Name="m_MenuSelector" IsVisible="True">
+			<Panel x:Name="m_MenuMask" VerticalAlignment="Top" HorizontalAlignment="Left" Background="#7f000000" Width="{Binding $parent.Bounds.Width}" Height="{Binding $parent.Bounds.Height}"/>
+			<Panel Width="200" Height="{Binding	$parent.Bounds.Height}" HorizontalAlignment="Left" Background="#323232">
+				<Border x:Name="m_CloseButton" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="10" Width="48" Height="48">
+					<TextBlock Classes="FORE_HOVER" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="avares://Client/Assets/segfluicons.ttf#Segoe Fluent Icons" FontSize="24" Padding="8" Text="&#xE8BB;"/>
+				</Border>
+				<Button VerticalAlignment="Bottom" Margin="0, 10" Width="200" Height="50" CornerRadius="0">
+					<Panel>
+						<TextBlock Classes="FORE_HOVER" Margin="10" VerticalAlignment="Center" FontFamily="avares://Client/Assets/segfluicons.ttf#Segoe Fluent Icons" FontSize="16" Text="&#xE77B;"/>
+						<TextBlock Text="My Account" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+					</Panel>
+				</Button>
+			</Panel>
 		</Panel>
 	</Panel>
 </UserControl>

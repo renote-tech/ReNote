@@ -14,7 +14,7 @@ LogonSignInButton=Se connecter
 LogonEmptyField=Veuillez entrer votre nom d'utilisateur et mot de passe
 LogonContactAdmin=Si ce problème persiste; contacter votre administrateur
 LogonInvalidField=Nom d'utilisateur ou mot de passe incorrect
-LogonUnknownError=Erreur inconnue\nContacter votre administrateur
+LogonUnknownError=Erreur inconnue; contacter votre administrateur
 LogonCopyrightText=© ReNote NETW.\nTous Droits Réservés.
 
 DialogConfirm=OK
@@ -31,7 +31,7 @@ AccountProfile=Profil
 AccountContact=Contact
 AccountNoEmail=[Aucune addresse mail disponible]
 AccountNoPhone=[Aucun numéro de téléphone disponible]
-AccountWelcome=C'est la première fois que vous êtes connectez à votre compte! Bievenue!
+AccountWelcome=C'est la première fois que vous êtes connectez à votre compte. Bievenue!
 AccountLastConnection=Dernière connection
 
 AccountSecurity=Sécurité
@@ -47,3 +47,8 @@ AccountApplyPreferences=Appliquer
 AccountMobile=Application mobile
 
 AccountAbout=À propos
+AboutCredits=Crédits
+AboutThirdParties=Library tierces
+AboutThirdPartiesLicense1=Newtonsoft.Json est sous la license MIT.
+AboutThirdPartiesLicense2=ProtoBuf est sous la license BSD.
+AboutThirdPartiesLicense3=ProtoBuf.NET est sous la license Apache.

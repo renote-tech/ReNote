@@ -1,4 +1,4 @@
-﻿using Client.ReNote;
+﻿using Client.ReNote.Data;
 using Newtonsoft.Json;
 
 namespace Client.Api.Responses

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Client.ReNote.Data;
 using Newtonsoft.Json;
 
 namespace Client.Api.Responses
@@ -16,6 +17,9 @@ namespace Client.Api.Responses
 
         [JsonProperty("toolbarsInfo")]
         public ToolbarInfo[] ToolbarsInfo { get; set; }
+
+        [JsonProperty("themes")]
+        public Theme[] Themes { get; set; }
     }
 
     internal class ToolbarInfo

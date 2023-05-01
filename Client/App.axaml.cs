@@ -1,4 +1,5 @@
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Client.Windows;
@@ -16,6 +17,8 @@ namespace Client
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
                 desktop.MainWindow = new MainWindow();
+
+            Control.IsTabStopProperty.OverrideDefaultValue(typeof(Control), false);
             
             base.OnFrameworkInitializationCompleted();
         }

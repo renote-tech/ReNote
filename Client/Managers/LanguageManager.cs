@@ -17,11 +17,11 @@ namespace Client.Managers
         public static void Initialize()
         {
             Languages = new Language[] { new Language("en-GB", "\ud83c\uddec\ud83c\udde7", "English (UK)"),
-                                                  new Language("en-US", "\ud83c\uddfa\ud83c\uddf8", "English (US)"),
-                                                  new Language("fr-FR", "\ud83c\uddeb\ud83c\uddf7", "Français"),
-                                                  new Language("zh-CN", "\ud83c\udde8\ud83c\uddf3", "\u4e2d\u6587"),
-                                                  new Language("es-ES", "\ud83c\uddea\ud83c\uddf8", "Español"),
-                                                  new Language("de-DE", "\ud83c\udde9\ud83c\uddea", "Deutsch") };
+                                         new Language("en-US", "\ud83c\uddfa\ud83c\uddf8", "English (US)"),
+                                         new Language("fr-FR", "\ud83c\uddeb\ud83c\uddf7", "Français"),
+                                         new Language("zh-CN", "\ud83c\udde8\ud83c\uddf3", "\u4e2d\u6587"),
+                                         new Language("es-ES", "\ud83c\uddea\ud83c\uddf8", "Español"),
+                                         new Language("de-DE", "\ud83c\udde9\ud83c\uddea", "Deutsch") };
             
             for (int i = 0; i < Languages.Length; i++)
                 Languages[i].Id = i;

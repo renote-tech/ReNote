@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Server.Common.Utilities;
 
@@ -71,11 +72,11 @@ namespace Server.Common
         /// <summary>
         /// Saves all of the specified configurations.
         /// </summary>
-        public static void SaveAllConfigurations()
+        public static async Task SaveAllConfigurationsAsync()
         {
-            SaveConfigurationAsync("Global", GlobalConfig);
-            SaveConfigurationAsync("Web", WebConfig);
-            SaveConfigurationAsync("ReNote", ReNoteConfig);
+            await SaveConfigurationAsync("Global", GlobalConfig);
+            await SaveConfigurationAsync("Web", WebConfig);
+            await SaveConfigurationAsync("ReNote", ReNoteConfig);
         }
 
         /// <summary>
@@ -84,7 +85,7 @@ namespace Server.Common
         /// <typeparam name="T">The configuration type.</typeparam>
         /// <param name="name">The configuration name.</param>
         /// <param name="configObject">The configuration object.</param>
-        public static async void SaveConfigurationAsync<T>(string name, T configObject)
+        public static async Task SaveConfigurationAsync<T>(string name, T configObject)
         {
             string data = JsonConvert.SerializeObject(configObject);
             await File.WriteAllTextAsync($"{name.ToLower()}.config.json", data);

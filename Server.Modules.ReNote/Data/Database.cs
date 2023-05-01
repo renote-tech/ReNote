@@ -152,7 +152,7 @@ namespace Server.ReNote.Data
 
                 try
                 {
-#if DEBUG
+#if !OPEN_ENCRYPTION
                     byte[] data = File.ReadAllBytes(FileLocation);
                     using MemoryStream stream = new MemoryStream(data);
                     Database database = Serializer.Deserialize<Database>(stream);

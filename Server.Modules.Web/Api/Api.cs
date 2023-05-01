@@ -185,7 +185,6 @@ namespace Server.Web.Api
                                        "SchoolInfo",    "/global/school/info",
                                        "About",         "/global/about",
                                        "Quotation",     "/global/quotation",
-                                       "ColorTheme",    "/global/color/themes",
                                        "Configuration", "/global/client/config",
 
                                        "Profile",       "/user/profile",
