@@ -30,9 +30,7 @@ dotnet build <projectName.csproj> --runtime linux-x64
 dotnet build <projectName.csproj> --runtime osx-x64
 ```
 
-<br/>
-
-### Example for the Client on Windows x64
+### *Example for the Client on Windows x64*
 ```bash
 dotnet build Client.csproj --runtime win-x64
 ```
