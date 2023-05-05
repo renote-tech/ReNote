@@ -1,7 +1,7 @@
 <h1 align="center">
   <b>ReNote</b>
   <br>
-  <sub><sup><b><i>Beyond limitations</i></b></sup></sub>
+  <sub><sup><b>Goes<i> Beyond Limitations</i></b></sup></sub>
 </h1>
 
 <p align="center">
@@ -30,9 +30,7 @@ dotnet build <projectName.csproj> --runtime linux-x64
 dotnet build <projectName.csproj> --runtime osx-x64
 ```
 
-<br/>
-
-### Example for the Client on Windows x64
+### *Example for the Client on Windows x64*
 ```bash
 dotnet build Client.csproj --runtime win-x64
 ```
