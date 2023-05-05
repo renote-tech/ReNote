@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace Client
 {
@@ -18,10 +18,10 @@ namespace Client
 
         public static readonly string Configuration = $"{(IsDebug ? "Dev" : "Release")}";
         
-        public const string Version = $"0.8.27";
+        public const string Version = "0.8.9.0";
         public const string VersionName = "SummerHeat";
-        public const string BuildDate = "230511103";
-        public const int BuildNumber = 0;
+        public const string BuildDate = "23552216";
+        public const int BuildNumber = 2;
 
         public static ClientOS DetectOS()
         {

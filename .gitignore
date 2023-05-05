@@ -3,7 +3,12 @@
 **/bin
 **/obj
 **/.vs
-.vs/
+.vs
 
 ## Files
-**/*.bat
+Tools/*.exe
+Tools/*.pdb
+Tools/*.config
+Tools/*.json
+Tools/*.dll
+Tools/*/*.dll

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace Server.Common
 {
@@ -34,11 +34,19 @@ namespace Server.Common
         /// <summary>
         /// The server version.
         /// </summary>
-        public static readonly string Version = $"0.8.37";
+        public static readonly string Version = "0.0.0.0";
         /// <summary>
         /// The server version name.
         /// </summary>
         public const string VersionName = "SpringBloom";
+        /// <summary>
+        /// The server build date.
+        /// </summary>
+        public const string BuildDate = "NOW";
+        /// <summary>
+        /// The server build number.
+        /// </summary>
+        public const int BuildNumber = 0;
 
         /// <summary>
         /// Returns whether the environment is running Windows or Unix.
