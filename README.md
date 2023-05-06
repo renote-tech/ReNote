@@ -26,7 +26,7 @@ build_project.bat client Debug win x86
 
 Notes:
   - You need the .NET SDK 7.0+ to run the commands above. Download <a href="https://aka.ms/netcore">here</a>.
-  - It is not **yet** recommended to build for macOS as I will not provide any support in the current state. Scripts likely won't work as expected.
+  - It is not **yet** recommended to build for macOS as I will not provide any support in the current state. (Scripts may not work as expected as well).
   - If you changed the .NET Version in one of the projects, make sure to specify the new .NET Version as well as the fifth argument such as `net7.0`.
 
 # Run ReNote
