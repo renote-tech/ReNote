@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Server.ReNote.Management;
 using Server.Web.Api;
-using Server.Web.Utilities;
+using Server.Web.Helpers;
 
 namespace Server.ReNote.Api
 {
@@ -19,7 +19,7 @@ namespace Server.ReNote.Api
                 case "DELETE":
                     return await Delete(req);
                 default:
-                    return await ApiUtil.SendAsync(405, ApiMessages.MethodNotAllowed());
+                    return await ApiHelper.SendAsync(405, ApiMessages.MethodNotAllowed());
             }
         }
 
@@ -30,14 +30,14 @@ namespace Server.ReNote.Api
         /// <returns><see cref="ApiResponse"/></returns>
         private static async Task<ApiResponse> Delete(ApiRequest req)
         {
-            ApiResponse verification = await ApiUtil.VerifyAuthorizationAsync(req.Headers);
+            ApiResponse verification = await ApiHelper.VerifyAuthorizationAsync(req.Headers);
             if (verification.Status != 200)
                 return verification;
 
-            long sessionId = long.Parse(ApiUtil.GetHeaderValue(req.Headers["sessionId"]));
+            long sessionId = long.Parse(ApiHelper.GetHeaderValue(req.Headers["sessionId"]));
             SessionManager.DeleteSession(sessionId);
 
-            return await ApiUtil.SendAsync(200, ApiMessages.Success());
+            return await ApiHelper.SendAsync(200, ApiMessages.Success());
         }
     }
 }

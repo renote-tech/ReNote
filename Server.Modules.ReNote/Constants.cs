@@ -11,7 +11,7 @@ namespace Server.ReNote
         /// </summary>
         public const int SID_LENGTH = 9;
         /// <summary>
-        /// The interval between each <see cref="Database.SaveAsync(bool)"/> call.
+        /// The interval between each Worker Service call.
         /// </summary>
         public const int WORKER_INTERVAL = 300000;
         /// <summary>

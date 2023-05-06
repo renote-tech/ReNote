@@ -7,7 +7,7 @@ namespace Server.Web.Api
         /// <summary>
         /// The list of <see cref="ApiEndpoint"/>s.
         /// </summary>
-        private static readonly List<ApiEndpoint> endpoints = new List<ApiEndpoint>();
+        private static readonly List<ApiEndpoint> s_Endpoints = new List<ApiEndpoint>();
 
         /// <summary>
         /// Register a specified amount of endpoints.
@@ -19,9 +19,9 @@ namespace Server.Web.Api
                 return;
 
             for (int i = 0; i < endpoints.Length; i += 2)
-                ApiAtlas.endpoints.Add(new ApiEndpoint(endpoints[i], endpoints[i + 1]));
+                s_Endpoints.Add(new ApiEndpoint(endpoints[i], endpoints[i + 1]));
 
-            ApiAtlas.endpoints.TrimExcess();
+            s_Endpoints.TrimExcess();
         }
 
         /// <summary>
@@ -31,21 +31,21 @@ namespace Server.Web.Api
         /// <returns><see cref="ApiEndpoint"/></returns>
         public static ApiEndpoint GetEndpoint(string uri)
         {
-            for(int i = 0; i < endpoints.Count; i++)
+            for(int i = 0; i < s_Endpoints.Count; i++)
             {
-                if (endpoints[i].Uri == uri)
-                    return endpoints[i];
+                if (s_Endpoints[i].Uri == uri)
+                    return s_Endpoints[i];
             }
             return null;
         }
 
         /// <summary>
-        /// Returns the number of <see cref="ApiEndpoint"/>s in <see cref="endpoints"/>.
+        /// Returns the number of <see cref="ApiEndpoint"/>s in <see cref="s_Endpoints"/>.
         /// </summary>
         /// <returns><see cref="int"/></returns>
         public static int GetEndpointsCount()
         {
-            return endpoints.Count;
+            return s_Endpoints.Count;
         }
     }
 }

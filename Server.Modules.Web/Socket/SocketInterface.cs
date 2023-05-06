@@ -10,18 +10,14 @@ namespace Server.Web.Socket
     public class SocketInterface : IListener
     {
         /// <summary>
-        /// The current existing instance of the <see cref="SocketInterface"/> class; creates a new one if <see cref="instance"/> is null.
+        /// The current existing instance of the <see cref="SocketInterface"/> class; creates a new one if <see cref="m_Instance"/> is null.
         /// </summary>
         public static SocketInterface Instance
         {
             get
             {
-                instance ??= new SocketInterface();
-                return instance;
-            }
-            private set
-            {
-                instance = value;
+                m_Instance ??= new SocketInterface();
+                return m_Instance;
             }
         }
 
@@ -43,26 +39,29 @@ namespace Server.Web.Socket
         /// <summary>
         /// The private field of the <see cref="Instance"/> field.
         /// </summary>
-        private static SocketInterface instance;
+        private static SocketInterface m_Instance;
 
         /// <summary>
         /// The request handler <see cref="Thread"/>.
         /// </summary>
-        private Thread requestHandler;
+        private Thread m_RequestHandler;
 
+        /// <summary>
+        /// Constructor.
+        /// </summary>
         public SocketInterface()
         {
             if (Configuration.GlobalConfig.SocketPort == 0)
                 Configuration.GlobalConfig.SocketPort = 7201;
 
             Listener = new TcpListener(IPAddress.Any, Configuration.GlobalConfig.SocketPort);
-            requestHandler = new Thread(SocketHandler.Handle);
+            m_RequestHandler = new Thread(SocketHandler.Handle);
 
             Platform.Log($"Initialized IListener; PORT={Configuration.GlobalConfig.SocketPort}", LogLevel.INFO);
         }
 
         /// <summary>
-        /// Starts the <see cref="Listener"/> and <see cref="requestHandler"/> <see cref="Thread"/>.
+        /// Starts the <see cref="Listener"/> and <see cref="m_RequestHandler"/> <see cref="Thread"/>.
         /// </summary>
         /// <exception cref="ObjectDisposedException">Throws an exception if the <see cref="SocketInterface"/>'s instance is disposed.</exception>
         public void Start()
@@ -76,7 +75,7 @@ namespace Server.Web.Socket
             IsRunning = true;
 
             Listener.Start();
-            requestHandler.Start();
+            m_RequestHandler.Start();
         }
 
         /// <summary>
@@ -97,7 +96,7 @@ namespace Server.Web.Socket
             IsDisposed = true;
 
             Listener.Stop();
-            requestHandler = null;
+            m_RequestHandler = null;
         }
     }
 }

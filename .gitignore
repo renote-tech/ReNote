@@ -1,14 +1,6 @@
 ## Directories
 **/Proto
+**/processor
 **/bin
 **/obj
 **/.vs
-.vs
-
-## Files
-Tools/*.exe
-Tools/*.pdb
-Tools/*.config
-Tools/*.json
-Tools/*.dll
-Tools/*/*.dll

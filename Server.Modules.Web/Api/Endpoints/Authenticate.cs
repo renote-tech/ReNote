@@ -1,12 +1,12 @@
 ﻿using System.Threading.Tasks;
 using Server.Common.Encryption;
-using Server.Common.Utilities;
+using Server.Common.Helpers;
 using Server.ReNote.Data;
 using Server.ReNote.Management;
 using Server.Web.Api;
 using Server.Web.Api.Requests;
 using Server.Web.Api.Responses;
-using Server.Web.Utilities;
+using Server.Web.Helpers;
 using Newtonsoft.Json;
 
 namespace Server.ReNote.Api
@@ -25,7 +25,7 @@ namespace Server.ReNote.Api
                 case "POST":
                     return await Post(req);
                 default:
-                    return await ApiUtil.SendAsync(405, ApiMessages.MethodNotAllowed());
+                    return await ApiHelper.SendAsync(405, ApiMessages.MethodNotAllowed());
             }
         }
 
@@ -36,27 +36,27 @@ namespace Server.ReNote.Api
         /// <returns><see cref="ApiResponse"/></returns>
         private static async Task<ApiResponse> Post(ApiRequest req)
         {
-            string requestBody = await StreamUtil.GetStringAsync(req.Body);
+            string requestBody = await StreamHelper.GetStringAsync(req.Body);
             if (string.IsNullOrWhiteSpace(requestBody))
-                return await ApiUtil.SendAsync(400, ApiMessages.EmptyUsernameOrPassword());
+                return await ApiHelper.SendAsync(400, ApiMessages.EmptyUsernameOrPassword());
 
-            if (!JsonUtil.ValiditateJson(requestBody))
-                return await ApiUtil.SendAsync(400, ApiMessages.InvalidJson());
+            if (!JsonHelper.ValiditateJson(requestBody))
+                return await ApiHelper.SendAsync(400, ApiMessages.InvalidJson());
 
             AuthRequest requestData = JsonConvert.DeserializeObject<AuthRequest>(requestBody);
 
             if(string.IsNullOrWhiteSpace(requestData.Username) || string.IsNullOrWhiteSpace(requestData.Password))
-                return await ApiUtil.SendAsync(400, ApiMessages.EmptyUsernameOrPassword());
+                return await ApiHelper.SendAsync(400, ApiMessages.EmptyUsernameOrPassword());
 
             if (UserManager.GetUserId(requestData.Username) == -1)
-                return await ApiUtil.SendAsync(400, ApiMessages.InvalidUsernameOrPassword());
+                return await ApiHelper.SendAsync(400, ApiMessages.InvalidUsernameOrPassword());
 
             User userData = UserManager.GetUser(requestData.Username);
             byte[] hashPassword = await Sha256.ComputeAsync(requestData.Password);
             AESObject aesObject = new AESObject(userData.SecurePassword, iv: userData.IVPassword, key: hashPassword);
 
             if (!AES.VerifyKey(requestData.Password, aesObject))
-                return await ApiUtil.SendAsync(401, ApiMessages.InvalidUsernameOrPassword());
+                return await ApiHelper.SendAsync(401, ApiMessages.InvalidUsernameOrPassword());
 
             Session session = await SessionManager.CreateSessionAsync(userData.UserId);
             AuthResponse response = new AuthResponse()
@@ -67,7 +67,7 @@ namespace Server.ReNote.Api
                 AuthToken   = session.AuthToken
             };
 
-            return await ApiUtil.SendWithDataAsync(200, ApiMessages.Success(), response);
+            return await ApiHelper.SendAsync(200, ApiMessages.Success(), response);
         }
     }
 }

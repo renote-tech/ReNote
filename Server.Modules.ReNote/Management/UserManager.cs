@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Server.ReNote.Data;
-using Server.ReNote.Utilities;
+using Server.ReNote.Helpers;
 
 namespace Server.ReNote.Management
 {
@@ -17,7 +17,7 @@ namespace Server.ReNote.Management
             if (userId == -1)
                 return null;
 
-            return DatabaseUtil.GetAs<User>(Constants.DB_ROOT_USERS, userId.ToString());
+            return DatabaseHelper.GetAs<User>(Constants.DB_ROOT_USERS, userId.ToString());
         }
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace Server.ReNote.Management
         /// <returns><see cref="User"/></returns>
         public static User GetUser(long userId)
         {
-            return DatabaseUtil.GetAs<User>(Constants.DB_ROOT_USERS, userId.ToString());
+            return DatabaseHelper.GetAs<User>(Constants.DB_ROOT_USERS, userId.ToString());
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace Server.ReNote.Management
                 return UserExists(userId) ? userId : -1;
             }
 
-            Dictionary<string, string> items = DatabaseUtil.GetItems(Constants.DB_ROOT_USERS);
+            Dictionary<string, string> items = DatabaseHelper.GetItems(Constants.DB_ROOT_USERS);
             if (items == null || items.Count == 0)
                 return -1;
 
@@ -64,7 +64,7 @@ namespace Server.ReNote.Management
         /// <returns><see cref="bool"/></returns>
         private static bool UserExists(long userId)
         {
-            if (DatabaseUtil.ItemExists(Constants.DB_ROOT_USERS, userId.ToString()))
+            if (DatabaseHelper.ItemExists(Constants.DB_ROOT_USERS, userId.ToString()))
                 return true;
 
             return false;

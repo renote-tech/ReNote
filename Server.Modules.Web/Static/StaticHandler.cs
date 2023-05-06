@@ -5,7 +5,7 @@ using Server.Common;
 using Server.ReNote;
 using Server.Web.Api;
 using Server.Web.Api.Responses;
-using Server.Web.Utilities;
+using Server.Web.Helpers;
 using Newtonsoft.Json;
 
 namespace Server.Web.Static
@@ -28,7 +28,7 @@ namespace Server.Web.Static
                 if (webContext.Request.RawUrl == null)
                     return;
 
-                ApiResponse authResponse = await ApiUtil.VerifyAuthorizationAsync(webContext.Request.Headers);
+                ApiResponse authResponse = await ApiHelper.VerifyAuthorizationAsync(webContext.Request.Headers);
                 if(authResponse.Status == 200)
                 {
                     DataResponse authData = JsonConvert.DeserializeObject<DataResponse>(authResponse.Body);

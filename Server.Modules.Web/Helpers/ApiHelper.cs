@@ -1,14 +1,14 @@
 ﻿using System.Collections.Specialized;
 using System.Threading.Tasks;
+using Server.Common.Encryption;
 using Server.ReNote.Management;
 using Server.Web.Api;
 using Server.Web.Api.Responses;
 using Newtonsoft.Json;
-using Server.Common.Encryption;
 
-namespace Server.Web.Utilities
+namespace Server.Web.Helpers
 {
-    public class ApiUtil
+    public class ApiHelper
     {
         /// <summary>
         /// Returns an <see cref="ApiResponse"/>.
@@ -39,7 +39,7 @@ namespace Server.Web.Utilities
         /// <param name="message">The mesage of the <see cref="ApiResponse"/>.</param>
         /// <param name="data">The data of the <see cref="ApiResponse"/>.</param>
         /// <returns><see cref="ApiResponse"/></returns>
-        public static async Task<ApiResponse> SendWithDataAsync(int status, string message, object data)
+        public static async Task<ApiResponse> SendAsync(int status, string message, object data)
         {
             return await Task.Run(() =>
             {
@@ -52,15 +52,6 @@ namespace Server.Web.Utilities
 
                 return new ApiResponse(status, "application/json", JsonConvert.SerializeObject(response));
             });
-        }
-
-        /// <summary>
-        /// Returns an <see cref="ApiResponse"/>.
-        /// </summary>
-        /// <returns><see cref="ApiResponse"/></returns>
-        public static ApiResponse SendNoData(int httpStatus)
-        {
-            return new ApiResponse() { Status = httpStatus };
         }
 
         /// <summary>
@@ -104,7 +95,7 @@ namespace Server.Web.Utilities
 
             SessionManager.UpdateTimestamp(session.SessionId);
 
-            return await SendWithDataAsync(200, ApiMessages.Success(), session.UserId);
+            return await SendAsync(200, ApiMessages.Success(), session.UserId);
         }
 
         /// <summary>
@@ -116,9 +107,6 @@ namespace Server.Web.Utilities
         {
             if (string.IsNullOrWhiteSpace(headerValue))
                 return string.Empty;
-
-            if (!headerValue.Contains(','))
-                return headerValue;
 
             return headerValue.Split(',')[0];
         }

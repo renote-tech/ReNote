@@ -5,9 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using ProtoBuf;
 using Server.Common;
-using Server.Common.Utilities;
-#if !DEBUG
-    using Server.Common.Proto;
+
+#if !OPEN_ENCRYPTION
+using Server.Common.Proto;
 #endif
 
 namespace Server.ReNote.Data
@@ -206,7 +206,7 @@ namespace Server.ReNote.Data
 
             string formatTime = DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss-fff");
             string fileName = $"db_school_{formatTime}.dat";
-            string path = PathUtil.NormalizeToOS(Path.Combine(dirName, fileName));
+            string path = Path.Combine(dirName, fileName);
 
             return await SaveAsync(path);
         }
@@ -221,7 +221,7 @@ namespace Server.ReNote.Data
             {
                 using MemoryStream stream = new MemoryStream();
                 Serializer.Serialize(stream, this);
-#if DEBUG
+#if !OPEN_ENCRYPTION
                 File.WriteAllBytes(FileLocation, stream.ToArray());
 #else
                 byte[] data = ByteShifting.Encrypt(stream.ToArray());
@@ -247,7 +247,7 @@ namespace Server.ReNote.Data
             {
                 using MemoryStream stream = new MemoryStream();
                 Serializer.Serialize(stream, this);
-#if DEBUG
+#if !OPEN_ENCRYPTION
                 await File.WriteAllBytesAsync(saveLocation, stream.ToArray());
 #else
                 byte[] data = ByteShifting.Encrypt(stream.ToArray());

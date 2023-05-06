@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Server.Common;
-using Server.Web.Utilities;
+using Server.Web.Helpers;
 
 namespace Server.Web.Api
 {
@@ -48,7 +48,7 @@ namespace Server.Web.Api
                 if (apiEndpoint != null)
                     apiResponse = await CallEndpointAsync(apiEndpoint, apiRequest);
                 else
-                    apiResponse = await ApiUtil.SendAsync(404, "Not found");
+                    apiResponse = await ApiHelper.SendAsync(404, "Not found");
 
 #if METRICS_ANALYSIS
                 long endpointEndTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
@@ -104,12 +104,12 @@ namespace Server.Web.Api
             Type endpointClass = Type.GetType($"Server.ReNote.Api.{endpoint.Name}");
 
             if (endpointClass == null)
-                return await ApiUtil.SendErrorAsync(ApiMessages.EndpointNotFound());
+                return await ApiHelper.SendErrorAsync(ApiMessages.EndpointNotFound());
 
             MethodInfo endpointMethod = endpointClass.GetMethod("OperateRequest", BindingFlags.Public | BindingFlags.Static);
 
             if (endpointMethod == null)
-                return await ApiUtil.SendErrorAsync(ApiMessages.EndpointMethodNotFound());
+                return await ApiHelper.SendErrorAsync(ApiMessages.EndpointMethodNotFound());
 
             return await (Task<ApiResponse>)endpointMethod.Invoke(null, new object[] { request });
         }

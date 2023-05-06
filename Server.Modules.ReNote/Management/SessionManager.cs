@@ -2,10 +2,10 @@
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Server.Common.Encryption;
-using Server.Common.Utilities;
+using Server.Common.Helpers;
 using Server.ReNote.Data;
 using Server.ReNote.Encryption;
-using Server.ReNote.Utilities;
+using Server.ReNote.Helpers;
 
 namespace Server.ReNote.Management
 {
@@ -31,7 +31,7 @@ namespace Server.ReNote.Management
                 Connection       = connectionTimestamp
             };
 
-            DatabaseUtil.Set(Constants.DB_ROOT_SESSIONS, sessionId.ToString(), internalSession);
+            DatabaseHelper.Set(Constants.DB_ROOT_SESSIONS, sessionId.ToString(), internalSession);
             return new Session(sessionId, userId, authToken, userData.AccountType);
         }
 
@@ -44,7 +44,7 @@ namespace Server.ReNote.Management
             Session session = GetSession(sessionId);
             session.RequestTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
-            DatabaseUtil.Set(Constants.DB_ROOT_SESSIONS, session.SessionId.ToString(), session);
+            DatabaseHelper.Set(Constants.DB_ROOT_SESSIONS, session.SessionId.ToString(), session);
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace Server.ReNote.Management
         /// <returns><see cref="Session"/></returns>
         public static Session GetSession(long sessionId)
         {
-            return DatabaseUtil.GetAs<Session>(Constants.DB_ROOT_SESSIONS, sessionId.ToString());
+            return DatabaseHelper.GetAs<Session>(Constants.DB_ROOT_SESSIONS, sessionId.ToString());
         }
 
         /// <summary>
@@ -67,8 +67,8 @@ namespace Server.ReNote.Management
             User user = UserManager.GetUser(session.UserId);
             user.LastConnection = session.Connection;
 
-            DatabaseUtil.Set(Constants.DB_ROOT_USERS, user.UserId.ToString(), user);
-            DatabaseUtil.Remove(Constants.DB_ROOT_SESSIONS, sessionId.ToString());
+            DatabaseHelper.Set(Constants.DB_ROOT_USERS, user.UserId.ToString(), user);
+            DatabaseHelper.Remove(Constants.DB_ROOT_SESSIONS, sessionId.ToString());
         }
 
         /// <summary>
@@ -78,7 +78,7 @@ namespace Server.ReNote.Management
         /// <returns><see cref="bool"/></returns>
         public static bool SessionExists(long sessionId)
         {
-            return DatabaseUtil.ItemExists(Constants.DB_ROOT_SESSIONS, sessionId.ToString());
+            return DatabaseHelper.ItemExists(Constants.DB_ROOT_SESSIONS, sessionId.ToString());
         }
 
         /// <summary>
@@ -86,11 +86,11 @@ namespace Server.ReNote.Management
         /// </summary>
         public static void Clean(bool checkExpiring = true)
         {
-            string[] sessions = DatabaseUtil.GetValues(Constants.DB_ROOT_SESSIONS);
+            string[] sessions = DatabaseHelper.GetValues(Constants.DB_ROOT_SESSIONS);
             for (int i = 0; i < sessions.Length; i++)
             {
                 string rawSession = sessions[i];
-                if (!JsonUtil.ValiditateJson(rawSession))
+                if (!JsonHelper.ValiditateJson(rawSession))
                     continue;
 
                 Session session = JsonConvert.DeserializeObject<Session>(rawSession);

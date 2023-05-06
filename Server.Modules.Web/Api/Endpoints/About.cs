@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Server.Web.Api;
 using Server.Web.Api.Responses;
-using Server.Web.Utilities;
+using Server.Web.Helpers;
 
 namespace Server.ReNote.Api
 {
@@ -19,7 +19,7 @@ namespace Server.ReNote.Api
                 case "GET":
                     return await Get(req);
                 default:
-                    return await ApiUtil.SendAsync(405, ApiMessages.MethodNotAllowed());
+                    return await ApiHelper.SendAsync(405, ApiMessages.MethodNotAllowed());
             }
         }
 
@@ -37,7 +37,7 @@ namespace Server.ReNote.Api
                 SoftwareCopyright = "© ReNote NETW. All rights reserved."
             };
 
-            return await ApiUtil.SendWithDataAsync(200, ApiMessages.Success(), response);
+            return await ApiHelper.SendAsync(200, ApiMessages.Success(), response);
         }
     }
 }

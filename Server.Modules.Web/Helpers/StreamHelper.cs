@@ -1,10 +1,9 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Threading.Tasks;
 
-namespace Server.Web.Utilities
+namespace Server.Web.Helpers
 {
-    internal class StreamUtil
+    internal class StreamHelper
     {
         /// <summary>
         /// Retrieves the data from a <see cref="Stream"/> as a string.
@@ -14,8 +13,8 @@ namespace Server.Web.Utilities
         /// <returns><see cref="string"/></returns>
         public static async Task<string> GetStringAsync(Stream stream)
         {
-            using StreamReader strreamReader = new StreamReader(stream);
-            return await strreamReader.ReadToEndAsync();
+            using StreamReader streamReader = new StreamReader(stream);
+            return await streamReader.ReadToEndAsync();
         }
     }
 }

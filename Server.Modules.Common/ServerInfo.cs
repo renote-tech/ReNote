@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.InteropServices;
 
 namespace Server.Common
 {
@@ -49,33 +50,27 @@ namespace Server.Common
         public const int BuildNumber = 0;
 
         /// <summary>
-        /// Returns whether the environment is running Windows or Unix.
-        /// </summary>
-        /// <returns><see cref="ServerOS"/></returns>
-        public static ServerOS DetectOS()
-        {
-            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
-                return ServerOS.WINDOWS;
-
-            return ServerOS.UNIX;
-        }
-
-        /// <summary>
         /// Returns the name of the platform ReNote is running on.
         /// </summary>
         /// <returns><see cref="string"/></returns>
         public static string GetPlatformName()
         {
-            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
-                return "Windows NT";
+            string platformName = string.Empty;
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                platformName = "Windows";
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                platformName = "Unix";
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                platformName = "macOS";
 
-            return "Unix";
+            return $"{platformName} {RuntimeInformation.ProcessArchitecture.ToString().ToLower()}";
         }
     }
 
     public enum ServerOS
     {
         UNIX    = 0,
-        WINDOWS = 1
+        WINDOWS = 1,
+        OTHER   = 2
     }
 }

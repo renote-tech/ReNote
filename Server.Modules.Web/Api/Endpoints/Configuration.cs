@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Server.Common.Utilities;
+using Server.Common.Helpers;
 using Server.ReNote.Data;
-using Server.ReNote.Utilities;
+using Server.ReNote.Helpers;
 using Server.Web.Api;
 using Server.Web.Api.Responses;
-using Server.Web.Utilities;
+using Server.Web.Helpers;
 
 namespace Server.ReNote.Api
 {
@@ -25,7 +25,7 @@ namespace Server.ReNote.Api
                 case "GET":
                     return await Get(req);
                 default:
-                    return await ApiUtil.SendAsync(405, ApiMessages.MethodNotAllowed());
+                    return await ApiHelper.SendAsync(405, ApiMessages.MethodNotAllowed());
             }
         }
 
@@ -36,21 +36,21 @@ namespace Server.ReNote.Api
         /// <returns><see cref="ApiResponse"/></returns>
         private static async Task<ApiResponse> Get(ApiRequest req)
         {
-            string rawFeatures = DatabaseUtil.Get(Constants.DB_ROOT_CONFIGS, "plugins");
+            string rawFeatures = DatabaseHelper.Get(Constants.DB_ROOT_CONFIGS, "plugins");
             Dictionary<string, bool> features = new Dictionary<string, bool>();
-            if (JsonUtil.ValiditateJson(rawFeatures))
+            if (JsonHelper.ValiditateJson(rawFeatures))
                 features = JsonConvert.DeserializeObject<Dictionary<string, bool>>(rawFeatures);
 
-            string rawToolbars = DatabaseUtil.Get(Constants.DB_ROOT_CONFIGS, "toolbars");
+            string rawToolbars = DatabaseHelper.Get(Constants.DB_ROOT_CONFIGS, "toolbars");
             ToolbarInfo[] toolbars = Array.Empty<ToolbarInfo>();
-            if (JsonUtil.ValiditateJson(rawToolbars))
+            if (JsonHelper.ValiditateJson(rawToolbars))
                 toolbars = JsonConvert.DeserializeObject<ToolbarInfo[]>(rawToolbars);
 
-            string[] rawThemes = DatabaseUtil.GetValues(Constants.DB_ROOT_COLOR_THEMES);
+            string[] rawThemes = DatabaseHelper.GetValues(Constants.DB_ROOT_COLOR_THEMES);
             Theme[] themes = new Theme[rawThemes.Length];
             for (int i = 0; i < themes.Length; i++)
             {
-                if (!JsonUtil.ValiditateJson(rawThemes[i]))
+                if (!JsonHelper.ValiditateJson(rawThemes[i]))
                     continue;
 
                 themes[i] = JsonConvert.DeserializeObject<Theme>(rawThemes[i]);
@@ -63,7 +63,7 @@ namespace Server.ReNote.Api
                 Themes       = themes
             };
 
-            return await ApiUtil.SendWithDataAsync(200, ApiMessages.Success(), response);
+            return await ApiHelper.SendAsync(200, ApiMessages.Success(), response);
         }
     }
 }

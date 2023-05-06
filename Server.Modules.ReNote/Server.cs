@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using System.Timers;
+﻿using System.Timers;
 using Server.Common;
 using Server.ReNote.Data;
 using Server.ReNote.Management;

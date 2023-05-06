@@ -1,8 +1,7 @@
 ﻿using System;
 using System.IO;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Server.Common.Utilities;
+using Server.Common.Helpers;
 
 namespace Server.Common
 {
@@ -59,7 +58,7 @@ namespace Server.Common
             if (string.IsNullOrWhiteSpace(configContent))
                 return new T();
 
-            if (JsonUtil.ValiditateJson(configContent))
+            if (JsonHelper.ValiditateJson(configContent))
                 config = JsonConvert.DeserializeObject<T>(configContent);
             else
                 config = new T();
@@ -67,28 +66,6 @@ namespace Server.Common
             Platform.Log($"Loaded {name} configuration", LogLevel.INFO);
 
             return config;
-        }
-
-        /// <summary>
-        /// Saves all of the specified configurations.
-        /// </summary>
-        public static async Task SaveAllConfigurationsAsync()
-        {
-            await SaveConfigurationAsync("Global", GlobalConfig);
-            await SaveConfigurationAsync("Web", WebConfig);
-            await SaveConfigurationAsync("ReNote", ReNoteConfig);
-        }
-
-        /// <summary>
-        /// Saves a specific configuration.
-        /// </summary>
-        /// <typeparam name="T">The configuration type.</typeparam>
-        /// <param name="name">The configuration name.</param>
-        /// <param name="configObject">The configuration object.</param>
-        public static async Task SaveConfigurationAsync<T>(string name, T configObject)
-        {
-            string data = JsonConvert.SerializeObject(configObject);
-            await File.WriteAllTextAsync($"{name.ToLower()}.config.json", data);
         }
     }
 

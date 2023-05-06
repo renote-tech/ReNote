@@ -4,25 +4,21 @@ using System.Threading;
 using Server.Common;
 using Server.Common.Exceptions;
 using Server.Web.Interfaces;
-using Server.Web.Utilities;
+using Server.Web.Helpers;
 
 namespace Server.Web.Static
 {
     public class StaticInterface : IHttpListener
     {
         /// <summary>
-        /// The current existing instance of the <see cref="StaticInterface"/> class; creates a new one if <see cref="instance"/> is null.
+        /// The current existing instance of the <see cref="StaticInterface"/> class; creates a new one if <see cref="m_Instance"/> is null.
         /// </summary>
         public static StaticInterface Instance
         {
             get
             {
-                instance ??= new StaticInterface();
-                return instance;
-            }
-            private set
-            {
-                instance = value;
+                m_Instance ??= new StaticInterface();
+                return m_Instance;
             }
         }
 
@@ -44,22 +40,25 @@ namespace Server.Web.Static
         /// <summary>
         /// The private instance of the <see cref="Instance"/> field.
         /// </summary>
-        private static StaticInterface instance;
+        private static StaticInterface m_Instance;
         
         /// <summary>
         /// True if the <see cref="StaticInterface"/>'s instance is initialized; otherwise false.
         /// </summary>
-        private bool initialized;
+        private bool m_Initialized;
         
         /// <summary>
         /// The request handler <see cref="Thread"/>.
         /// </summary>
-        private Thread requestHandler;
+        private Thread m_RequestHandler;
 
+        /// <summary>
+        /// Constructor.
+        /// </summary>
         public StaticInterface()
         {
             Listener = new HttpListener();
-            requestHandler = new Thread(() => StaticHandler.Handle().Wait());
+            m_RequestHandler = new Thread(() => StaticHandler.Handle().Wait());
         }
 
         /// <summary>
@@ -71,18 +70,18 @@ namespace Server.Web.Static
             if (IsDisposed)
                 throw new ObjectDisposedException("StaticInterface");
 
-            if (initialized)
+            if (m_Initialized)
                 return;
 
             if (Configuration.GlobalConfig.WebPort == 0)
                 Configuration.GlobalConfig.WebPort = 7001;
 
-            HttpUtil.RegisterPrefixes(this, Configuration.GlobalConfig.Prefixes, Configuration.GlobalConfig.WebPort);
-            initialized = true;
+            HttpHelper.RegisterPrefixes(this, Configuration.GlobalConfig.Prefixes, Configuration.GlobalConfig.WebPort);
+            m_Initialized = true;
         }
 
         /// <summary>
-        /// Starts the <see cref="Listener"/> and <see cref="requestHandler"/> <see cref="Thread"/>.
+        /// Starts the <see cref="Listener"/> and <see cref="m_RequestHandler"/> <see cref="Thread"/>.
         /// </summary>
         /// <exception cref="ObjectDisposedException">Throws an exception if the <see cref="StaticInterface"/>'s instance is disposed.</exception>
         /// <exception cref="UninitializedException">Throws an exception if the <see cref="StaticInterface"/>'s instance is not initialized.</exception>
@@ -91,7 +90,7 @@ namespace Server.Web.Static
             if (IsDisposed)
                 throw new ObjectDisposedException("StaticInterface");
 
-            if (!initialized)
+            if (!m_Initialized)
                 throw new UninitializedException("StaticInterface", "Start");
 
             if (IsRunning)
@@ -100,7 +99,7 @@ namespace Server.Web.Static
             IsRunning = true;
 
             Listener.Start();
-            requestHandler.Start();
+            m_RequestHandler.Start();
         }
 
         /// <summary>
@@ -115,20 +114,19 @@ namespace Server.Web.Static
             if (IsDisposed)
                 throw new ObjectDisposedException("StaticInterface");
 
-
-            if (!initialized)
+            if (!m_Initialized)
                 throw new UninitializedException("StaticInterface", "Stop");
 
             if (!IsRunning)
                 return;
 
+            m_Initialized = false;
             IsRunning = false;
-            initialized = false;
             IsDisposed = true;
 
             Listener.Stop();
             Listener.Close();
-            requestHandler = null;
+            m_RequestHandler = null;
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Server.Web.Api;
-using Server.Web.Utilities;
+using Server.Web.Helpers;
 
 namespace Server.ReNote.Api
 {
@@ -13,7 +13,7 @@ namespace Server.ReNote.Api
         /// <returns><see cref="ApiResponse"/></returns>
         public static async Task<ApiResponse> OperateRequest(ApiRequest req)
         {
-            return await ApiUtil.SendAsync(200, ApiMessages.ServerRunning());
+            return await ApiHelper.SendAsync(200, ApiMessages.ServerRunning());
         }
     }
 }

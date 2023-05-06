@@ -1,8 +1,8 @@
 ﻿using System.Buffers.Binary;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Server.Common;
-using Server.Common.Utilities;
 using Server.ReNote;
 
 namespace Server.Web.Static
@@ -63,14 +63,17 @@ namespace Server.Web.Static
         /// <returns><see cref="string"/></returns>
         private static string GetResourcePath(string uri)
         {
+            uri = Regex.Replace(uri, @"[/\\\\]", Path.DirectorySeparatorChar.ToString());
+            uri = Regex.Replace(uri, @"^[\\/]+", string.Empty);
+
             if (GetPathExtension(uri) == "None")
                 return WebResources.Index;
             else if (GetPathExtension(uri) == "DotHtml")
-                return PathUtil.NormalizeToOS($"{WebResources.WebRoot}/{uri}/index.html");
+                return Path.Combine(WebResources.WebRoot, uri, "index.html");
             else if (GetPathExtension(uri) == "VueHtml")
                 return WebResources.Index;
             else
-                return PathUtil.NormalizeToOS($"{WebResources.WebRoot}/{uri}");
+                return Path.Combine(WebResources.WebRoot, uri);
         }
 
         /// <summary>
@@ -80,7 +83,7 @@ namespace Server.Web.Static
         /// <returns><see cref="string"/></returns>
         private static string GetPathExtension(string uri)
         {
-            if (string.IsNullOrWhiteSpace(uri) || uri == "/")
+            if (string.IsNullOrWhiteSpace(uri) || IsEmptyWebPath(uri))
                 return "None";
             else if (Configuration.WebConfig.WebNoDotHtml && uri.LastIndexOf('.') == -1)
                 return "DotHtml";
@@ -94,7 +97,7 @@ namespace Server.Web.Static
         /// Gets the original resource data. (without attributes)
         /// </summary>
         /// <param name="resource">The resource to be proceeded.</param>
-        /// <returns></returns>
+        /// <returns><see cref="string"/>[]</returns>
         private static byte[] GetOriginalResource(byte[] resource)
         {
             // We remove the total number of bytes used by the attributes.
@@ -110,12 +113,20 @@ namespace Server.Web.Static
 
         /// <summary>
         /// Returns whether the file has attributes.
+        ///
+        /// We split the file into chunks of 16 bytes.
+        /// ReNote Custom Attribute adds one chunck to the file
+        /// It also adds some other bytes as well to finish the previous row.
+        /// The attribute has only a long (8 bytes) that corresponds to the user id.
+        /// So in the end 7 bytes will be left (See the calculation below for the 'finalBytes' variable.)
+        /// These 7 bytes will always be empty bytes (0x0).
+        /// If they are all empty - It means the file has an attribute otherwise it hasn't.
         /// </summary>
         /// <param name="resource">The resource to be proceeded.</param>
         /// <returns><see cref="bool"/></returns>
         private static bool HasAttribute(byte[] resource)
         {
-            // We check if the final attribute's bytes are empty. (the ones that are not used)
+
             byte finalBytes = CHUNK_SIZE - OFFSET_SIZE - LONG_SIZE;
             for (int i = resource.Length - finalBytes; i < resource.Length; i++)
             {
@@ -140,6 +151,16 @@ namespace Server.Web.Static
                 arrayOwnerId[i] = resource[resource.Length - offset + i];
 
             return BinaryPrimitives.ReadInt64BigEndian(arrayOwnerId);
+        }
+
+        /// <summary>
+        /// Returns whether the specified URI is an empty path.
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <returns></returns>
+        private static bool IsEmptyWebPath(string uri)
+        {
+            return uri == Regex.Replace("/", "[/\\\\]", Path.DirectorySeparatorChar.ToString());
         }
     }
 }

@@ -1,4 +1,4 @@
-using System;
+using System.Runtime.InteropServices;
 
 namespace Client
 {
@@ -18,30 +18,14 @@ namespace Client
 
         public static readonly string Configuration = $"{(IsDebug ? "Dev" : "Release")}";
         
-        public const string Version = "0.8.9.0";
+        public const string Version = "0.0.0.0";
         public const string VersionName = "SummerHeat";
-        public const string BuildDate = "23552216";
-        public const int BuildNumber = 2;
-
-        public static ClientOS DetectOS()
-        {
-            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
-                return ClientOS.WINDOWS;
-
-            return ClientOS.UNIX;
-        }
-
-        public static string GetPlatformName()
-        {
-            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
-                return "Windows NT";
-
-            return "Unix";
-        }
+        public const string BuildDate = "NOW";
+        public const int BuildNumber = 0;
 
         public static string GetFullVersion()
         {
-            string platformName = (DetectOS() == ClientOS.WINDOWS ? "WIN" : "UNIX");
+            string platformName = GetPlatformName();
             string buildConfig  = (IsDebug ? "DEV" : "PROD");
             string version      = Version.Replace(".", "");
 
@@ -51,11 +35,17 @@ namespace Client
             return $"{buildConfig}_{platformName}_{BuildDate}_{BuildNumber}_{version}";
 #endif
         }
-    }
 
-    public enum ClientOS
-    {
-        UNIX    = 0,
-        WINDOWS = 1
+        private static string GetPlatformName()
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                return "WIN";
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                return "OSX";
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                return "UNIX";
+
+            return "OTHER";
+        }
     }
 }

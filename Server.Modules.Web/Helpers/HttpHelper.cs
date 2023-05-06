@@ -1,11 +1,9 @@
 ﻿using Server.Common;
 using Server.Web.Interfaces;
-using System.Net;
-using System.Net.Sockets;
 
-namespace Server.Web.Utilities
+namespace Server.Web.Helpers
 {
-    internal class HttpUtil
+    internal class HttpHelper
     {
         /// <summary>
         /// Registers the prefixes of an interface.

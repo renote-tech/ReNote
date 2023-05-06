@@ -1,8 +1,8 @@
 ﻿using System.Text.Json;
 
-namespace Server.Common.Utilities
+namespace Server.Common.Helpers
 {
-    public class JsonUtil
+    public class JsonHelper
     {
         /// <summary>
         /// Returns whether the <see cref="string"/> is a valid json value.
@@ -11,7 +11,7 @@ namespace Server.Common.Utilities
         /// <returns><see cref="bool"/></returns>
         public static bool ValiditateJson(string content)
         {
-            if (string.IsNullOrEmpty(content))
+            if (string.IsNullOrWhiteSpace(content))
                 return false;
 
             try

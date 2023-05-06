@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
-using Server.Common.Utilities;
+using Server.Common.Helpers;
 using Server.ReNote.Data;
 
-namespace Server.ReNote.Utilities
+namespace Server.ReNote.Helpers
 {
-    public class DatabaseUtil
+    public class DatabaseHelper
     {
         /// <summary>
         /// Sets data to the <see cref="Database"/>.
@@ -90,7 +90,7 @@ namespace Server.ReNote.Utilities
                 return null;
 
             string data = Server.Database[root][key];
-            if (string.IsNullOrWhiteSpace(data) || !JsonUtil.ValiditateJson(data))
+            if (string.IsNullOrWhiteSpace(data) || !JsonHelper.ValiditateJson(data))
                 return null;
 
             return JsonConvert.DeserializeObject<T>(data);
