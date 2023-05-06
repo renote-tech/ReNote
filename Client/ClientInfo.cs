@@ -19,7 +19,7 @@ namespace Client
         public static readonly string Configuration = $"{(IsDebug ? "Dev" : "Release")}";
         
         public const string Version = "0.0.0.0";
-        public const string VersionName = "SummerHeat";
+        public const string VersionName = "SolidFire";
         public const string BuildDate = "NOW";
         public const int BuildNumber = 0;
 
