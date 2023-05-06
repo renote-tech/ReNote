@@ -12,8 +12,7 @@
 </p>
 
 # Build ReNote
-Use the `cd` command to navigate to one of the following directories: `Client` or `Server`. 
-Next run the command below for the corresponding platform.
+You can modify the `build_client.bat` and `build_server.bat` scripts located in the Tools folder to any of the command below depending on the platform you are using. Next you'll just have to run one of the script. Alternatively you can simply use alone one of these by replacing with the corresponding C# project file from the different folders of this repository.
 
 ### Windows
 ```bash
@@ -66,3 +65,4 @@ If you have suggestions, bugs or problems with ReNote, you can let us know via t
 - Newtonsoft.Json is licensed under the <a href="https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md">MIT</a> License.
 - ProtoBuf is licensed under the <a href="https://github.com/protocolbuffers/protobuf/blob/main/LICENSE">BSD</a> License.
 - ProtoBuf.NET is licensed under the <a href="https://github.com/protobuf-net/protobuf-net/blob/main/Licence.txt">Apache</a> License.
+- Avalonia is licensed under the <a href="https://github.com/AvaloniaUI/Avalonia/blob/master/licence.md">MIT</a> License.
