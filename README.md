@@ -14,6 +14,11 @@
 # Build ReNote
 Navigate to the Tools folder; you'll find 4 scripts, you can use either the version for Windows (Batch scripts) or the version for Linux/macOS (Bash scripts). Here are some examples for the `build_project` script:
 
+### Usage
+```
+build_project.[sh/bat] [client|server] [Debug|Release] [win|linux|osx] [x86|x64] [netX.X]
+```
+
 ### Windows
 ```
 build_project.bat client Debug win x86
