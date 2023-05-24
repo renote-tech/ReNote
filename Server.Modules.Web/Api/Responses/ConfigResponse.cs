@@ -7,6 +7,12 @@ namespace Server.Web.Api.Responses
     internal class ConfigResponse
     {
         /// <summary>
+        /// The menu info of the <see cref="ConfigResponse"/>.
+        /// </summary>
+        [JsonProperty("menuInfo")]
+        public MenuInfo[] MenuInfo { get; set; }
+
+        /// <summary>
         /// The features of the <see cref="ConfigResponse"/>.
         /// </summary>
         [JsonProperty("features")]

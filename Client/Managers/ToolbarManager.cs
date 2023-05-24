@@ -1,54 +1,54 @@
-﻿using Client.Api.Responses;
+﻿namespace Client.Managers;
+
+using Client.Api.Responses;
 using Client.Pages;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Client.Managers
+internal class ToolbarManager
 {
-    internal class ToolbarManager
+    private static readonly Dictionary<string, Toolbar> s_Toolbars = new Dictionary<string, Toolbar>();
+
+    public static void Initialize(ToolbarInfo[] toolbarsInfo)
     {
-        private static readonly Dictionary<string, Toolbar> s_Toolbars = new Dictionary<string, Toolbar>();
+        if (toolbarsInfo == null)
+            return;
 
-        public static void Initialize(ToolbarInfo[] toolbarsInfo)
+        for (int i = 0; i < toolbarsInfo.Length; i++)
         {
-            if (toolbarsInfo == null)
-                return;
+            ToolbarInfo toolbarInfo = toolbarsInfo[i];
+            Toolbar toolbar = new Toolbar(toolbarInfo.Id, toolbarInfo.Name);
 
-            for (int i = 0; i < toolbarsInfo.Length; i++)
+            toolbar.DefaultPage = Type.GetType($"Client.Pages.{toolbarInfo.DefaultPage}");
+
+            for (int j = 0; j < toolbarInfo.Buttons.Count; j++)
             {
-                ToolbarInfo toolbarInfo = toolbarsInfo[i];
-                Toolbar toolbar = new Toolbar(toolbarInfo.Id, toolbarInfo.Name);
-
-                toolbar.DefaultPage = Type.GetType($"Client.Pages.{toolbarInfo.DefaultPage}");
-
-                for (int j = 0; j < toolbarInfo.Buttons.Count; j++)
-                {
-                    KeyValuePair<string, string> button = toolbarInfo.Buttons.ElementAt(j);
-                    toolbar.Buttons.Add(button.Key, Type.GetType($"Client.Pages.{button.Value}"));
-                }
-
-                AddToolbar(toolbar);
+                KeyValuePair<string, string> button = toolbarInfo.Buttons.ElementAt(j);
+                toolbar.Buttons.Add(button.Key, Type.GetType($"Client.Pages.{button.Value}"));
             }
+
+            AddToolbar(toolbar);
         }
+    }
 
-        public static void AddToolbar(Toolbar toolbar)
-        {
-            if (s_Toolbars.ContainsKey(toolbar.Id))
-                return;
+    public static void AddToolbar(Toolbar toolbar)
+    {
+        if (s_Toolbars.ContainsKey(toolbar.Id))
+            return;
 
-            s_Toolbars.Add(toolbar.Id, toolbar);
-        }
+        s_Toolbars.Add(toolbar.Id, toolbar);
+    }
 
-        public static Toolbar GetToolbar(string toolbarId) 
-        {
-            if (string.IsNullOrWhiteSpace(toolbarId))
-                return null;
+    public static Toolbar GetToolbar(string toolbarId)
+    {
+        if (string.IsNullOrWhiteSpace(toolbarId))
+            return null;
 
-            if (!s_Toolbars.ContainsKey(toolbarId))
-                return null;
+        if (!s_Toolbars.ContainsKey(toolbarId))
+            return null;
 
-            return s_Toolbars[toolbarId];
-        }
+        return s_Toolbars[toolbarId];
     }
 }

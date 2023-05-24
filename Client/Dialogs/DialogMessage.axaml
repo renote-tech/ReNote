@@ -1,0 +1,26 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="960" d:DesignHeight="540"
+             x:Class="Client.Dialogs.DialogMessage">
+	<UserControl.Styles>
+		<Style Selector="Button">
+			<Setter Property="Background" Value="{DynamicResource BaseMenuButton}"/>
+		</Style>
+		<Style Selector="Button:pointerover /template/ ContentPresenter">
+			<Setter Property="Background" Value="{DynamicResource BaseMenuButtonHover}"/>
+		</Style>
+		<Style Selector="Button:pressed /template/ ContentPresenter">
+			<Setter Property="Background" Value="{DynamicResource BaseMenuButtonHover}"/>
+		</Style>
+	</UserControl.Styles>
+	<Panel Background="{DynamicResource BaseBackgroundMask}">
+		<Border VerticalAlignment="Center" Margin="0, 30, 0, 0" HorizontalAlignment="Center" Background="{DynamicResource BaseBackgroundDialog}" Width="300" Height="125" CornerRadius="16">
+			<Panel>
+				<TextBlock x:Name="m_MessageLabel" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="16" Margin="20, 25"/>
+				<Button x:Name="m_ConfirmButton" Width="65" Height="30" HorizontalContentAlignment="Center" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="15"/>
+			</Panel>
+		</Border>
+	</Panel>
+</UserControl>

@@ -1,4 +1,4 @@
-﻿using System;
+﻿ using System;
 using System.Net;
 using System.Threading.Tasks;
 using Server.Common;
@@ -35,7 +35,10 @@ namespace Server.Web.Static
                     userId = (long)authData.Data;
                 }
 
-                webResponse = await StaticStorage.GetResourceAsync(webContext.Request.RawUrl, userId);
+                if (ReNote.Server.Instance.CheckStatus() != 200)
+                    webResponse = Array.Empty<byte>();
+                else 
+                    webResponse = await StaticStorage.GetResourceAsync(webContext.Request.RawUrl, userId);
 
                 webContext.Response.Headers.Add("Server", string.Empty);
                 webContext.Response.Headers.Add("Server-Agent", ServerInfo.Agent);

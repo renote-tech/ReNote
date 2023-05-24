@@ -11,14 +11,14 @@ namespace Server.Web.Api
     public class ApiInterface : IHttpListener
     {
         /// <summary>
-        /// The current existing instance of the <see cref="ApiInterface"/> class; creates a new one if <see cref="m_Instance"/> is null.
+        /// The current existing instance of the <see cref="ApiInterface"/> class; creates a new one if <see cref="s_Instance"/> is null.
         /// </summary>
         public static ApiInterface Instance
         {
             get
             {
-                m_Instance ??= new ApiInterface();
-                return m_Instance;
+                s_Instance ??= new ApiInterface();
+                return s_Instance;
             }
         }
 
@@ -40,7 +40,7 @@ namespace Server.Web.Api
         /// <summary>
         /// The private instance of the <see cref="Instance"/> field.
         /// </summary>
-        private static ApiInterface m_Instance;
+        private static ApiInterface s_Instance;
 
         /// <summary>
         /// True if the <see cref="ApiInterface"/>'s instance is initialized; otherwise false.

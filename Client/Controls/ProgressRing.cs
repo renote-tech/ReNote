@@ -1,88 +1,85 @@
-﻿using System;
+﻿namespace Client.Controls;
+
 using Avalonia;
 using Avalonia.Controls.Primitives;
 using Avalonia.Media;
+using System;
 
-namespace Client.Controls
+internal class ProgressRing : TemplatedControl
 {
-    public class ProgressRing : TemplatedControl
+    public static readonly StyledProperty<bool> IsActiveProperty = AvaloniaProperty.Register<ProgressRing, bool>(nameof(IsActive), defaultValue: true, notifying: OnActiveStateChanged);
+    public static readonly DirectProperty<ProgressRing, double> MaxSideLengthProperty = AvaloniaProperty.RegisterDirect<ProgressRing, double>(nameof(MaxSideLength), o => o.MaxSideLength);
+    public static readonly DirectProperty<ProgressRing, double> EllipseDiameterProperty = AvaloniaProperty.RegisterDirect<ProgressRing, double>(nameof(EllipseDiameter), o => o.EllipseDiameter);
+    public static readonly DirectProperty<ProgressRing, Thickness> EllipseOffsetProperty = AvaloniaProperty.RegisterDirect<ProgressRing, Thickness>(nameof(EllipseOffset), o => o.EllipseOffset);
+
+    public bool IsActive
     {
-        public static readonly StyledProperty<bool> IsActiveProperty = AvaloniaProperty.Register<ProgressRing, bool>(nameof(IsActive), defaultValue: true, notifying: OnIsActiveChanged);
+        get => GetValue(IsActiveProperty);
+        set => SetValue(IsActiveProperty, value);
+    }
 
-        public static readonly DirectProperty<ProgressRing, double> MaxSideLengthProperty = AvaloniaProperty.RegisterDirect<ProgressRing, double>(nameof(MaxSideLength), o => o.MaxSideLength);
+    public double MaxSideLength
+    {
+        get { return m_MaxSideLength; }
+        private set { SetAndRaise(MaxSideLengthProperty, ref m_MaxSideLength, value); }
+    }
 
-        public static readonly DirectProperty<ProgressRing, double> EllipseDiameterProperty = AvaloniaProperty.RegisterDirect<ProgressRing, double>(nameof(EllipseDiameter), o => o.EllipseDiameter);
+    public double EllipseDiameter
+    {
+        get { return m_EllipseDiameter; }
+        private set { SetAndRaise(EllipseDiameterProperty, ref m_EllipseDiameter, value); }
+    }
 
-        public static readonly DirectProperty<ProgressRing, Thickness> EllipseOffsetProperty = AvaloniaProperty.RegisterDirect<ProgressRing, Thickness>(nameof(EllipseOffset), o => o.EllipseOffset);
+    public Thickness EllipseOffset
+    {
+        get { return m_EllipseOffset; }
+        private set { SetAndRaise(EllipseOffsetProperty, ref m_EllipseOffset, value); }
+    }
 
-        public bool IsActive
-        {
-            get => GetValue(IsActiveProperty);
-            set => SetValue(IsActiveProperty, value);
-        }
+    private const string LARGE_STATE = ":large";
+    private const string SMALL_STATE = ":small";
 
-        public double MaxSideLength
-        {
-            get { return maxSideLength; }
-            private set { SetAndRaise(MaxSideLengthProperty, ref maxSideLength, value); }
-        }
+    private const string INACTIVE_STATE = ":inactive";
+    private const string ACTIVE_STATE = ":active";
 
-        public double EllipseDiameter
-        {
-            get { return ellipseDiameter; }
-            private set { SetAndRaise(EllipseDiameterProperty, ref ellipseDiameter, value); }
-        }
+    private double m_MaxSideLength = 10;
+    private double m_EllipseDiameter = 10;
+    private Thickness m_EllipseOffset = new Thickness(2);
 
-        public Thickness EllipseOffset
-        {
-            get { return ellipseOffset; }
-            private set { SetAndRaise(EllipseOffsetProperty, ref ellipseOffset, value); }
-        }
+    public override void Render(DrawingContext context)
+    {
+        base.Render(context);
+        UpdateVisualStates();
+    }
 
-        private const string LargeState = ":large";
-        private const string SmallState = ":small";
+    protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
+    {
+        base.OnApplyTemplate(e);
 
-        private const string InactiveState = ":inactive";
-        private const string ActiveState   = ":active";
+        double maxSideLength = Math.Min(this.Width, this.Height);
+        double ellipseDiameter = 0.1 * maxSideLength;
+        if (maxSideLength <= 40)
+            ellipseDiameter += 1;
 
-        private double maxSideLength    = 10;
-        private double ellipseDiameter  = 10;
-        private Thickness ellipseOffset = new Thickness(2);
+        EllipseDiameter = ellipseDiameter;
+        MaxSideLength = maxSideLength;
+        EllipseOffset = new Thickness(0, maxSideLength / 2 - ellipseDiameter, 0, 0);
 
-        public override void Render(DrawingContext context)
-        {
-            base.Render(context);
-            UpdateVisualStates();
-        }
+        UpdateVisualStates();
+    }
 
-        protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
-        {
-            base.OnApplyTemplate(e);
+    private static void OnActiveStateChanged(IAvaloniaObject sender, bool argument)
+    {
+        ((ProgressRing)sender).UpdateVisualStates();
+    }
 
-            double maxSideLength = Math.Min(this.Width, this.Height);
-            double ellipseDiameter = 0.1 * maxSideLength;
-            if (maxSideLength <= 40)
-                ellipseDiameter += 1;
-
-            EllipseDiameter = ellipseDiameter;
-            MaxSideLength = maxSideLength;
-            EllipseOffset = new Thickness(0, maxSideLength / 2 - ellipseDiameter, 0, 0);
-            UpdateVisualStates();
-        }
-
-        private static void OnIsActiveChanged(IAvaloniaObject obj, bool arg)
-        {
-            ((ProgressRing)obj).UpdateVisualStates();
-        }
-
-        private void UpdateVisualStates()
-        {
-            PseudoClasses.Remove(ActiveState);
-            PseudoClasses.Remove(InactiveState);
-            PseudoClasses.Remove(SmallState);
-            PseudoClasses.Remove(LargeState);
-            PseudoClasses.Add(IsActive ? ActiveState : InactiveState);
-            PseudoClasses.Add(maxSideLength < 60 ? SmallState : LargeState);
-        }
+    private void UpdateVisualStates()
+    {
+        PseudoClasses.Remove(ACTIVE_STATE);
+        PseudoClasses.Remove(INACTIVE_STATE);
+        PseudoClasses.Remove(SMALL_STATE);
+        PseudoClasses.Remove(LARGE_STATE);
+        PseudoClasses.Add(IsActive ? ACTIVE_STATE : INACTIVE_STATE);
+        PseudoClasses.Add(m_MaxSideLength < 60 ? SMALL_STATE : LARGE_STATE);
     }
 }

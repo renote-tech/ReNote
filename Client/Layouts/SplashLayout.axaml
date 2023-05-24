@@ -22,7 +22,7 @@
 			<controls:ProgressRing x:Name="m_LoadingRing" Width="50" Height="50" IsActive="True" VerticalAlignment="Center" Foreground="{DynamicResource BaseForeground}" Margin="60"/>
 			<Button x:Name="m_TryAgainButton" Margin="0, 90, 0, 0" IsVisible="False" Content="{DynamicResource SplashTryAgain}"/>
 		</Panel>
-		<TextBlock x:Name="m_ErrorMessage" IsVisible="False" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{DynamicResource SplashErrorMessage}"/>
+		<TextBlock x:Name="m_ErrorMessage" IsVisible="False" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" Text="{DynamicResource SplashErrorMessage}" Width="650"/>
 		<TextBlock x:Name="m_SplashDeveloper" FontStyle="Italic" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10" Text="{DynamicResource SplashDeveloperInfo}"/>
 		<TextBlock x:Name="m_SplashCopyright" FontStyle="Italic" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="10" Text="{DynamicResource SplashCopyrightInfo}"/>
 	</Panel>

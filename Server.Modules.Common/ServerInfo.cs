@@ -39,7 +39,7 @@ namespace Server.Common
         /// <summary>
         /// The server version name.
         /// </summary>
-        public const string VersionName = "MeltWater";
+        public const string VersionName = "Prototype";
         /// <summary>
         /// The server build date.
         /// </summary>

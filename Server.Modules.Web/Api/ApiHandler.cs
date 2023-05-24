@@ -20,14 +20,6 @@ namespace Server.Web.Api
                 HttpListener listener = ApiInterface.Instance.Listener;
                 HttpListenerContext apiContext = await listener.GetContextAsync();
 
-#if PROD_SIM && !METRICS_ANALYSIS
-                await Task.Delay(new Random().Next(100, 500));
-#endif
-
-#if METRICS_ANALYSIS
-                long startTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-#endif
-
                 ApiResponse apiResponse;
                 ApiEndpoint apiEndpoint = ApiAtlas.GetEndpoint(apiContext.Request.RawUrl);
                 if (apiEndpoint == null)
@@ -41,18 +33,10 @@ namespace Server.Web.Api
                     Body    = apiContext.Request.InputStream
                 };
 
-#if METRICS_ANALYSIS
-                long endpointStartTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-#endif
-
                 if (apiEndpoint != null)
                     apiResponse = await CallEndpointAsync(apiEndpoint, apiRequest);
                 else
                     apiResponse = await ApiHelper.SendAsync(404, "Not found");
-
-#if METRICS_ANALYSIS
-                long endpointEndTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-#endif
 
                 byte[] body = Array.Empty<byte>();
 
@@ -85,11 +69,6 @@ namespace Server.Web.Api
                 {
                     Platform.Log(ex.ToString(), LogLevel.ERROR);
                 }
-
-#if METRICS_ANALYSIS
-                long endTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-                Platform.Log($"Sent {(HttpStatusCode)apiContext.Response.StatusCode}: {apiEndpoint.Uri}\nOverall: {endTime - startTime}ms\nEndpoint Processing: {endpointEndTime - endpointStartTime}ms\n");
-#endif
             }
         }
 
@@ -101,6 +80,10 @@ namespace Server.Web.Api
         /// <returns><see cref="ApiResponse"/></returns>
         private static async Task<ApiResponse> CallEndpointAsync(ApiEndpoint endpoint, ApiRequest request)
         {
+            int serverStatus = ReNote.Server.Instance.CheckStatus();
+            if (serverStatus != 200)
+                return await ApiHelper.SendAsync(serverStatus, "AbnormalStatus");
+
             Type endpointClass = Type.GetType($"Server.ReNote.Api.{endpoint.Name}");
 
             if (endpointClass == null)
@@ -113,5 +96,7 @@ namespace Server.Web.Api
 
             return await (Task<ApiResponse>)endpointMethod.Invoke(null, new object[] { request });
         }
+
+
     }
 }

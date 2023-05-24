@@ -56,7 +56,7 @@ namespace Server.ReNote.Api
             AESObject aesObject = new AESObject(userData.SecurePassword, iv: userData.IVPassword, key: hashPassword);
 
             if (!AES.VerifyKey(requestData.Password, aesObject))
-                return await ApiHelper.SendAsync(401, ApiMessages.InvalidUsernameOrPassword());
+                return await ApiHelper.SendAsync(400, ApiMessages.InvalidUsernameOrPassword());
 
             Session session = await SessionManager.CreateSessionAsync(userData.UserId);
             AuthResponse response = new AuthResponse()

@@ -36,6 +36,11 @@ namespace Server.ReNote.Api
         /// <returns><see cref="ApiResponse"/></returns>
         private static async Task<ApiResponse> Get(ApiRequest req)
         {
+            string rawMenuItems = DatabaseHelper.Get(Constants.DB_ROOT_CONFIGS, "menu");
+            MenuInfo[] menuItems = Array.Empty<MenuInfo>();
+            if (JsonHelper.ValiditateJson(rawMenuItems))
+                menuItems = JsonConvert.DeserializeObject<MenuInfo[]>(rawMenuItems);
+
             string rawFeatures = DatabaseHelper.Get(Constants.DB_ROOT_CONFIGS, "plugins");
             Dictionary<string, bool> features = new Dictionary<string, bool>();
             if (JsonHelper.ValiditateJson(rawFeatures))
@@ -58,6 +63,7 @@ namespace Server.ReNote.Api
 
             ConfigResponse response = new ConfigResponse()
             {
+                MenuInfo     = menuItems,
                 Features     = features,
                 ToolbarsInfo = toolbars,
                 Themes       = themes

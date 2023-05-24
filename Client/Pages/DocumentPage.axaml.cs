@@ -1,17 +1,14 @@
-namespace Client.Pages
+namespace Client.Pages;
+
+public partial class DocumentPage : Page
 {
-    public partial class DocumentPage : Page
+    public DocumentPage()
     {
-        public static DocumentPage Instance { get; set; }
+        InitializeComponent();
+    }
 
-        public DocumentPage()
-        {
-            InitializeComponent();
-        }
-
-        public override string GetToolbarId()
-        {
-            return "User";
-        }
+    public override string GetToolbarId()
+    {
+        return "User";
     }
 }

@@ -84,14 +84,14 @@ namespace Server.Web.Helpers
             Session session = SessionManager.GetSession(realSessionId);
 
             if (session == null)
-                return await SendAsync(400, ApiMessages.InvalidSession());
+                return await SendAsync(401, ApiMessages.InvalidSession());
 
             if (session.HasExpired())
-                return await SendAsync(ApiStatus.SESSION_EXPIRED, ApiMessages.InvalidSession(), 400);
+                return await SendAsync(401, ApiMessages.InvalidSession());
 
             string computedHash = await Sha256.ComputeStringAsync(authToken);
             if (computedHash != session.AuthToken)
-                return await SendAsync(400, ApiMessages.InvalidSession());
+                return await SendAsync(401, ApiMessages.InvalidSession());
 
             SessionManager.UpdateTimestamp(session.SessionId);
 

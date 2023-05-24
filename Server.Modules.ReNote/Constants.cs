@@ -53,6 +53,15 @@ namespace Server.ReNote
         public const string DB_ROOT_PREFERENCES = "preferences";
 
         /// <summary>
+        /// The 'OK' status for the server.
+        /// </summary>
+        public const int SERVER_STATUS_OK = 200;
+        /// <summary>
+        /// The path for the server status file.
+        /// </summary>
+        public const string SERVER_STATUS_FILE = "server.status";
+
+        /// <summary>
         /// The <see cref="ReNoteToken"/> base token pattern.
         /// </summary>
         public const string TOKEN_BASE_PATTERN = "rst";

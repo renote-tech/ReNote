@@ -24,6 +24,8 @@ namespace Server.ReNote.Management
 
             User userData = UserManager.GetUser(userId);
 
+            ClearPreviousSessions(userData.UserId);
+
             long connectionTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             Session internalSession = new Session(sessionId, userId, sha256AuthToken, userData.AccountType)
             {
@@ -98,6 +100,20 @@ namespace Server.ReNote.Management
                     session.HasExpired();
                 else
                     DeleteSession(session.SessionId);
+            }
+        }
+
+        private static void ClearPreviousSessions(long userId)
+        {
+            string[] sessions = DatabaseHelper.GetValues(Constants.DB_ROOT_SESSIONS);
+            for (int i = 0; i < sessions.Length; i++)
+            {
+                if (!sessions[i].Contains(userId.ToString()))
+                    continue;
+
+                Session session = JsonConvert.DeserializeObject<Session>(sessions[i]);
+
+                DeleteSession(session.SessionId);
             }
         }
 

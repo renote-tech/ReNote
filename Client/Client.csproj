@@ -20,7 +20,6 @@
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 	  <OutputType>Exe</OutputType>
 	  <DebugType>full</DebugType>
-	  <DefineConstants>METRICS_ANALYSIS</DefineConstants>
 	</PropertyGroup>
 	
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -68,6 +67,12 @@
 	</ItemGroup>
 	
 	<ItemGroup>
+	  <Compile Update="App.axaml.cs">
+	    <DependentUpon>App.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Dialogs\DialogMessage.axaml.cs">
+	    <DependentUpon>DialogMessage.axaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Layouts\LogonLayout.axaml.cs">
 	    <DependentUpon>LogonLayout.axaml</DependentUpon>
 	  </Compile>

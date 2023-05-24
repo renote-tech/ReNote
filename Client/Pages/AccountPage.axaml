@@ -23,11 +23,6 @@
 		<Style Selector="Grid">
 			<Setter Property="Background" Value="{DynamicResource BaseToolBar}"/>
 		</Style>
-		<Style Selector="ToolTip">
-			<Setter Property="Background" Value="{DynamicResource BaseTopBar}"/>
-			<Setter Property="BorderThickness" Value="0"/>
-			<Setter Property="CornerRadius" Value="0"/>
-		</Style>
 		<Style Selector="ComboBox">
 			<Setter Property="Background" Value="{DynamicResource BaseBackground}"/>
 			<Setter Property="CornerRadius" Value="0"/>
@@ -68,11 +63,11 @@
 			<TextBlock x:Name="m_PhoneNumber" FontWeight="Light" Margin="45, 180" Text="{DynamicResource AccountNoPhone}"/>
 			<TextBlock FontWeight="SemiBold" Margin="25, 215" Text="{DynamicResource AccountLastConnection}"/>
 			<TextBlock x:Name="m_LastConnection" VerticalAlignment="Top" FontWeight="Light" Margin="45, 245" Height="20"/>
-			<TextBlock x:Name="m_UserId" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="10"/>
 		</Panel>
 		<Panel x:Name="m_FragSecurity" Margin="256, 0, 0, 0" IsVisible="False">
 			<TextBlock FontWeight="SemiBold" Margin="25" Text="{DynamicResource	AccountPassword}"/>
-			<Button x:Name="m_ChangePasswordBtn" VerticalAlignment="Top" Margin="25, 55" Padding="10" CornerRadius="6" Content="{DynamicResource AccountChangePassword}"/>
+			<Button x:Name="m_ChangePasswordBtn" VerticalAlignment="Top" Margin="30, 55" Padding="10" CornerRadius="6" Height="40" Content="{DynamicResource AccountChangePassword}"/>
+			<TextBlock x:Name="m_UserId" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="10"/>
 		</Panel>
 		<Panel x:Name="m_FragPreferences" Margin="256, 0, 0, 0" IsVisible="False">
 			<TextBlock Text="{DynamicResource AccountThemes}" FontWeight="SemiBold" Margin="25"/>
@@ -124,10 +119,12 @@
 			<TextBlock FontWeight="SemiBold" Margin="25, 150" Text="{DynamicResource AboutCredits}"/>
 			<TextBlock FontWeight="Light" Margin="45, 180" Text="{DynamicResource SplashDeveloperInfo}"/>
 			<TextBlock FontWeight="Light" Margin="45, 205" Text="{DynamicResource SplashCopyrightInfo}"/>
-			<TextBlock FontWeight="SemiBold" Margin="25, 250" Height="20" Text="{DynamicResource AboutThirdParties}" VerticalAlignment="Top"/>
-			<TextBlock FontWeight="Light" Margin="45, 280" Height="20" Text="{DynamicResource AboutThirdPartiesLicense1}" VerticalAlignment="Top"/>
-			<TextBlock FontWeight="Light" Margin="45, 305" Height="20" Text="{DynamicResource AboutThirdPartiesLicense2}" VerticalAlignment="Top"/>
-			<TextBlock FontWeight="Light" Margin="45, 330" Height="20" Text="{DynamicResource AboutThirdPartiesLicense3}" VerticalAlignment="Top"/>
+			<TextBlock FontWeight="SemiBold" Margin="25, 240" Height="20" Text="{DynamicResource AboutThirdParties}" VerticalAlignment="Top"/>
+			<TextBlock FontWeight="Light" Margin="45, 270" Height="20" Text="{DynamicResource AboutThirdPartiesLicense1}" VerticalAlignment="Top"/>
+			<TextBlock FontWeight="Light" Margin="45, 295" Height="20" Text="{DynamicResource AboutThirdPartiesLicense2}" VerticalAlignment="Top"/>
+			<TextBlock FontWeight="Light" Margin="45, 320" Height="20" Text="{DynamicResource AboutThirdPartiesLicense3}" VerticalAlignment="Top"/>
+			<TextBlock FontWeight="Light" Margin="45, 345" Height="20" Text="{DynamicResource AboutThirdPartiesLicense4}" VerticalAlignment="Top"/>
+			<TextBlock x:Name="m_FullVersionLabel" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5"/>
 		</Panel>
 	</Panel>
 </UserControl>

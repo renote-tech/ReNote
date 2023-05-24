@@ -1,84 +1,94 @@
-using System.Net;
-using Avalonia.Controls;
+namespace Client.Layouts;
+
 using Client.Api;
-using Client.Api.Responses;
 using Client.Managers;
 using Client.Windows;
 
-namespace Client.Layouts
-{
-    public partial class SplashLayout : Layout
-    {
-        private bool m_IsErrorState = false;
+using Avalonia.Controls;
+using Client.ReNote.Data;
+using Avalonia.Markup.Xaml.MarkupExtensions;
 
-        public SplashLayout()
-        {
-            InitializeComponent();
+public partial class SplashLayout : Layout
+{
+    private bool m_IsErrorState = false;
+    private bool m_IsMaintenanceState = false;
+
+    public SplashLayout()
+    {
+        InitializeComponent();
 
 #if DEBUG
-            if (Design.IsDesignMode)
-                return;
+        if (Design.IsDesignMode)
+            return;
 #endif
 
-            Initialize();
-            InitializeEvents();
-        }
+        InitializeEvents();
+        InitializeReNote();
+    }
 
-        private async void Initialize()
+    private async void InitializeReNote()
+    {
+        ApiService.Initialize();
+
+        await ApiService.GetSchoolDataAsync((requestStatus, response) =>
         {
-            ApiService.Initialize();
-
-            await ApiService.GetSchoolDataAsync((HttpStatusCode statusCode, SchoolResponse response) =>
+            if (requestStatus != ResponseStatus.OK)
             {
-                if (statusCode != HttpStatusCode.OK)
-                {
-                    m_IsErrorState = true;
-                    return;
-                }
-
-                ReNote.Client.Instance.SchoolInformation = response.Data;
-                MainWindow.Instance.Title = $"ReNote \u03a3 - {response.Data.SchoolName}";
-            });
-
-            await ApiService.GetConfigurationAsync((HttpStatusCode statusCode, ConfigResponse response) =>
-            {
-                if (statusCode != HttpStatusCode.OK)
-                {
-                    m_IsErrorState = true;
-                    return;
-                }
-
-                PluginManager.Initialize(response.Data.Features);
-                ToolbarManager.Initialize(response.Data.ToolbarsInfo);
-                ThemeManager.Initialize(response.Data.Themes);
-            });
-
-            if (m_IsErrorState)
-            {
-                ChangeErrorState(true);
+                m_IsErrorState = true;
+                m_IsMaintenanceState = requestStatus == ResponseStatus.SERVICE_UNAVAILABLE;
                 return;
             }
 
-            MainWindow.Instance.SetLayout(new LogonLayout());
-        }
+            School.Instance = response.Data;
+            MainWindow.Instance.Title = $"ReNote \u03a3 - {response.Data.SchoolName}";
+        });
 
-        private void ChangeErrorState(bool isErrorState)
+        await ApiService.GetConfigurationAsync((requestStatus, response) =>
         {
-            m_LoadingRing.IsVisible    = !isErrorState;
-            m_TryAgainButton.IsVisible = isErrorState;
-            m_ErrorMessage.IsVisible   = isErrorState;
-
-            m_IsErrorState = isErrorState;
-        }
-
-        private void InitializeEvents()
-        {
-            m_TryAgainButton.Click += (sender, e) =>
+            if (requestStatus != ResponseStatus.OK)
             {
-                ChangeErrorState(false);
-                Initialize();
-            };
+                m_IsErrorState = true;
+                m_IsMaintenanceState = requestStatus == ResponseStatus.SERVICE_UNAVAILABLE;
+                return;
+            }
+
+            PluginManager.Initialize(response.Data.Features);
+            ToolbarManager.Initialize(response.Data.ToolbarsInfo);
+            ThemeManager.Initialize(response.Data.Themes);
+
+            UserLayout.SetGlobalMenu(response.Data.MenuInfo);
+        });
+
+        if (m_IsErrorState)
+        {
+            ChangeErrorState(true);
+            return;
         }
 
+        MainWindow.Instance.SetLogonUI();
+    }
+
+    private void ChangeErrorState(bool isErrorState)
+    {
+        string messageKey = m_IsMaintenanceState ? "ServiceUnavailable" : "SplashErrorMessage";
+
+        m_LoadingRing.IsVisible = !isErrorState;
+        m_TryAgainButton.IsVisible = isErrorState;
+        m_ErrorMessage.IsVisible = isErrorState;
+
+        m_ErrorMessage[!TextBlock.TextProperty] = new DynamicResourceExtension(messageKey);
+    }
+
+    private void InitializeEvents()
+    {
+        m_TryAgainButton.Click += (sender, e) =>
+        {
+            ChangeErrorState(false);
+
+            m_IsErrorState = false;
+            m_IsMaintenanceState = false;
+
+            InitializeReNote();
+        };
     }
 }

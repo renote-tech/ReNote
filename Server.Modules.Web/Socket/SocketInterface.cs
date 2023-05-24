@@ -10,14 +10,14 @@ namespace Server.Web.Socket
     public class SocketInterface : IListener
     {
         /// <summary>
-        /// The current existing instance of the <see cref="SocketInterface"/> class; creates a new one if <see cref="m_Instance"/> is null.
+        /// The current existing instance of the <see cref="SocketInterface"/> class; creates a new one if <see cref="s_Instance"/> is null.
         /// </summary>
         public static SocketInterface Instance
         {
             get
             {
-                m_Instance ??= new SocketInterface();
-                return m_Instance;
+                s_Instance ??= new SocketInterface();
+                return s_Instance;
             }
         }
 
@@ -39,7 +39,7 @@ namespace Server.Web.Socket
         /// <summary>
         /// The private field of the <see cref="Instance"/> field.
         /// </summary>
-        private static SocketInterface m_Instance;
+        private static SocketInterface s_Instance;
 
         /// <summary>
         /// The request handler <see cref="Thread"/>.

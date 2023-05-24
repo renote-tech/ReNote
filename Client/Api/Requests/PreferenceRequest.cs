@@ -1,13 +1,18 @@
-﻿using Newtonsoft.Json;
+﻿namespace Client.Api.Requests;
 
-namespace Client.Api.Requests
+using Newtonsoft.Json;
+
+internal class PreferenceRequest : Request
 {
-    internal class PreferenceRequest : Request
-    {
-        [JsonProperty("language")]
-        public string Language { get; set; }
+    [JsonProperty("language")]
+    public string Language { get; set; }
 
-        [JsonProperty("theme")]
-        public string Theme { get; set; }
+    [JsonProperty("theme")]
+    public string Theme { get; set; }
+
+    public PreferenceRequest(string language, string theme)
+    {
+        Language = language;
+        Theme = theme;
     }
 }

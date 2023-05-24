@@ -1,17 +1,14 @@
-namespace Client.Pages
+namespace Client.Pages;
+
+public partial class HomePage : Page
 {
-    public partial class HomePage : Page
+    public HomePage()
     {
-        public static HomePage Instance { get; set; }
+        InitializeComponent();
+    }
 
-        public HomePage()
-        {
-            InitializeComponent();
-        }
-
-        public override string GetToolbarId()
-        {
-            return "Home";
-        }
+    public override string GetToolbarId()
+    {
+        return "Home";
     }
 }

@@ -11,14 +11,14 @@ namespace Server.Web.Static
     public class StaticInterface : IHttpListener
     {
         /// <summary>
-        /// The current existing instance of the <see cref="StaticInterface"/> class; creates a new one if <see cref="m_Instance"/> is null.
+        /// The current existing instance of the <see cref="StaticInterface"/> class; creates a new one if <see cref="s_Instance"/> is null.
         /// </summary>
         public static StaticInterface Instance
         {
             get
             {
-                m_Instance ??= new StaticInterface();
-                return m_Instance;
+                s_Instance ??= new StaticInterface();
+                return s_Instance;
             }
         }
 
@@ -40,7 +40,7 @@ namespace Server.Web.Static
         /// <summary>
         /// The private instance of the <see cref="Instance"/> field.
         /// </summary>
-        private static StaticInterface m_Instance;
+        private static StaticInterface s_Instance;
         
         /// <summary>
         /// True if the <see cref="StaticInterface"/>'s instance is initialized; otherwise false.

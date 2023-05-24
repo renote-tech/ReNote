@@ -38,6 +38,23 @@
 		<Style Selector="TextBox:pointerover">
 			<Setter Property="Foreground" Value="{DynamicResource BaseForeground}"/>
 		</Style>
+		<Style Selector="ComboBox">
+			<Setter Property="Background" Value="{DynamicResource BaseBackground}"/>
+			<Setter Property="CornerRadius" Value="0"/>
+		</Style>
+		<Style Selector="ComboBox Grid">
+			<Setter Property="Background" Value="{DynamicResource BaseToolBar}"/>
+		</Style>
+		<Style Selector="ComboBox:pointerover /template/ Border#Background">
+			<Setter Property="Background" Value="{DynamicResource BaseBackground}"/>
+		</Style>
+		<Style Selector="ComboBoxItem:pointerover /template/ ContentPresenter">
+			<Setter Property="Background" Value="{DynamicResource BaseSelectionHover}"/>
+			<Setter Property="BorderThickness" Value="0"/>
+		</Style>
+		<Style Selector="ComboBoxItem:selected /template/ ContentPresenter">
+			<Setter Property="Background" Value="{DynamicResource BaseAccent}"/>
+		</Style>
 	</UserControl.Styles>
 	<Panel>
 		<Panel Background="{DynamicResource	BaseSidebar}" HorizontalAlignment="Left">

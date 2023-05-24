@@ -1,11 +1,16 @@
 ﻿# Translation by K/T.
 
+AboutReNote=About ReNote
+AboutReNoteContent=Franchement; J'aime les potatoes.
+
 SplashDeveloperInfo=Komplett entwickelt von Alian DEAD.
 SplashCopyrightInfo=© ReNote NETW. Alle Rechte vorbehalten.
 SplashErrorMessage=Es ist ein Fehler aufgetreten. Die Anwendung ist möglicherweise nicht richtig konfiguriert.
 SplashTryAgain=Versuchen Sie es erneut
 
 UnexpectedError=Ein unerwarteter Fehler ist aufgetreten
+ServiceUnavailable=ReNote Services are currently unavailable. Try again later! (●'◡'●)
+SessionExpired=Your session expired; please login again.
 
 LogonMainTitle=Anmelden
 LogonWatermarkUsername=Nutzername
@@ -49,6 +54,7 @@ AccountMobile=Mobile Anmeldung
 AccountAbout=Um
 AboutCredits=Credits
 AboutThirdParties=Third parties
-AboutThirdPartiesLicense1=Newtonsoft.Json is licensed under the MIT License.
-AboutThirdPartiesLicense2=ProtoBuf is licensed under the BSD License.
-AboutThirdPartiesLicense3=ProtoBuf.NET is licensed under the Apache License.
+AboutThirdPartiesLicense1=Avalonia is licensed under the MIT License.
+AboutThirdPartiesLicense2=Newtonsoft.Json is licensed under the MIT License.
+AboutThirdPartiesLicense3=ProtoBuf is licensed under the BSD License.
+AboutThirdPartiesLicense4=ProtoBuf.NET is licensed under the Apache License.

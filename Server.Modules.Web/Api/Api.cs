@@ -45,6 +45,8 @@ namespace Server.Web.Api
 
     public class ApiResponse
     {
+        public static readonly ApiResponse OK = new ApiResponse(200, string.Empty, string.Empty);
+        
         /// <summary>
         /// The status of the <see cref="ApiResponse"/>.
         /// </summary>
@@ -165,11 +167,6 @@ namespace Server.Web.Api
         {
             return "Language or theme may not be empty";
         }
-    }
-
-    public class ApiStatus
-    {
-        public const int SESSION_EXPIRED = 1;
     }
 
     public class ApiRegisterer

@@ -1,153 +1,188 @@
-﻿using System.Net;
-using System.Threading.Tasks;
+﻿namespace Client.Layouts;
+
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml.MarkupExtensions;
+
 using Client.Api;
 using Client.Api.Requests;
-using Client.Api.Responses;
 using Client.Builders;
+using Client.Dialogs;
 using Client.Managers;
 using Client.ReNote.Data;
 using Client.Windows;
 
-namespace Client.Layouts
+public partial class LogonLayout : Layout
 {
-    public partial class LogonLayout : Layout
-    {
-        private bool m_IsLoginLocked = false;
+    private bool m_IsLoginLocked = false;
 
-        public LogonLayout()
-        {
-            InitializeComponent();
+    private const string EMPTY_FIELD         = "LogonEmptyField";
+    private const string UNEXPECTED_ERROR    = "UnexpectedError";
+    private const string CONTACT_ADMIN       = "LogonContactAdmin";
+    private const string SERVICE_UNAVAILABLE = "AbnormalStatus";
+
+    public LogonLayout()
+    {
+        InitializeComponent();
 
 #if DEBUG
-            if (Design.IsDesignMode)
-                return;
+        if (Design.IsDesignMode)
+            return;
 #endif
 
-            InitializeLayout();
-            InitializeEvents();
-        }
+        InitializeLayout();
+        InitializeEvents();
+    }
 
-        private async void InitializeLayout()
+    private async void InitializeLayout()
+    {
+        ThemeManager.RestoreDefault();
+        int index = LanguageManager.RestoreDefault();
+
+        m_LanguageList.Items = LanguageManager.Languages;
+        m_LanguageList.SelectedIndex = index;
+
+#if DEBUG || BETA
+        m_FullVersionLabel.Text = ClientInfo.GetFullVersion();
+#endif
+
+        await ApiService.GetQuotationAsync((requestStatus, response) =>
         {
-            ThemeManager.RestoreDefault();
-            int index = LanguageManager.RestoreDefault();
+            if (requestStatus != ResponseStatus.OK)
+                return;
 
-            m_LanguageList.Items = LanguageManager.Languages;
-            m_LanguageList.SelectedIndex = index;
+            m_QuotationContentLabel.Text = $"\"{response.Data.Content}\"";
+            m_QuotationAuthorLabel.Text = $"- {response.Data.Author}";
+        });
+    }
 
-            m_FullVersionLabel.Text = ClientInfo.GetFullVersion();
+    private void InitializeEvents()
+    {
+        User.Delete();
 
-            await ApiService.GetQuotationAsync((HttpStatusCode statusCode, QuotationResponse response) =>
-            {
-                if (statusCode != HttpStatusCode.OK)
-                    return;
-
-                m_QuotationContentLabel.Text = $"\"{response.Data.Content}\"";
-                m_QuotationAuthorLabel.Text = $"- {response.Data.Author}";
-            });
-        }
-
-        private void InitializeEvents()
+        m_ReNoteIcon.DoubleTapped += (sender, e) =>
         {
-            m_ReNoteIcon.DoubleTapped += (sender, e) =>
-            {
-                MessageBoxBuilder.Create()
-                             .SetTitle("About ReNote \u03A3")
-                             .SetMessage($"Entirely developed by Alian/DEAD \ud83d\udc7b\n" +
-                                         $"Ver. {ClientInfo.Version} ({ClientInfo.Configuration})\n" +
-                                         $"Code name \"{ClientInfo.VersionName}\"")
+            MessageBoxBuilder.Create()
+                             .SetTitle("$$AboutReNote$$")
+                             .SetMessage($"$$AboutReNoteContent$$")
                              .SetType(MessageBoxType.OK)
                              .SetIcon(MessageBoxIcon.INFO)
                              .Show();
-            };
+        };
 
-            m_PasswordBox.KeyUp += (sender, e) =>
-            {
-                if (m_IsLoginLocked)
-                    return;
+        m_PasswordBox.KeyUp += (sender, e) =>
+        {
+            if (m_IsLoginLocked)
+                return;
 
-                if (e.Key == Key.Enter)
-                    PerformLogin();
-            };
-
-            m_LoginButton.Click += (sender, e) =>
-            {
+            if (e.Key == Key.Enter)
                 PerformLogin();
-            };
+        };
 
-            m_LanguageList.SelectionChanged += (sender, e) =>
-            {
-                Language language = (Language)m_LanguageList.SelectedItem;
-                LanguageManager.SetLanguage(language.LangCode);
-                Configuration.Save("Local", language.LangCode);
-            };
+        m_LoginButton.Click += (sender, e) => PerformLogin();
+
+        m_LanguageList.SelectionChanged += (sender, e) =>
+        {
+            Language language = (Language)m_LanguageList.SelectedItem;
+            LanguageManager.SetLanguage(language.LangCode);
+            Configuration.Save(Configuration.LOCAL_CONFIG, language.LangCode);
+        };
+    }
+
+    private async void PerformLogin()
+    {
+        Lock();
+
+        if (string.IsNullOrWhiteSpace(m_UsernameBox.Text) || string.IsNullOrWhiteSpace(m_PasswordBox.Text))
+        {
+            Unlock(EMPTY_FIELD);
+            return;
         }
 
-        private async void PerformLogin()
+        AuthRequest authRequest = new AuthRequest(m_UsernameBox.Text, m_PasswordBox.Text);
+        await ApiService.AuthenticateAsync(authRequest, async (requestStatus, response) =>
         {
-            LockLogin();
-
-            if (string.IsNullOrWhiteSpace(m_UsernameBox.Text) || string.IsNullOrWhiteSpace(m_PasswordBox.Text))
+            if (requestStatus == ResponseStatus.UNKNOWN)
             {
-                UnlockLogin("LogonEmptyField");
+                Unlock(UNEXPECTED_ERROR);
                 return;
             }
 
-            AuthRequest authRequest = new AuthRequest(m_UsernameBox.Text, m_PasswordBox.Text);
-            await ApiService.AuthenticateAsync(authRequest, async (HttpStatusCode statusCode, AuthResponse response) =>
+            if (response.Status != 200)
             {
-                if (statusCode == HttpStatusCode.InternalServerError)
-                {
-                    UnlockLogin("UnexpectedError");
-                    return;
-                }
+                Unlock(response.Message);
+                return;
+            }
 
-                if (response.Status != 200)
-                {
-                    UnlockLogin(response.Message);
-                    return;
-                }
+            bool hasFailed = await User.GetAsync(response.Data);
+            if (hasFailed)
+            {
+                Unlock(CONTACT_ADMIN);
+                return;
+            }
 
-                await User.GetAsync(response.Data);
-                if (User.Current == null)
-                {
-                    UnlockLogin("LogonContactAdmin");
-                    return;
-                }
+            MainWindow.Instance.SetUserUI();
+        });
+    }
 
-                MainWindow.Instance.SetLayout(new UserLayout());
-            });
-        }
+    private void Lock()
+    {
+        m_IsLoginLocked = true;
 
-        private void LockLogin()
-        {
-            m_IsLoginLocked = true;
+        m_LoginButton.IsTabStop = false;
+        m_UsernameBox.IsTabStop = false;
+        m_PasswordBox.IsTabStop = false;
 
-            m_LoginButton.IsEnabled = false;
-            m_UsernameBox.IsEnabled = false;
-            m_PasswordBox.IsEnabled = false;
+        m_LoginButton.IsEnabled = false;
+        m_UsernameBox.IsEnabled = false;
+        m_PasswordBox.IsEnabled = false;
 
+        if (!PluginManager.Enabled(PluginTypes.EXPERIMENTAL, Plugins.EX_NEW_LOGIN_DIALOG))
             m_LoginErrorLabel.IsVisible = false;
-            m_LoadingRing.IsVisible = true;
+        
+        m_LoadingRing.IsVisible = true;
 
-            m_LoginButton.Focus();
-        }
+        Focus();
+    }
 
-        private void UnlockLogin(string errorType)
+    private void Unlock(string errorType)
+    {
+        if (string.IsNullOrWhiteSpace(errorType) || errorType == SERVICE_UNAVAILABLE)
+            return;
+
+        if (!PluginManager.Enabled(PluginTypes.EXPERIMENTAL, Plugins.EX_NEW_LOGIN_DIALOG))
         {
             m_LoginButton.IsEnabled = true;
             m_UsernameBox.IsEnabled = true;
             m_PasswordBox.IsEnabled = true;
 
-            m_LoginErrorLabel[!TextBlock.TextProperty] = new DynamicResourceExtension(errorType);
+            m_LoginButton.IsTabStop = true;
+            m_UsernameBox.IsTabStop = true;
+            m_PasswordBox.IsTabStop = true;
 
-            m_LoginErrorLabel.IsVisible = true;
             m_LoadingRing.IsVisible = false;
 
+            m_LoginErrorLabel[!TextBlock.TextProperty] = new DynamicResourceExtension(errorType);
+            m_LoginErrorLabel.IsVisible = true;
+
             m_IsLoginLocked = false;
+
+            return;
         }
+
+        m_LoadingRing.IsVisible = false;
+
+        DialogMessage.Show($"$${errorType}$$", () =>
+        {
+            m_LoginButton.IsEnabled = true;
+            m_UsernameBox.IsEnabled = true;
+            m_PasswordBox.IsEnabled = true;
+
+            m_LoginButton.IsTabStop = true;
+            m_UsernameBox.IsTabStop = true;
+            m_PasswordBox.IsTabStop = true;
+
+            m_IsLoginLocked = false;
+        }, false);
     }
 }

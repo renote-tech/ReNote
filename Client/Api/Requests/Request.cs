@@ -1,5 +1,4 @@
-﻿namespace Client.Api.Requests
-{
-    internal class Request
-    { }
-}
+﻿namespace Client.Api.Requests;
+
+internal class Request
+{ }

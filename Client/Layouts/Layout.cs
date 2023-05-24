@@ -1,7 +1,6 @@
-﻿using Avalonia.Controls;
+﻿namespace Client.Layouts;
 
-namespace Client.Layouts
-{
-    public class Layout : UserControl
-    { }
-}
+using Avalonia.Controls;
+
+public class Layout : UserControl
+{ }

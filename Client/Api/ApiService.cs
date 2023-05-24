@@ -1,147 +1,157 @@
-﻿using System;
+﻿namespace Client.Api;
+
+using Client.Api.Requests;
+using Client.Api.Responses;
+using Client.Dialogs;
+using Client.Layouts;
+using Client.ReNote.Data;
+using Client.Windows;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Newtonsoft.Json;
+
+using System;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Client.Api.Requests;
-using Client.Api.Responses;
-using Client.ReNote.Data;
-using Newtonsoft.Json;
 
-namespace Client.Api
+internal class ApiService
 {
-    internal class ApiService
+    private const string GLOBAL_AUTH = "/global/auth";
+    private const string SCHOOL_DATA = "/global/school/info";
+    private const string QUOTATION = "/global/quotation";
+    private const string CONFIGURATION = "/global/client/config";
+    private const string USER_PROFILE = "/user/profile";
+    private const string USER_LOGOUT = "/user/session/delete";
+    private const string TEAM_PROFILE = "/user/team/profile";
+    private const string PREFERENCES = "/user/preferences";
+
+    public delegate void RequestCallback<T>(ResponseStatus requestStatus, T response) where T : Response;
+
+    private static HttpClient s_HttpClient;
+    private static bool s_Initialized;
+
+    public static void Initialize()
     {
-        private const string GLOBAL_AUTH   = "/global/auth";
-        private const string SCHOOL_DATA   = "/global/school/info";
-        private const string QUOTATION     = "/global/quotation";
-        private const string CONFIGURATION = "/global/client/config";
-        private const string USER_PROFILE  = "/user/profile";
-        private const string USER_LOGOUT   = "/user/session/delete";
-        private const string TEAM_PROFILE  = "/user/team/profile";
-        private const string PREFERENCES   = "/user/preferences";
+        if (s_Initialized)
+            return;
 
-        public delegate void RequestCallback<T>(HttpStatusCode statusCode, T response) where T : Response;
-
-        private static HttpClient s_HttpClient;
-        private static bool s_Initialized;
-
-        public static void Initialize()
+        s_HttpClient = new HttpClient
         {
-            if (s_Initialized)
-                return;
+            BaseAddress = new Uri(Configuration.EndpointAddress),
+            Timeout = TimeSpan.FromMilliseconds(7500)
+        };
 
-            s_HttpClient = new HttpClient
-            {
-                BaseAddress = new Uri(Configuration.EndpointAddress),
-                Timeout     = TimeSpan.FromMilliseconds(7500)
-            };
+        s_Initialized = true;
+    }
 
-            s_Initialized = true;
+    private static async Task SendRequestAsync<TResponse>(string uri, HttpMethod method, Request body, RequestCallback<TResponse> callback) where TResponse : Response, new()
+    {
+        using HttpRequestMessage request = new HttpRequestMessage(method, uri);
+
+        if (User.Current != null)
+        {
+            request.Headers.Add("sessionId", User.Current.SessionId.ToString());
+            request.Headers.Add("authToken", User.Current.AuthToken);
         }
 
-        private static async Task SendRequestAsync<T>(string uri, HttpMethod method, Request body, RequestCallback<T> callback) where T : Response, new()
+        if (body != null)
+            request.Content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
+
+        HttpStatusCode statusCode = HttpStatusCode.ServiceUnavailable;
+        string responseBody = string.Empty;
+
+        try
         {
-#if METRICS_ANALYSIS
-            long startTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-            Platform.Log($"Sending {method.Method} request: {uri}");
-#endif
+            using HttpResponseMessage response = await s_HttpClient.SendAsync(request);
 
-            HttpRequestMessage request = new HttpRequestMessage(method, uri);
-            HttpResponseMessage response = null;
-            
-            if (User.Current != null)
-            {
-                request.Headers.Add("sessionId", User.Current.SessionId.ToString());
-                request.Headers.Add("authToken", User.Current.AuthToken);
-            }
-
-            if (body != null)
-                request.Content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
-
-#if METRICS_ANALYSIS
-            long reqStartTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-#endif
-            
-            try
-            {
-                response = await s_HttpClient.SendAsync(request);
-            }
-            catch (Exception ex) when (ex is HttpRequestException || ex is TaskCanceledException)
-            {
-                response ??= new HttpResponseMessage();
-                response.StatusCode = HttpStatusCode.InternalServerError;
-            }
-
-#if METRICS_ANALYSIS
-            long reqEndTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-#endif
-
-            string requestBody = await response.Content.ReadAsStringAsync();
-            T requestData = new T();
-
-            if (!string.IsNullOrWhiteSpace(requestBody))
-                requestData = JsonConvert.DeserializeObject<T>(requestBody);
-
-            if (callback != null)
-                callback(response.StatusCode, requestData);
-
-#if METRICS_ANALYSIS
-            long endTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-
-            long overAll = endTime - startTime;
-            long reqProcess = reqEndTime - reqStartTime;
-            long methodProcess = overAll - reqProcess;
-            Platform.Log($"Received {response.StatusCode}: {uri}\nOverall: {overAll}ms\nRequest Processing: {reqProcess}ms\nCallback Processing: {methodProcess}ms\n");
-#endif
-
-            request.Dispose();
-            response.Dispose();
+            statusCode = response.StatusCode;
+            responseBody = await response.Content.ReadAsStringAsync();
         }
+        catch (Exception ex)
+        when (ex is HttpRequestException || ex is TaskCanceledException) { }
 
-        public static async Task GetSchoolDataAsync(RequestCallback<SchoolResponse> callback)
-        {
-            await SendRequestAsync(SCHOOL_DATA, HttpMethod.Get, null, callback);
-        }
+        if (callback == null)
+            return;
 
-        public static async Task AuthenticateAsync(AuthRequest request, RequestCallback<AuthResponse> callback)
-        {
-            await SendRequestAsync(GLOBAL_AUTH, HttpMethod.Post, request, callback);
-        }
+        ResponseStatus responseStatus = GetStatusFromCode(statusCode);
+        TResponse responseData = new TResponse();
 
-        public static async Task GetQuotationAsync(RequestCallback<QuotationResponse> callback)
-        {
-            await SendRequestAsync(QUOTATION, HttpMethod.Get, null, callback);
-        }
+        if (!string.IsNullOrWhiteSpace(responseBody))
+            responseData = JsonConvert.DeserializeObject<TResponse>(responseBody);
 
-        public static async Task GetProfileAsync(RequestCallback<ProfileResponse> callback)
-        {
-            await SendRequestAsync(USER_PROFILE, HttpMethod.Get, null, callback);
-        }
+        callback(responseStatus, responseData);
+    }
 
-        public static async Task LogoutAsync(RequestCallback<Response> callback)
-        {
-            await SendRequestAsync(USER_LOGOUT, HttpMethod.Delete, null, callback);
-        }
+    public static async Task GetSchoolDataAsync(RequestCallback<SchoolResponse> callback = null)
+    {
+        await SendRequestAsync(SCHOOL_DATA, HttpMethod.Get, null, callback);
+    }
 
-        public static async Task GetTeamProfileAsync(RequestCallback<TeamProfileResponse> callback)
-        {
-            await SendRequestAsync(TEAM_PROFILE, HttpMethod.Get, null, callback);
-        }
+    public static async Task AuthenticateAsync(AuthRequest request, RequestCallback<AuthResponse> callback = null)
+    {
+        await SendRequestAsync(GLOBAL_AUTH, HttpMethod.Post, request, callback);
+    }
 
-        public static async Task GetConfigurationAsync(RequestCallback<ConfigResponse> callback)
-        {
-            await SendRequestAsync(CONFIGURATION, HttpMethod.Get, null, callback);
-        }
+    public static async Task GetQuotationAsync(RequestCallback<QuotationResponse> callback = null)
+    {
+        await SendRequestAsync(QUOTATION, HttpMethod.Get, null, callback);
+    }
 
-        public static async Task GetPreferencesAsync(RequestCallback<PreferenceResponse> callback)
-        {
-            await SendRequestAsync(PREFERENCES, HttpMethod.Get, null, callback);
-        }
+    public static async Task GetProfileAsync(RequestCallback<ProfileResponse> callback = null)
+    {
+        await SendRequestAsync(USER_PROFILE, HttpMethod.Get, null, callback);
+    }
 
-        public static async Task SetPreferencesAsync(PreferenceRequest request, RequestCallback<Response> callback)
+    public static async Task LogoutAsync(RequestCallback<Response> callback = null)
+    {
+        await SendRequestAsync(USER_LOGOUT, HttpMethod.Delete, null, callback);
+    }
+
+    public static async Task GetTeamProfileAsync(RequestCallback<TeamProfileResponse> callback = null)
+    {
+        await SendRequestAsync(TEAM_PROFILE, HttpMethod.Get, null, callback);
+    }
+
+    public static async Task GetConfigurationAsync(RequestCallback<ConfigResponse> callback = null)
+    {
+        await SendRequestAsync(CONFIGURATION, HttpMethod.Get, null, callback);
+    }
+
+    public static async Task GetPreferencesAsync(RequestCallback<PreferenceResponse> callback = null)
+    {
+        await SendRequestAsync(PREFERENCES, HttpMethod.Get, null, callback);
+    }
+
+    public static async Task SetPreferencesAsync(PreferenceRequest request, RequestCallback<Response> callback = null)
+    {
+        await SendRequestAsync(PREFERENCES, HttpMethod.Post, request, callback);
+    }
+
+    private static ResponseStatus GetStatusFromCode(HttpStatusCode statusCode)
+    {
+        switch (statusCode)
         {
-            await SendRequestAsync(PREFERENCES, HttpMethod.Post, request, callback);
+            case HttpStatusCode.OK:
+                return ResponseStatus.OK;
+            case HttpStatusCode.Unauthorized:
+                return ResponseStatus.EXPIRED;
+            case HttpStatusCode.BadRequest:
+                return ResponseStatus.BAD_REQUEST;
+            case HttpStatusCode.ServiceUnavailable:
+                MainWindow.Instance.SetMaintenanceMode();
+                return ResponseStatus.SERVICE_UNAVAILABLE;
+            default:
+                return ResponseStatus.UNKNOWN;
         }
     }
+}
+
+internal enum ResponseStatus
+{
+    OK                  = 0,
+    EXPIRED             = 1,
+    BAD_REQUEST         = 2,
+    SERVICE_UNAVAILABLE = 3,
+    UNKNOWN             = 4
 }

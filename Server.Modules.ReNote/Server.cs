@@ -1,7 +1,7 @@
-﻿using System.Timers;
-using Server.Common;
+﻿using Server.Common;
 using Server.ReNote.Data;
 using Server.ReNote.Management;
+using System.Timers;
 
 namespace Server.ReNote
 {
@@ -51,11 +51,10 @@ namespace Server.ReNote
         /// True if the <see cref="Server"/>'s instance is initialized; otherwise false.
         /// </summary>
         private bool m_Initialized;
-
-        public Server()
-        {
-            ServerWorker = new Timer(Constants.WORKER_INTERVAL);
-        }
+        /// <summary>
+        /// The current status of the server.
+        /// </summary>
+        private int m_CurrentStatus;
 
         /// <summary>
         /// Initializes the <see cref="Server"/>'s instance.
@@ -79,13 +78,35 @@ namespace Server.ReNote
             if (!loaded)
                 Platform.Log("Coudln't load the database", LogLevel.WARN);
 
+            ServerWorker = new Timer(Constants.WORKER_INTERVAL);
+
             ServerWorker.Elapsed += OnWorkerServiceInvoked;
             ServerWorker.AutoReset = true;
             ServerWorker.Enabled   = true;
 
-            Platform.Log("Initialized ReNote Server", LogLevel.INFO);
+            m_CurrentStatus = Constants.SERVER_STATUS_OK;
 
+            Platform.Log("Initialized ReNote Server", LogLevel.INFO);
+            
             m_Initialized = true;
+        }
+
+        /// <summary>
+        /// Returns the current status of the server.
+        /// </summary>
+        /// <returns><see cref="int"/></returns>
+        public int CheckStatus()
+        {
+            return m_CurrentStatus;
+        }
+
+        /// <summary>
+        /// Sets the current status of the server.
+        /// </summary>
+        /// <param name="statusCode">The new status code.</param>
+        public void SetStatus(int statusCode)
+        {
+            m_CurrentStatus = statusCode;
         }
 
         /// <summary>
@@ -98,7 +119,9 @@ namespace Server.ReNote
             Platform.Log("[Worker] Cleaning and saving data", LogLevel.INFO);
 
             SessionManager.Clean();
+
             await s_DatabaseInstance.SaveAsync(true);
+            await s_DatabaseInstance.SaveAsync();
         }
     }
 }
