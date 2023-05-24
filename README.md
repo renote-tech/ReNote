@@ -26,12 +26,12 @@ build_project.bat client Debug win x86
 
 Notes:
   - You need the .NET SDK 7.0+ to run the commands above. Download <a href="https://aka.ms/netcore">here</a>.
-  - It is not **yet** recommended to build for macOS as I will not provide any support in the current state. Scripts likely won't work as expected.
+  - It is not **yet** recommended to build for macOS as I will not provide any support in the current state. (Scripts may not work as expected as well).
   - If you changed the .NET Version in one of the projects, make sure to specify the new .NET Version as well as the fifth argument such as `net7.0`.
 
 # Run ReNote
 If there is a pre-built version of ReNote available in the Releases <a href="https://github.com/renote-tech/ReNote/releases">section</a>, you'll need .NET Runtime 7.0+ to run it.
-Download <a href="https://dotnet.microsoft.com/en-us/download/dotnet/7.0#runtime-7.0.4">here</a>.
+Download <a href="https://dotnet.microsoft.com/en-us/download/dotnet/7.0">here</a>.
 
 # Features
 ### → Server
