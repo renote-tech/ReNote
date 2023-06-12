@@ -26,14 +26,15 @@ internal class ClientInfo
     public static string GetFullVersion()
     {
         string platformName = GetPlatformName();
-        string buildConfig = (IsDebug ? "DEV" : "PROD");
         string version = Version.Replace(".", "");
 
-#if METRICS_ANALYSIS
-        return $"{buildConfig}_{platformName}_{BuildDate}_{BuildNumber}_{version}_MAB";
+#if BETA
+        string buildConfig = (IsDebug ? "DEV" : "BETA");
 #else
-        return $"{buildConfig}_{platformName}_{BuildDate}_{BuildNumber}_{version}";
+        string buildConfig = (IsDebug ? "DEV" : "PROD");
 #endif
+
+        return $"{buildConfig}_{platformName}_{BuildDate}_{BuildNumber}_{version}";
     }
 
     private static string GetPlatformName()

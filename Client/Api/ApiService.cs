@@ -2,13 +2,9 @@
 
 using Client.Api.Requests;
 using Client.Api.Responses;
-using Client.Dialogs;
-using Client.Layouts;
 using Client.ReNote.Data;
 using Client.Windows;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Newtonsoft.Json;
-
 using System;
 using System.Net;
 using System.Net.Http;
@@ -25,6 +21,7 @@ internal class ApiService
     private const string USER_LOGOUT = "/user/session/delete";
     private const string TEAM_PROFILE = "/user/team/profile";
     private const string PREFERENCES = "/user/preferences";
+    private const string CHANGE_PASS = "/user/password/modify";
 
     public delegate void RequestCallback<T>(ResponseStatus requestStatus, T response) where T : Response;
 
@@ -69,13 +66,17 @@ internal class ApiService
             responseBody = await response.Content.ReadAsStringAsync();
         }
         catch (Exception ex)
-        when (ex is HttpRequestException || ex is TaskCanceledException) { }
+        when (ex is HttpRequestException || ex is TaskCanceledException)
+        { }
 
         if (callback == null)
             return;
 
         ResponseStatus responseStatus = GetStatusFromCode(statusCode);
         TResponse responseData = new TResponse();
+
+        if (responseStatus == ResponseStatus.SERVICE_UNAVAILABLE)
+            MainWindow.Instance.SetMaintenanceMode();
 
         if (!string.IsNullOrWhiteSpace(responseBody))
             responseData = JsonConvert.DeserializeObject<TResponse>(responseBody);
@@ -125,7 +126,12 @@ internal class ApiService
 
     public static async Task SetPreferencesAsync(PreferenceRequest request, RequestCallback<Response> callback = null)
     {
-        await SendRequestAsync(PREFERENCES, HttpMethod.Post, request, callback);
+        await SendRequestAsync(PREFERENCES, HttpMethod.Patch, request, callback);
+    }
+
+    public static async Task ChangePasswordAsync(PasswordRequest request, RequestCallback<Response> callback = null)
+    {
+        await SendRequestAsync(CHANGE_PASS, HttpMethod.Patch, request, callback);
     }
 
     private static ResponseStatus GetStatusFromCode(HttpStatusCode statusCode)
@@ -139,7 +145,6 @@ internal class ApiService
             case HttpStatusCode.BadRequest:
                 return ResponseStatus.BAD_REQUEST;
             case HttpStatusCode.ServiceUnavailable:
-                MainWindow.Instance.SetMaintenanceMode();
                 return ResponseStatus.SERVICE_UNAVAILABLE;
             default:
                 return ResponseStatus.UNKNOWN;

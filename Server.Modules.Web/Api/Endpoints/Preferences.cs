@@ -23,8 +23,8 @@ namespace Server.ReNote.Api
             {
                 case "GET":
                     return await Get(req);
-                case "POST":
-                    return await Post(req);
+                case "PATCH":
+                    return await Patch(req);
                 default:
                     return await ApiHelper.SendAsync(405, ApiMessages.MethodNotAllowed());
             }
@@ -37,33 +37,27 @@ namespace Server.ReNote.Api
         /// <returns><see cref="ApiResponse"/></returns>
         private static async Task<ApiResponse> Get(ApiRequest req)
         {
-            ApiResponse verification = await ApiHelper.VerifyAuthorizationAsync(req.Headers);
-            if (verification.Status != 200)
-                return verification;
+            VerificationResponse verification = await ApiHelper.VerifyAuthorizationAsync(req.Headers);
+            if (verification.Response.Status != 200)
+                return verification.Response;
 
-            DataResponse verificationResponse = JsonConvert.DeserializeObject<DataResponse>(verification.Body);
-            string userId = verificationResponse.Data.ToString();
 
-            PreferenceResponse response = DatabaseHelper.GetAs<PreferenceResponse>(Constants.DB_ROOT_PREFERENCES, userId);
-            if (response == null)
-                response = new PreferenceResponse() { Language = null, Theme = null };
+            PreferenceResponse response = DatabaseHelper.GetAs<PreferenceResponse>(Constants.DB_ROOT_PREFERENCES, verification.UserId.ToString());
+            response ??= new PreferenceResponse() { Language = null, Theme = null };
 
             return await ApiHelper.SendAsync(200, ApiMessages.Success(), response);
         }
 
         /// <summary>
-        /// Operates a POST request.
+        /// Operates a PATCH request.
         /// </summary>
         /// <param name="req">The <see cref="ApiRequest"/> to be proceeded.</param>
         /// <returns><see cref="ApiResponse"/></returns>
-        private static async Task<ApiResponse> Post(ApiRequest req)
+        private static async Task<ApiResponse> Patch(ApiRequest req)
         {
-            ApiResponse verification = await ApiHelper.VerifyAuthorizationAsync(req.Headers);
-            if (verification.Status != 200)
-                return verification;
-
-            DataResponse verificationResponse = JsonConvert.DeserializeObject<DataResponse>(verification.Body);
-            string userId = verificationResponse.Data.ToString();
+            VerificationResponse verification = await ApiHelper.VerifyAuthorizationAsync(req.Headers);
+            if (verification.Response.Status != 200)
+                return verification.Response;
 
             string requestBody = await StreamHelper.GetStringAsync(req.Body);
             if (string.IsNullOrWhiteSpace(requestBody))
@@ -73,9 +67,9 @@ namespace Server.ReNote.Api
                 return await ApiHelper.SendAsync(400, ApiMessages.InvalidJson());
 
             PreferenceRequest requestData = JsonConvert.DeserializeObject<PreferenceRequest>(requestBody);
-            PreferenceResponse preferences = DatabaseHelper.GetAs<PreferenceResponse>(Constants.DB_ROOT_PREFERENCES, userId);
+            PreferenceResponse preferences = DatabaseHelper.GetAs<PreferenceResponse>(Constants.DB_ROOT_PREFERENCES, verification.UserId.ToString());
 
-            DatabaseHelper.Set(Constants.DB_ROOT_PREFERENCES, userId, new PreferenceRequest()
+            DatabaseHelper.Set(Constants.DB_ROOT_PREFERENCES, verification.UserId.ToString(), new PreferenceRequest()
             {
                 Language = string.IsNullOrWhiteSpace(requestData.Language) ? preferences.Language : requestData.Language,
                 Theme    = string.IsNullOrWhiteSpace(requestData.Theme) ? preferences.Theme: requestData.Theme

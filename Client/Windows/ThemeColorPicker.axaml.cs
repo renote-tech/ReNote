@@ -1,16 +1,16 @@
-#if DEBUG
+namespace Client.Windows;
 
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
 using Client.Managers;
-
 using System;
-
-namespace Client.Windows;
 
 public partial class ThemeColorPicker : Window
 {
+#if DEBUG
+    public static bool IsClosed = true;
+
     private static byte s_RedColor;
     private static byte s_GreenColor;
     private static byte s_BlueColor;
@@ -35,6 +35,7 @@ public partial class ThemeColorPicker : Window
 
             byte byteValue = (byte)(m_SliderRed.Value * 255 / 100);
             s_RedColor = byteValue;
+            m_RedIntensity.Background = new SolidColorBrush(new Color(255, byteValue, 0, 0));
             m_RedText.Text = $"Red ({byteValue})";
 
             SetTheme(new Color(255, s_RedColor, s_GreenColor, s_BlueColor), s_IsDarkMode);
@@ -48,6 +49,7 @@ public partial class ThemeColorPicker : Window
 
             byte byteValue = (byte)(m_SliderGreen.Value * 255 / 100);
             s_GreenColor = byteValue;
+            m_GreenIntensity.Background = new SolidColorBrush(new Color(255, 0, byteValue, 0));
             m_GreenText.Text = $"Green ({byteValue})";
 
             SetTheme(new Color(255, s_RedColor, s_GreenColor, s_BlueColor), s_IsDarkMode);
@@ -60,6 +62,7 @@ public partial class ThemeColorPicker : Window
 
             byte byteValue = (byte)(m_SliderBlue.Value * 255 / 100);
             s_BlueColor = byteValue;
+            m_BlueIntensity.Background = new SolidColorBrush(new Color(255, 0, 0, byteValue));
             m_BlueText.Text = $"Blue ({byteValue})";
 
             SetTheme(new Color(255, s_RedColor, s_GreenColor, s_BlueColor), s_IsDarkMode);
@@ -73,10 +76,14 @@ public partial class ThemeColorPicker : Window
 
         Opened += (sender, e) =>
         {
-            m_SliderRed.Value   = s_RedColor * 100 / 255.0;
+            m_SliderRed.Value = s_RedColor * 100 / 255.0;
             m_SliderGreen.Value = s_GreenColor * 100 / 255.0;
-            m_SliderBlue.Value  = s_BlueColor * 100 / 255.0;
+            m_SliderBlue.Value = s_BlueColor * 100 / 255.0;
+
+            IsClosed = false;
         };
+
+        Closed += (sende, e) => IsClosed = true;
     }
 
     public void SetTheme(Color color, bool isDarkTheme)
@@ -84,7 +91,7 @@ public partial class ThemeColorPicker : Window
         if (ThemeManager.s_DefaultTheme.Count == 0)
             return;
 
-        Background = new SolidColorBrush(color);
+        m_EndColor.Background = new SolidColorBrush(color);
 
         Application.Current.Resources["BaseBackground"] = GetThemedColor("BaseBackground", color, isDarkTheme);
 
@@ -106,7 +113,9 @@ public partial class ThemeColorPicker : Window
 
         Application.Current.Resources["BaseForegroundGray"] = GetThemedColor("BaseForegroundGray", color, isDarkTheme);
 
+        Application.Current.Resources["SystemAccentColor"] = color;
         Application.Current.Resources["BaseAccent"] = color;
+
         Application.Current.Resources["BaseAccentHover"] = GetThemedColor("BaseAccentHover", color, false);
         Application.Current.Resources["BaseAccentPress"] = GetThemedColor("BaseAccentPress", color, false);
 
@@ -139,6 +148,10 @@ public partial class ThemeColorPicker : Window
 
         return new SolidColorBrush(themedColor);
     }
-}
-
+#else
+    public ThemeColorPicker()
+    {
+        InitializeComponent();
+    }
 #endif
+}

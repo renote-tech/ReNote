@@ -9,6 +9,9 @@ internal class Theme
     public bool IsDarkTheme { get; set; }
     public int Id { get; set; }
 
+    private const byte PRIMARY_DARK = 35;
+    private const byte PRIMARY_LIGHT = 235;
+
     public Color Accent
     {
         get
@@ -29,9 +32,9 @@ internal class Theme
         get
         {
             if (IsDarkTheme)
-                return new Color(255, 35, 35, 35);
+                return new Color(255, PRIMARY_DARK, PRIMARY_DARK, PRIMARY_DARK);
             else
-                return new Color(255, 235, 235, 235);
+                return new Color(255, PRIMARY_LIGHT, PRIMARY_LIGHT, PRIMARY_LIGHT);
         }
     }
 }

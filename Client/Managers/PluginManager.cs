@@ -17,7 +17,7 @@ internal class PluginManager
             PluginTypes.USER,
             PluginTypes.STUDENT,
             PluginTypes.TEACHER,
-            PluginTypes.EXPERIMENTAL 
+            PluginTypes.EXPERIMENTAL
         });
     }
 
@@ -44,8 +44,8 @@ internal struct PluginTypes
     public const string TEACHER      = "teacher";
     public const string EXPERIMENTAL = "experimental";
 
-    public static string AUTO 
-    { 
+    public static string AUTO
+    {
         get
         {
             if (User.Current == null)
@@ -53,12 +53,14 @@ internal struct PluginTypes
 
             switch (User.Current.AccountType)
             {
-                case 1:
+                case 4:
                     return STUDENT;
+                case 8:
+                    return TEACHER;
                 default:
                     return USER;
             }
-        } 
+        }
     }
 }
 

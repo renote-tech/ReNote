@@ -2,17 +2,22 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="450" d:DesignHeight="250"
+        mc:Ignorable="d" d:DesignWidth="450" d:DesignHeight="275"
         x:Class="Client.Windows.ThemeColorPicker"
-        Title="ReNote Dev Theme Color Picker" Width="450" Height="250" CanResize="False" MaxWidth="450" MaxHeight="250">
+        Title="ReNote Dev Theme Color Picker" Width="450" Height="275" CanResize="False" MaxWidth="450" MaxHeight="275">
 	<Panel Margin="25">
 		<TextBlock x:Name="m_RedText" Text="Red" FontSize="16" Margin="0, -5"/>
+		<Border x:Name="m_RedIntensity" Width="24" Height="24" HorizontalAlignment="Right" VerticalAlignment="Top" CornerRadius="32" Margin="0,-7"/>
 		<Slider x:Name="m_SliderRed" Margin="0, 10" Height="40" VerticalAlignment="Top"/>
 
 		<TextBlock x:Name="m_GreenText" Text="Green" FontSize="16" Margin="0, 70"/>
+		<Border x:Name="m_GreenIntensity" Width="24" Height="24" HorizontalAlignment="Right" VerticalAlignment="Top" CornerRadius="32" Margin="0,70"/>
 		<Slider x:Name="m_SliderGreen" Height="40" Margin="0, 105"/>
 
 		<TextBlock x:Name="m_BlueText" Text="Blue" FontSize="16" Height="20" Margin="0, 155"/>
+		<Border x:Name="m_BlueIntensity" Width="24" Height="24" HorizontalAlignment="Right" VerticalAlignment="Bottom" CornerRadius="32" Margin="0,58"/>
 		<Slider x:Name="m_SliderBlue" Margin="0, 180" Height="40"/>
+
+		<Border x:Name="m_EndColor" Width="400" Height="20" VerticalAlignment="Bottom" Margin="-10" CornerRadius="8"/>
 	</Panel>
 </Window>

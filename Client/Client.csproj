@@ -17,12 +17,12 @@
 		<Description>ReNote Σ</Description>
 	</PropertyGroup>
 	
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	<PropertyGroup Condition="'$(Configuration)'=='Debug'">
 	  <OutputType>Exe</OutputType>
 	  <DebugType>full</DebugType>
 	</PropertyGroup>
 	
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+	<PropertyGroup Condition="'$(Configuration)'=='Release'">
 	  <OutputType>WinExe</OutputType>
 	  <DebugType>full</DebugType>
 	</PropertyGroup>

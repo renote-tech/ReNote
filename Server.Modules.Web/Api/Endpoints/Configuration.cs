@@ -41,11 +41,6 @@ namespace Server.ReNote.Api
             if (JsonHelper.ValiditateJson(rawMenuItems))
                 menuItems = JsonConvert.DeserializeObject<MenuInfo[]>(rawMenuItems);
 
-            string rawFeatures = DatabaseHelper.Get(Constants.DB_ROOT_CONFIGS, "plugins");
-            Dictionary<string, bool> features = new Dictionary<string, bool>();
-            if (JsonHelper.ValiditateJson(rawFeatures))
-                features = JsonConvert.DeserializeObject<Dictionary<string, bool>>(rawFeatures);
-
             string rawToolbars = DatabaseHelper.Get(Constants.DB_ROOT_CONFIGS, "toolbars");
             ToolbarInfo[] toolbars = Array.Empty<ToolbarInfo>();
             if (JsonHelper.ValiditateJson(rawToolbars))
@@ -63,8 +58,8 @@ namespace Server.ReNote.Api
 
             ConfigResponse response = new ConfigResponse()
             {
+                Features     = PluginManager.Features   ,
                 MenuInfo     = menuItems,
-                Features     = features,
                 ToolbarsInfo = toolbars,
                 Themes       = themes
             };

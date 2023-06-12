@@ -13,34 +13,24 @@ internal class ConsoleWriter : TextWriter
     public StreamWriter StreamWriter { get; set; }
 
     private static ConsoleWriter s_ConsoleWriter;
-    private static bool s_Initialized;
 
     public static void Initialize(string fileName)
     {
-        if (s_Initialized)
-            return;
-
-        s_ConsoleWriter = new ConsoleWriter();
-#if DEBUG
-        s_ConsoleWriter.TextWriter = Console.Out;
-#endif
-        s_ConsoleWriter.FileStream = new FileStream(fileName, FileMode.Create, FileAccess.Write);
-        s_ConsoleWriter.StreamWriter = new StreamWriter(s_ConsoleWriter.FileStream);
+        s_ConsoleWriter = new ConsoleWriter
+        {
+            FileStream = new FileStream(fileName, FileMode.Create, FileAccess.Write),
+            StreamWriter = new StreamWriter(s_ConsoleWriter.FileStream)
+        };
 
         s_ConsoleWriter.StreamWriter.AutoFlush = true;
 
         Console.SetOut(s_ConsoleWriter);
-
-        s_Initialized = true;
     }
 
     public override void Write(string value)
     {
-        if (TextWriter != null)
-            TextWriter.Write(value);
-
-        if (StreamWriter != null)
-            StreamWriter.Write(value);
+        TextWriter?.Write(value);
+        StreamWriter?.Write(value);
     }
 
     public override void Close()

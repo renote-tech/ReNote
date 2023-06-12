@@ -34,14 +34,11 @@ namespace Server.ReNote.Api
         /// <returns><see cref="ApiResponse"/></returns>
         private static async Task<ApiResponse> Get(ApiRequest req)
         {
-            ApiResponse verification = await ApiHelper.VerifyAuthorizationAsync(req.Headers);
-            if (verification.Status != 200)
-                return verification;
+            VerificationResponse verification = await ApiHelper.VerifyAuthorizationAsync(req.Headers);
+            if (verification.Response.Status != 200)
+                return verification.Response;
 
-            DataResponse verificationResponse = JsonConvert.DeserializeObject<DataResponse>(verification.Body);
-            long userId = (long)verificationResponse.Data;
-
-            User userData = UserManager.GetUser(userId);
+            User userData = UserManager.GetUser(verification.UserId);
             Team teamData = DatabaseHelper.GetAs<Team>(Constants.DB_ROOT_TEAMS, userData.TeamId.ToString());
 
             TeamProfileResponse response = new TeamProfileResponse()

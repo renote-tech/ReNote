@@ -6,20 +6,10 @@ internal static class ClientConsole
 {
     private static readonly object s_Locker = new object();
 
-    public static void Debug(string message) =>
-        Write($"{DateTime.Now} | [<$Green>Debug</>] {message}");
-
-    public static void Info(string message) =>
-        Write($"{DateTime.Now} | [<$DarkGreen>Info</>] {message}");
-
-    public static void Warn(string message) =>
-        Write($"{DateTime.Now} | [<$Yellow>Warn</>] {message}");
-
-    public static void Error(string message) =>
-        Write($"{DateTime.Now} | [<$Red>Error</>] {message}");
-
-    public static void Fatal(string message) =>
-        Write($"{DateTime.Now} | [<$DarkRed>Fatal</>] | {message}");
+    public static void Log(string message, LogLevel level, string levelColor)
+    {
+        Write($"{DateTime.Now} | <${levelColor}>{level}</> | {message}");
+    }
 
     private static void Write(string message, bool addLine = true)
     {

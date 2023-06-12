@@ -2,7 +2,6 @@
 
 using Client.Api.Responses;
 using Client.Pages;
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,9 +18,10 @@ internal class ToolbarManager
         for (int i = 0; i < toolbarsInfo.Length; i++)
         {
             ToolbarInfo toolbarInfo = toolbarsInfo[i];
-            Toolbar toolbar = new Toolbar(toolbarInfo.Id, toolbarInfo.Name);
-
-            toolbar.DefaultPage = Type.GetType($"Client.Pages.{toolbarInfo.DefaultPage}");
+            Toolbar toolbar = new Toolbar(toolbarInfo.Id, toolbarInfo.Name)
+            {
+                DefaultPage = Type.GetType($"Client.Pages.{toolbarInfo.DefaultPage}")
+            };
 
             for (int j = 0; j < toolbarInfo.Buttons.Count; j++)
             {

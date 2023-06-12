@@ -55,15 +55,17 @@ namespace Server.Common
         /// <returns><see cref="string"/></returns>
         public static string GetPlatformName()
         {
-            string platformName = string.Empty;
+            string platformName;
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 platformName = "Windows";
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                 platformName = "Unix";
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
                 platformName = "macOS";
+            else
+                platformName = "Unknown";
 
-            return $"{platformName} {RuntimeInformation.ProcessArchitecture.ToString().ToLower()}";
+            return $"{platformName} ({RuntimeInformation.ProcessArchitecture.ToString().ToLower()})";
         }
     }
 

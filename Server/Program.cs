@@ -1,6 +1,7 @@
 ﻿using System;
+using System.IO;
+using System.Net.Sockets;
 using Server.Common;
-using Server.ReNote;
 using Server.ReNote.Management;
 using Server.Web.Api;
 using Server.Web.Static;
@@ -27,7 +28,21 @@ namespace Server
 
             StaticInterface.Instance.Initialize();
             ApiInterface.Instance.Initialize();
-            ApiRegisterer.Initialize();
+
+            ApiAtlas.Initialize("Root", "/",
+
+                                "Authenticate", "/global/auth",
+                                "SchoolInfo", "/global/school/info",
+                                "About", "/global/about",
+                                "Quotation", "/global/quotation",
+                                "Configuration", "/global/client/config",
+
+                                "Profile", "/user/profile",
+                                "Preferences", "/user/preferences",
+                                "Timetable", "/user/timetable",
+                                "LogOut", "/user/session/delete",
+                                "TeamProfile", "/user/team/profile",
+                                "Password", "/user/password/modify");
 
             ReNote.Server.Instance.Initialize();
 
@@ -42,7 +57,10 @@ namespace Server
         {
             AppDomain.CurrentDomain.FirstChanceException += (sender, e) =>
             {
-                Platform.Log($"Caused by {e.Exception.Source} | {e.Exception.Message}\n{e.Exception.StackTrace}\n", LogLevel.ERROR);
+                if (e.Exception is SocketException || e.Exception is IOException)
+                    return;
+
+                Platform.Log($"Caused by {e.Exception.Source} | {e.Exception.GetType()} | {e.Exception.Message}\n{e.Exception.StackTrace}\n", LogLevel.ERROR);
             };
 
             AppDomain.CurrentDomain.ProcessExit += (sender, e) => EndService();

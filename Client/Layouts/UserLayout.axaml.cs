@@ -5,24 +5,25 @@ using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Markup.Xaml.MarkupExtensions;
 using Avalonia.Media;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
 using Client.Api;
 using Client.Api.Responses;
 using Client.Managers;
 using Client.Pages;
 using Client.ReNote.Data;
 using Client.Windows;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 public partial class UserLayout : Layout
 {
     private static MenuInfo[] s_MenuInfo;
     private string m_ToolbarId;
 
-    private Page m_CurrentPage
+    private const string TOOLBAR_HOME = "Home";
+    private const string TOOLBAR_USER = "User";
+
+    private Page CurrentPage
     {
         get
         {
@@ -78,7 +79,7 @@ public partial class UserLayout : Layout
         ThemeManager.SetThemeByName(user.Theme);
         LanguageManager.SetLanguage(user.Language);
 
-        Navigate("Home");
+        Navigate(TOOLBAR_HOME);
     }
 
     public void InitializeMenu()
@@ -169,7 +170,7 @@ public partial class UserLayout : Layout
             if (e.InitialPressMouseButton != Avalonia.Input.MouseButton.Left)
                 return;
 
-            Navigate("Home");
+            Navigate(TOOLBAR_HOME);
         };
 
         m_ProfileButton.PointerReleased += (sender, e) =>
@@ -177,7 +178,7 @@ public partial class UserLayout : Layout
             if (e.InitialPressMouseButton != Avalonia.Input.MouseButton.Left)
                 return;
 
-            Navigate("User");
+            Navigate(TOOLBAR_USER);
         };
 
         m_LogOutButton.PointerReleased += async (sender, e) =>
@@ -195,11 +196,10 @@ public partial class UserLayout : Layout
         if (toolbar == null || toolbar.DefaultPage == null)
             return;
 
-        if (m_CurrentPage != null)
-            m_CurrentPage.Destroy();
+        CurrentPage?.Destroy();
 
         Page page = (Page)Activator.CreateInstance(toolbar.DefaultPage);
-        m_CurrentPage = page;
+        CurrentPage = page;
 
         if (m_MenuSelector.IsVisible)
             m_MenuSelector.IsVisible = false;
@@ -214,10 +214,10 @@ public partial class UserLayout : Layout
         if (m_Page.Children.Count > 0 && m_Page.Children[0].GetType() == page.GetType())
             return;
 
-        if (m_CurrentPage != null)
-            m_CurrentPage.Destroy();
+        if (CurrentPage != null)
+            CurrentPage.Destroy();
 
-        m_CurrentPage = page;
+        CurrentPage = page;
 
         Toolbar toolbar = ToolbarManager.GetToolbar(page.GetToolbarId());
         if (toolbar == null || m_ToolbarId == toolbar.Id)
@@ -258,7 +258,7 @@ public partial class UserLayout : Layout
                 formatter.FontSize = barButton.FontSize;
                 formatter.Text = (string)value;
 
-                lastButtonWidth = formatter.Bounds.Width + 16;
+                lastButtonWidth = formatter.Bounds.Width + 4;
             });
 
             barButton.Click += (sender, e) =>

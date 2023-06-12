@@ -1,6 +1,10 @@
-﻿using Server.Common;
+﻿using Newtonsoft.Json;
+using Server.Common;
+using Server.Common.Helpers;
 using Server.ReNote.Data;
+using Server.ReNote.Helpers;
 using Server.ReNote.Management;
+using System.Collections.Generic;
 using System.Timers;
 
 namespace Server.ReNote
@@ -86,6 +90,12 @@ namespace Server.ReNote
 
             m_CurrentStatus = Constants.SERVER_STATUS_OK;
 
+            string pluginsData = DatabaseHelper.Get(Constants.DB_ROOT_CONFIGS, "plugins");
+            if (JsonHelper.ValiditateJson(pluginsData))
+                PluginManager.Initialize(JsonConvert.DeserializeObject<Dictionary<string, bool>>(pluginsData));
+            else
+                PluginManager.Initialize(new Dictionary<string, bool>());
+
             Platform.Log("Initialized ReNote Server", LogLevel.INFO);
             
             m_Initialized = true;
@@ -116,7 +126,7 @@ namespace Server.ReNote
         /// <param name="e">The event arguments.</param>
         private async void OnWorkerServiceInvoked(object sender, ElapsedEventArgs e)
         {
-            Platform.Log("[Worker] Cleaning and saving data", LogLevel.INFO);
+            Platform.Log("(Worker) Cleaning and saving data", LogLevel.INFO);
 
             SessionManager.Clean();
 

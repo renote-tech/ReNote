@@ -4,3 +4,6 @@
 **/bin
 **/obj
 **/.vs
+
+## Files
+*.log

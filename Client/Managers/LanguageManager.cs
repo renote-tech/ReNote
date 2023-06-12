@@ -2,7 +2,6 @@
 
 using Avalonia;
 using Avalonia.Platform;
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,9 +9,9 @@ using System.IO;
 internal class LanguageManager
 {
     public static Language[] Languages;
+    public static Language CurrentLanguage;
 
-    private static Language s_CurrentLanguage;
-    private static Dictionary<string, string[]> s_Languages = new Dictionary<string, string[]>();
+    private static readonly Dictionary<string, string[]> s_Languages = new Dictionary<string, string[]>();
 
     public static void Initialize()
     {
@@ -23,9 +22,6 @@ internal class LanguageManager
                                      new Language("de-DE", "\ud83c\udde9\ud83c\uddea", "Deutsch"),
                                      new Language("es-ES", "\ud83c\uddea\ud83c\uddf8", "Español") };
 
-        for (int i = 0; i < Languages.Length; i++)
-            Languages[i].Id = i;
-
         IAssetLoader loader = AvaloniaLocator.Current.GetService<IAssetLoader>();
 
         for (int i = 0; i < Languages.Length; i++)
@@ -35,33 +31,27 @@ internal class LanguageManager
             using Stream fileStream = loader.Open(new Uri($"avares://Client/Assets/{langCode}.lang"));
             using StreamReader fileReader = new StreamReader(fileStream);
 
-            s_Languages[langCode] = fileReader.ReadToEnd().Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            s_Languages[langCode] = fileReader.ReadToEnd().Split('\n', StringSplitOptions.RemoveEmptyEntries);
         }
 
         SetLanguage(Configuration.Language);
     }
 
-    public static int RestoreDefault()
-    {
-        return SetLanguage(Configuration.Language);
-    }
-
     public static int SetLanguage(string langCode)
     {
-        string actualLangCode = string.IsNullOrWhiteSpace(langCode) ? Configuration.Language : langCode;
+        if (string.IsNullOrWhiteSpace(langCode))
+            langCode = Configuration.Language;
+
         for (int i = 0; i < Languages.Length; i++)
         {
-            if (Languages[i].LangCode == actualLangCode)
-                s_CurrentLanguage = Languages[i];
+            if (Languages[i].LangCode == langCode)
+                CurrentLanguage = Languages[i];
         }
 
-        if (s_CurrentLanguage == null)
+        if (CurrentLanguage == null || !s_Languages.ContainsKey(langCode))
             return -1;
 
-        if (!s_Languages.ContainsKey(actualLangCode))
-            return -1;
-
-        string[] languageData = s_Languages[actualLangCode];
+        string[] languageData = s_Languages[langCode];
         for (int i = 0; i < languageData.Length; i++)
         {
             string[] keyValuePair = languageData[i].Split('=');
@@ -71,7 +61,7 @@ internal class LanguageManager
             Application.Current.Resources[keyValuePair[0]] = keyValuePair[1].Replace(@"\n", "\n");
         }
 
-        return s_CurrentLanguage.Id;
+        return CurrentLanguage.Id;
     }
 
     public static Language GetLanguageByName(string langCode)
@@ -87,24 +77,23 @@ internal class LanguageManager
 
         return null;
     }
-
-    public static Language GetCurrentLanguage()
-    {
-        return s_CurrentLanguage;
-    }
 }
 
 internal class Language
 {
-    public string LangCode { get; set; }
-    public string LangSymbol { get; set; }
-    public string DisplayName { get; set; }
-    public int Id { get; set; }
+    public int Id { get; }
+    public string LangCode { get; }
+    public string LangSymbol { get; }
+    public string DisplayName { get; }
+
+    private static int s_NextLangId;
 
     public Language(string langCode, string langSymbol, string displayName)
     {
         LangCode = langCode;
         LangSymbol = langSymbol;
         DisplayName = displayName;
+
+        Id = s_NextLangId++; // Post-incrementation: returns the current value & increment itself
     }
 }

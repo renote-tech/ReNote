@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Server.ReNote.Management;
 using Server.Web.Api;
+using Server.Web.Api.Responses;
 using Server.Web.Helpers;
 
 namespace Server.ReNote.Api
@@ -30,12 +31,11 @@ namespace Server.ReNote.Api
         /// <returns><see cref="ApiResponse"/></returns>
         private static async Task<ApiResponse> Delete(ApiRequest req)
         {
-            ApiResponse verification = await ApiHelper.VerifyAuthorizationAsync(req.Headers);
-            if (verification.Status != 200)
-                return verification;
+            VerificationResponse verification = await ApiHelper.VerifyAuthorizationAsync(req.Headers);
+            if (verification.Response.Status != 200)
+                return verification.Response;
 
-            long sessionId = long.Parse(ApiHelper.GetHeaderValue(req.Headers["sessionId"]));
-            SessionManager.DeleteSession(sessionId);
+            SessionManager.DeleteSession(verification.SessionId);
 
             return await ApiHelper.SendAsync(200, ApiMessages.Success());
         }

@@ -1,7 +1,5 @@
 ﻿using System.Collections.Specialized;
 using System.IO;
-using System.Text;
-using Server.Common;
 
 namespace Server.Web.Api
 {
@@ -121,7 +119,7 @@ namespace Server.Web.Api
         /// <summary>
         /// Returns an "empty sessionId or authToken" message.
         /// </summary>
-        /// <returns></returns>
+        /// <returns><see cref="string"/></returns>
         public static string EmptySessionIdOrAuthToken()
         {
             return "Session ID and auth token may not be empty";
@@ -134,6 +132,33 @@ namespace Server.Web.Api
         public static string EmptyUsernameOrPassword()
         {
             return "LogonEmptyField";
+        }
+
+        /// <summary>
+        /// Returns an "empty current password or new password" message.
+        /// </summary>
+        /// <returns><see cref="string"/></returns>
+        public static string EmptyCurrentPasswordOrNewPassword()
+        {
+            return "DialogPasswordEmptyField";
+        }
+
+        /// <summary>
+        /// Returns an "cannot use same password" message.
+        /// </summary>
+        /// <returns><see cref="string"/></returns>
+        public static string CannotUseSamePassword()
+        {
+            return "DialogCannotUseSamePassword";
+        }
+
+        /// <summary>
+        /// Returns an "invalid password" message.
+        /// </summary>
+        /// <returns><see cref="string"/></returns>
+        public static string InvalidPassword()
+        {
+            return "DialogInvalidPassword";
         }
 
         /// <summary>
@@ -157,40 +182,28 @@ namespace Server.Web.Api
         /// <summary>
         /// Returns a "server is running" message.
         /// </summary>
-        /// <returns></returns>
+        /// <returns><see cref="string"/></returns>
         public static string ServerRunning()
         {
             return "Server is running";
         }
 
+        /// <summary>
+        /// Returns a "empty language or theme" message.
+        /// </summary>
+        /// <returns><see cref="string"/></returns>
         public static string EmptyLanguageOrTheme()
         {
             return "Language or theme may not be empty";
         }
-    }
 
-    public class ApiRegisterer
-    {
         /// <summary>
-        /// Registers all of the <see cref="ApiEndpoint"/>s.
+        /// Returns a "plugin disabled" message.
         /// </summary>
-        public static void Initialize()
+        /// <returns></returns>
+        public static string PluginDisabled()
         {
-            ApiAtlas.RegisterEndpoints("Root", "/",
-
-                                       "Authenticate",  "/global/auth",
-                                       "SchoolInfo",    "/global/school/info",
-                                       "About",         "/global/about",
-                                       "Quotation",     "/global/quotation",
-                                       "Configuration", "/global/client/config",
-
-                                       "Profile",       "/user/profile",
-                                       "Preferences",   "/user/preferences",
-                                       "Timetable",     "/user/timetable",
-                                       "LogOut",        "/user/session/delete",
-                                       "TeamProfile",   "/user/team/profile");
-
-            Platform.Log($"Registered {ApiAtlas.GetEndpointsCount()} endpoints", LogLevel.INFO);
+            return "This plugin has been disabled by your administrator";
         }
     }
 }

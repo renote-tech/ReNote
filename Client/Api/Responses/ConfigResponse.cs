@@ -1,8 +1,8 @@
 ﻿namespace Client.Api.Responses;
 
-using System.Collections.Generic;
 using Client.ReNote.Data;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
 internal class ConfigResponse : Response
 {

@@ -10,39 +10,15 @@ namespace Server.Common
         private static readonly object s_Locker = new object();
 
         /// <summary>
-        /// Outputs a debugging message to the console.
+        /// Outputs a logging message with the format 'DATE | LEVEL | MESSAGE'
         /// </summary>
-        /// <param name="message">The message to be shown.</param>
-        public static void Debug(string message) =>
-            Write($"{DateTime.Now} | [<$Green>Debug</>] | {message}");
-
-        /// <summary>
-        /// Outputs an information message to the console.
-        /// </summary>
-        /// <param name="message">The message to be shown.</param>
-        public static void Info(string message) =>
-            Write($"{DateTime.Now} | [<$DarkGreen>Info</>]  | {message}");
-
-        /// <summary>
-        /// Outputs a warning message to the console.
-        /// </summary>
-        /// <param name="message">The message to be shown.</param>
-        public static void Warn(string message) =>
-            Write($"{DateTime.Now} | [<$Yellow>Warn</>]  | {message}");
-
-        /// <summary>
-        /// Outputs an error message to the console.
-        /// </summary>
-        /// <param name="message">The message to be shown.</param>
-        public static void Error(string message) =>
-            Write($"{DateTime.Now} | [<$Red>Error</>] | {message}");
-
-        /// <summary>
-        /// Outputs a fatal error message to the console.
-        /// </summary>
-        /// <param name="message">The message to be shown.</param>
-        public static void Fatal(string message) =>
-            Write($"{DateTime.Now} | [<$DarkRed>Fatal</>] | {message}");
+        /// <param name="message">The message.</param>
+        /// <param name="level">The severity level.</param>
+        /// <param name="levelColor">The color of the severity level.</param>
+        public static void Log(string message, LogLevel level, string levelColor)
+        {
+            Write($"{DateTime.Now} | <${levelColor}>{level}</> | {message}");
+        }
 
         /// <summary>
         /// Outputs a colored message to the console.

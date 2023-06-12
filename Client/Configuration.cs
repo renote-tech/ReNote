@@ -1,21 +1,19 @@
 ﻿namespace Client;
 
 using Client.Logging;
-
 using Newtonsoft.Json;
-
 using System;
 using System.IO;
 
 internal class Configuration
 {
     public const string GLOBAL_CONFIG = "Global";
-    public const string LOCAL_CONFIG  = "Local";
+    public const string LOCAL_CONFIG = "Local";
 
     public static string EndpointAddress { get; private set; }
     public static string Language { get; private set; }
 
-    private const string DEFAULT_ADDRESS  = "http://127.0.0.1:7101";
+    private const string DEFAULT_ADDRESS = "http://127.0.0.1:7101";
     private const string DEFAULT_LANGUAGE = "en-GB";
 
     private class ClientConfig
@@ -32,20 +30,22 @@ internal class Configuration
 
     public static void LoadAll()
     {
-        Load(GLOBAL_CONFIG);
+        Load(GLOBAL_CONFIG, false);
         Load(LOCAL_CONFIG, true);
 
         EndpointAddress ??= DEFAULT_ADDRESS;
         Language ??= DEFAULT_LANGUAGE;
     }
 
-    private static void Load(string name, bool useLocalFolder = false)
+    private static void Load(string name, bool useLocalFolder)
     {
         string configFileName = $"{name.ToLower()}.config.json";
         string configFilePath = configFileName;
         if (useLocalFolder)
+        {
             configFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                                           "ReNote", configFilePath);
+        }
 
         if (!File.Exists(configFilePath))
             return;
@@ -57,6 +57,7 @@ internal class Configuration
         try
         {
             ClientConfig config = JsonConvert.DeserializeObject<ClientConfig>(content);
+
             if (!useLocalFolder)
                 EndpointAddress = config.EndpointAddress;
             else if (!string.IsNullOrWhiteSpace(config.BackupEndpointAddress))

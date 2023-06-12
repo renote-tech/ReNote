@@ -1,20 +1,25 @@
 namespace Client.Dialogs;
 
+using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Input;
-using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml.MarkupExtensions;
-
 using Client.Exceptions;
 using Client.Windows;
+using System;
 
-internal partial class DialogMessage : Dialog
+public partial class DialogMessage : Dialog
 {
     public delegate void ConfirmEvent();
+
+    public const int BASE_DIALOG_HEIGHT = 115;
 
     public DialogMessage()
     {
         InitializeComponent();
+
+        if (Design.IsDesignMode)
+            return;
+
         InitializeLayout();
         InitializeEvents();
     }
@@ -26,7 +31,10 @@ internal partial class DialogMessage : Dialog
 
     public void InitializeEvents()
     {
-        MainWindow.Instance.KeyUp += OnDialogKeyUp;
+        m_MessageLabel.GetObservable(TextBlock.TextProperty).Subscribe(value =>
+        {
+            m_ContentBorder.Height = m_MessageLabel.Height + BASE_DIALOG_HEIGHT;
+        });
     }
 
     public void SetMessage(string messageKey)
@@ -37,44 +45,42 @@ internal partial class DialogMessage : Dialog
             m_MessageLabel.Text = messageKey;
     }
 
-    public void SetConfirmEvent(ConfirmEvent confirmEvent)
+    public void SetTitle(string titleKey)
     {
-        m_ConfirmButton.Click += (sender, e) =>
-        {
-            confirmEvent?.Invoke();
-
-            MainWindow.Instance.KeyUp -= OnDialogKeyUp;
-
-            Close();
-        };
+        if (titleKey.StartsWith("$$") && titleKey.EndsWith("$$"))
+            m_TitleLabel[!TextBlock.TextProperty] = new DynamicResourceExtension(titleKey.Trim('$'));
+        else
+            m_TitleLabel.Text = titleKey;
     }
 
-    private void OnDialogKeyUp(object sender, KeyEventArgs e)
+    public static DialogMessage Create(string titleKey, string messageKey, ConfirmEvent confirmEvent = null)
     {
-        if (e.Key == Key.Enter)
-            m_ConfirmButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        DialogMessage dialog = new DialogMessage();
+        dialog.SetTitle(titleKey);
+        dialog.SetMessage(messageKey);
+        dialog.SetConfirmButton(confirmEvent);
+
+        return dialog;
     }
 
-    public static DialogMessage Show(string messageKey, ConfirmEvent confirmEvent = null, bool alawysShow = true)
+    public static void Show(string titleKey, string messageKey, ConfirmEvent confirmEvent = null, bool force = true)
     {
         if (MainWindow.Instance == null)
             throw new UninitializedException("DialogMessage", "Show");
 
-        if (Instance != null && !alawysShow)
-            return null;
+        if (Instance != null && !force)
+            return;
 
-        if (Instance != null)
-            Instance.Close();
+        Instance?.Close();
 
         DialogMessage dialog = new DialogMessage();
 
+        dialog.SetTitle(titleKey);
         dialog.SetMessage(messageKey);
-        dialog.SetConfirmEvent(confirmEvent);
+        dialog.SetConfirmButton(confirmEvent);
 
-        MainWindow.Instance.AddDialog(dialog);
+        MainWindow.Instance.BindDialog(dialog);
 
         Instance = dialog;
-
-        return dialog;
     }
 }

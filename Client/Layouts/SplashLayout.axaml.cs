@@ -1,12 +1,12 @@
 namespace Client.Layouts;
 
+using Avalonia.Controls;
+using Avalonia.Markup.Xaml.MarkupExtensions;
 using Client.Api;
 using Client.Managers;
-using Client.Windows;
-
-using Avalonia.Controls;
 using Client.ReNote.Data;
-using Avalonia.Markup.Xaml.MarkupExtensions;
+using Client.Windows;
+using System.Threading.Tasks;
 
 public partial class SplashLayout : Layout
 {
@@ -23,10 +23,27 @@ public partial class SplashLayout : Layout
 #endif
 
         InitializeEvents();
-        InitializeReNote();
     }
 
-    private async void InitializeReNote()
+    private void InitializeEvents()
+    {
+        Initialized += async (sender, e) =>
+        {
+            await InitializeReNote();
+        };
+
+        m_TryAgainButton.Click += async (sender, e) =>
+        {
+            ChangeErrorState(false);
+
+            m_IsErrorState = false;
+            m_IsMaintenanceState = false;
+
+            await InitializeReNote();
+        };
+    }
+
+    private async Task InitializeReNote()
     {
         ApiService.Initialize();
 
@@ -59,6 +76,7 @@ public partial class SplashLayout : Layout
             UserLayout.SetGlobalMenu(response.Data.MenuInfo);
         });
 
+
         if (m_IsErrorState)
         {
             ChangeErrorState(true);
@@ -77,18 +95,5 @@ public partial class SplashLayout : Layout
         m_ErrorMessage.IsVisible = isErrorState;
 
         m_ErrorMessage[!TextBlock.TextProperty] = new DynamicResourceExtension(messageKey);
-    }
-
-    private void InitializeEvents()
-    {
-        m_TryAgainButton.Click += (sender, e) =>
-        {
-            ChangeErrorState(false);
-
-            m_IsErrorState = false;
-            m_IsMaintenanceState = false;
-
-            InitializeReNote();
-        };
     }
 }

@@ -15,15 +15,13 @@ namespace Server.Web.Api
         /// </summary>
         public static async Task Handle()
         {
-            while(ApiInterface.Instance.IsRunning)
+            while (ApiInterface.Instance.IsRunning)
             {
                 HttpListener listener = ApiInterface.Instance.Listener;
                 HttpListenerContext apiContext = await listener.GetContextAsync();
 
                 ApiResponse apiResponse;
                 ApiEndpoint apiEndpoint = ApiAtlas.GetEndpoint(apiContext.Request.RawUrl);
-                if (apiEndpoint == null)
-                    continue;
 
                 ApiRequest apiRequest = new ApiRequest()
                 {
@@ -50,13 +48,6 @@ namespace Server.Web.Api
 
                 apiContext.Response.Headers.Add("Server", string.Empty);
                 apiContext.Response.Headers.Add("Server-Agent", ServerInfo.Agent);
-                apiContext.Response.Headers.Add("Access-Control-Allow-Origin", "*");
-
-                if (apiRequest.Method == "OPTIONS")
-                {
-                    apiContext.Response.Headers.Add("Access-Control-Allow-Headers", "*");
-                    apiContext.Response.Headers.Add("Access-Control-Allow-Methods", "*");
-                }
 
                 await apiContext.Response.OutputStream.WriteAsync(body);
                 apiContext.Response.KeepAlive = false;

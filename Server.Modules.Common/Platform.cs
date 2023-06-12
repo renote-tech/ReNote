@@ -47,19 +47,19 @@ namespace Server
             switch (level)
             {
                 case LogLevel.DEBUG:
-                    ServerConsole.Debug(message);
+                    ServerConsole.Log(message, level, "Green");
                     break;
                 case LogLevel.INFO:
-                    ServerConsole.Info(message);
+                    ServerConsole.Log(message, level, "DarkGreen");
                     break;
                 case LogLevel.WARN:
-                    ServerConsole.Warn(message);
+                    ServerConsole.Log(message, level, "Yellow");
                     break;
                 case LogLevel.ERROR:
-                    ServerConsole.Error(message);
+                    ServerConsole.Log(message, level, "Red");
                     break;
                 case LogLevel.FATAL:
-                    ServerConsole.Fatal(message);
+                    ServerConsole.Log(message, level, "DarkRed");
                     break;
             }
         }

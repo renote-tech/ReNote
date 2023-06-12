@@ -28,12 +28,9 @@ namespace Server.Web.Static
                 if (webContext.Request.RawUrl == null)
                     return;
 
-                ApiResponse authResponse = await ApiHelper.VerifyAuthorizationAsync(webContext.Request.Headers);
-                if(authResponse.Status == 200)
-                {
-                    DataResponse authData = JsonConvert.DeserializeObject<DataResponse>(authResponse.Body);
-                    userId = (long)authData.Data;
-                }
+                VerificationResponse verification = await ApiHelper.VerifyAuthorizationAsync(webContext.Request.Headers);
+                if(verification.Response.Status == 200)
+                    userId = verification.UserId;
 
                 if (ReNote.Server.Instance.CheckStatus() != 200)
                     webResponse = Array.Empty<byte>();

@@ -22,6 +22,14 @@ namespace Server.ReNote
         /// The public ID for static file authorization.
         /// </summary>
         public const int PUBLIC_AUTH_ID = 0;
+        /// <summary>
+        /// The student ID for plugin authorization.
+        /// </summary>
+        public const int STUDENT_AUTH_ID = 4;
+        /// <summary>
+        /// The teacher ID for plugin authorization.
+        /// </summary>
+        public const int TEACHER_AUTH_ID = 8;
 
         /// <summary>
         /// The name of the <see cref="Container"/> for storing the <see cref="User"/>s' data.

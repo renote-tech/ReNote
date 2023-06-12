@@ -1,9 +1,7 @@
 namespace Client;
 
 using Avalonia;
-
 using Client.Logging;
-
 using System;
 
 internal class Program
@@ -25,13 +23,13 @@ internal class Program
     {
         AppDomain.CurrentDomain.FirstChanceException += (sender, e) =>
         {
-            Platform.Log($"Caused by {e.Exception.Source} | {e.Exception.Message}\n{e.Exception.StackTrace}\n", LogLevel.ERROR);
+            Platform.Log($"{e.Exception.Message}\n{e.Exception.StackTrace}", LogLevel.ERROR);
         };
 
         AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
         {
-            Exception exception = (Exception)e.ExceptionObject;
-            Platform.Log($"{exception.Message}\n{exception.StackTrace}\n", LogLevel.FATAL);
+            Exception ex = e.ExceptionObject as Exception;
+            Platform.Log($"{ex.Message}\n{ex.StackTrace}\n", LogLevel.FATAL);
         };
     }
 

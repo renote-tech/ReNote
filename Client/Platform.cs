@@ -1,30 +1,12 @@
 ﻿namespace Client;
 
 using Client.Logging;
-
 using System;
 
 internal class Platform
 {
-    public static bool IsDebug
-    {
-        get
-        {
-#if DEBUG
-            return true;
-#else
-                return false;
-#endif
-        }
-    }
-
-    private static bool s_Initialized;
-
     public static void Initialize()
     {
-        if (s_Initialized)
-            return;
-
 #if !DEBUG
         ConsoleWriter.Initialize("./client.log");
 #endif
@@ -32,7 +14,8 @@ internal class Platform
         try
         {
             Console.Title = "ReNote \u03a3 2023";
-        } catch { }
+        }
+        catch { }
 
         string watermark = @"      ____       _   __      __      " + "\n" +
                            @"     / __ \___  / | / /___  / /____  " + "\n" +
@@ -41,8 +24,6 @@ internal class Platform
                            @"  /_/ |_|\___/_/ |_/\____/\__/\___/  ";
 
         Console.WriteLine($"{watermark} Version {ClientInfo.Version} ({ClientInfo.Configuration})\n");
-
-        s_Initialized = true;
     }
 
     public static void Log(string message, LogLevel level = LogLevel.DEBUG)
@@ -50,19 +31,19 @@ internal class Platform
         switch (level)
         {
             case LogLevel.DEBUG:
-                ClientConsole.Debug(message);
+                ClientConsole.Log(message, level, "Green");
                 break;
             case LogLevel.INFO:
-                ClientConsole.Info(message);
+                ClientConsole.Log(message, level, "DarkGreen");
                 break;
             case LogLevel.WARN:
-                ClientConsole.Warn(message);
+                ClientConsole.Log(message, level, "Yellow");
                 break;
             case LogLevel.ERROR:
-                ClientConsole.Error(message);
+                ClientConsole.Log(message, level, "Red");
                 break;
             case LogLevel.FATAL:
-                ClientConsole.Fatal(message);
+                ClientConsole.Log(message, level, "DarkRed");
                 break;
         }
     }

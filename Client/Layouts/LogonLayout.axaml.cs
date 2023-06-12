@@ -6,19 +6,19 @@ using Avalonia.Markup.Xaml.MarkupExtensions;
 
 using Client.Api;
 using Client.Api.Requests;
-using Client.Builders;
 using Client.Dialogs;
 using Client.Managers;
 using Client.ReNote.Data;
 using Client.Windows;
+using System.Threading.Tasks;
 
 public partial class LogonLayout : Layout
 {
     private bool m_IsLoginLocked = false;
 
-    private const string EMPTY_FIELD         = "LogonEmptyField";
-    private const string UNEXPECTED_ERROR    = "UnexpectedError";
-    private const string CONTACT_ADMIN       = "LogonContactAdmin";
+    private const string EMPTY_FIELD = "LogonEmptyField";
+    private const string UNEXPECTED_ERROR = "UnexpectedError";
+    private const string CONTACT_ADMIN = "LogonContactAdmin";
     private const string SERVICE_UNAVAILABLE = "AbnormalStatus";
 
     public LogonLayout()
@@ -30,14 +30,41 @@ public partial class LogonLayout : Layout
             return;
 #endif
 
-        InitializeLayout();
         InitializeEvents();
     }
 
-    private async void InitializeLayout()
+    private void InitializeEvents()
     {
-        ThemeManager.RestoreDefault();
-        int index = LanguageManager.RestoreDefault();
+        User.Delete();
+
+        Initialized += async (sender, e) =>
+        {
+            await InitializeLayout();
+        };
+
+        m_PasswordBox.KeyUp += (sender, e) =>
+        {
+            if (m_IsLoginLocked)
+                return;
+
+            if (e.Key == Key.Enter)
+                m_LoginButton.SimulateClick();
+        };
+
+        m_LoginButton.Click += async (sender, e) => await PerformLogin();
+
+        m_LanguageList.SelectionChanged += (sender, e) =>
+        {
+            Language language = (Language)m_LanguageList.SelectedItem;
+            LanguageManager.SetLanguage(language.LangCode);
+            Configuration.Save(Configuration.LOCAL_CONFIG, language.LangCode);
+        };
+    }
+
+    private async Task InitializeLayout()
+    {
+        ThemeManager.SetThemeByName(ThemeManager.DEFAULT_THEME_NAME);
+        int index = LanguageManager.SetLanguage(Configuration.Language);
 
         m_LanguageList.Items = LanguageManager.Languages;
         m_LanguageList.SelectedIndex = index;
@@ -56,40 +83,7 @@ public partial class LogonLayout : Layout
         });
     }
 
-    private void InitializeEvents()
-    {
-        User.Delete();
-
-        m_ReNoteIcon.DoubleTapped += (sender, e) =>
-        {
-            MessageBoxBuilder.Create()
-                             .SetTitle("$$AboutReNote$$")
-                             .SetMessage($"$$AboutReNoteContent$$")
-                             .SetType(MessageBoxType.OK)
-                             .SetIcon(MessageBoxIcon.INFO)
-                             .Show();
-        };
-
-        m_PasswordBox.KeyUp += (sender, e) =>
-        {
-            if (m_IsLoginLocked)
-                return;
-
-            if (e.Key == Key.Enter)
-                PerformLogin();
-        };
-
-        m_LoginButton.Click += (sender, e) => PerformLogin();
-
-        m_LanguageList.SelectionChanged += (sender, e) =>
-        {
-            Language language = (Language)m_LanguageList.SelectedItem;
-            LanguageManager.SetLanguage(language.LangCode);
-            Configuration.Save(Configuration.LOCAL_CONFIG, language.LangCode);
-        };
-    }
-
-    private async void PerformLogin()
+    private async Task PerformLogin()
     {
         Lock();
 
@@ -114,7 +108,7 @@ public partial class LogonLayout : Layout
                 return;
             }
 
-            bool hasFailed = await User.GetAsync(response.Data);
+            bool hasFailed = await User.CreateAsync(response.Data);
             if (hasFailed)
             {
                 Unlock(CONTACT_ADMIN);
@@ -139,8 +133,6 @@ public partial class LogonLayout : Layout
 
         if (!PluginManager.Enabled(PluginTypes.EXPERIMENTAL, Plugins.EX_NEW_LOGIN_DIALOG))
             m_LoginErrorLabel.IsVisible = false;
-        
-        m_LoadingRing.IsVisible = true;
 
         Focus();
     }
@@ -149,6 +141,8 @@ public partial class LogonLayout : Layout
     {
         if (string.IsNullOrWhiteSpace(errorType) || errorType == SERVICE_UNAVAILABLE)
             return;
+
+        m_LoginButton.RestoreContent();
 
         if (!PluginManager.Enabled(PluginTypes.EXPERIMENTAL, Plugins.EX_NEW_LOGIN_DIALOG))
         {
@@ -160,8 +154,6 @@ public partial class LogonLayout : Layout
             m_UsernameBox.IsTabStop = true;
             m_PasswordBox.IsTabStop = true;
 
-            m_LoadingRing.IsVisible = false;
-
             m_LoginErrorLabel[!TextBlock.TextProperty] = new DynamicResourceExtension(errorType);
             m_LoginErrorLabel.IsVisible = true;
 
@@ -170,9 +162,7 @@ public partial class LogonLayout : Layout
             return;
         }
 
-        m_LoadingRing.IsVisible = false;
-
-        DialogMessage.Show($"$${errorType}$$", () =>
+        DialogMessage.Show("$$DialogError$$", $"$${errorType}$$", () =>
         {
             m_LoginButton.IsEnabled = true;
             m_UsernameBox.IsEnabled = true;

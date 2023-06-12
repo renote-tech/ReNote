@@ -22,6 +22,19 @@ LogonCopyrightText=© ReNote NETW.\nAll rights reserved.
 
 DialogConfirm=OK
 DialogCancel=Cancel
+DialogInformation=Information
+DialogWarning=Warning
+DialogError=Error
+
+DialogPasswordTitle=Change your password
+DialogCurrentPassword=Current password
+DialogNewPassword=New password
+DialogConfirmNewPassword=Confirm new password
+DialogPasswordNotMatch=The new password and confirmation password do not match
+DialogPasswordEmptyField=All the fields must not be empty
+DialogCannotUseSamePassword=Cannot use the current password as the new one
+DialogInvalidPassword=The current password is incorrect
+DialogLoginAgain=Please login again with your new password
 
 HomeTitle=Home
 UserTitle=Profile
@@ -40,6 +53,8 @@ AccountLastConnection=Last connection
 AccountSecurity=Security
 AccountPassword=Password
 AccountChangePassword=Change Password
+AccountCannotChangePassword=Uh! Seems like you can't change your password.
+AccountCannotChangePasswordLearn=Learn more.
 
 AccountPreferences=Preferences
 AccountThemes=Themes

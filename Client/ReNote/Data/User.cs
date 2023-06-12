@@ -2,7 +2,6 @@
 
 using Client.Api;
 using Client.Api.Responses;
-
 using System.Threading.Tasks;
 
 internal class User
@@ -24,7 +23,7 @@ internal class User
     public string Language { get; set; }
     public string Theme { get; set; }
 
-    public static async Task<bool> GetAsync(AuthData data)
+    public static async Task<bool> CreateAsync(AuthData data)
     {
         Current = new User()
         {

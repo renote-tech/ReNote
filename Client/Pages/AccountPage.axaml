@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:controls="clr-namespace:Client.Controls"
              mc:Ignorable="d" d:DesignWidth="960" d:DesignHeight="445"
              x:Class="Client.Pages.AccountPage">
 	<UserControl.Styles>
@@ -41,6 +42,12 @@
 			<Setter Property="HorizontalContentAlignment" Value="Center"/>
 			<Setter Property="VerticalContentAlignment" Value="Center"/>
 		</Style>
+		<Style Selector="TextBlock.TEXT_LINK">
+			<Setter Property="Foreground" Value="SkyBlue"/>
+		</Style>
+		<Style Selector="TextBlock.TEXT_LINK:pointerover">
+			<Setter Property="Foreground" Value="RoyalBlue"/>
+		</Style>
 	</UserControl.Styles>
 	<Panel Background="{DynamicResource BaseBackground}">
 		<Panel Background="{DynamicResource	BaseSidebar}" Width="256" HorizontalAlignment="Left">
@@ -66,7 +73,9 @@
 		</Panel>
 		<Panel x:Name="m_FragSecurity" Margin="256, 0, 0, 0" IsVisible="False">
 			<TextBlock FontWeight="SemiBold" Margin="25" Text="{DynamicResource	AccountPassword}"/>
-			<Button x:Name="m_ChangePasswordBtn" VerticalAlignment="Top" Margin="30, 55" Padding="10" CornerRadius="6" Height="40" Content="{DynamicResource AccountChangePassword}"/>
+			<Button x:Name="m_ChangePasswordBtn" VerticalAlignment="Top" Margin="30, 55" Padding="10" CornerRadius="6" Height="40" Content="{DynamicResource AccountChangePassword}" IsEnabled="False"/>
+			<TextBlock x:Name="m_CannotChangePasswordLabel" Text="{DynamicResource AccountCannotChangePassword}" Foreground="{DynamicResource BaseForegroundError}" Margin="35, 105" IsVisible="False"/>
+			<TextBlock x:Name="m_CannotChangePasswordLearnLabel" Text="{DynamicResource AccountCannotChangePasswordLearn}" VerticalAlignment="Top" Height="20" Classes="TEXT_LINK" Margin="35, 125" IsVisible="False"/>
 			<TextBlock x:Name="m_UserId" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="10"/>
 		</Panel>
 		<Panel x:Name="m_FragPreferences" Margin="256, 0, 0, 0" IsVisible="False">
@@ -105,7 +114,7 @@
 					</DataTemplate>
 				</ComboBox.ItemTemplate>
 			</ComboBox>
-			<Button x:Name="m_SaveButton" IsEnabled="False" Content="{DynamicResource AccountApplyPreferences}" Height="40" VerticalAlignment="Bottom" Margin="24, 16"/>
+			<controls:LoadingButton x:Name="m_SaveButton" IsEnabled="False" Content="{DynamicResource AccountApplyPreferences}" Height="40" VerticalAlignment="Bottom" Margin="24, 16"/>
 			<Button x:Name="m_ResetButton" IsEnabled="False" Content="{DynamicResource AccountResetPreferences}" Height="40" VerticalAlignment="Bottom" Margin="48, 16" />
 		</Panel>
 		<Panel x:Name="m_FragMobileLogin" Margin="256, 0, 0, 0" IsVisible="False">

@@ -4,14 +4,13 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml.MarkupExtensions;
 using Avalonia.Media;
-
 using Client.Api;
 using Client.Api.Requests;
-using Client.Managers;
 using Client.Dialogs;
+using Client.Helpers;
+using Client.Managers;
 using Client.ReNote.Data;
 using Client.Windows;
-
 using System;
 using System.Globalization;
 using System.Linq;
@@ -22,6 +21,8 @@ public partial class AccountPage : Page
     private string m_SelectedTheme;
     private string m_SelectedLanguage;
     private readonly Panel[] m_Fragments;
+
+    private DialogPassword s_DialogPassword;
 
     public AccountPage()
     {
@@ -63,6 +64,9 @@ public partial class AccountPage : Page
 
         m_SaveButton.GetObservable(ContentProperty).Subscribe(value =>
         {
+            if (value is not string)
+                return;
+
             formatter.Text = (string)value;
 
             double width = formatter.Bounds.Width;
@@ -70,9 +74,19 @@ public partial class AccountPage : Page
             m_ResetButton.Margin = new Thickness(width + 64, 16);
         });
 
+
         m_UserId.IsVisible = PluginManager.Enabled(PluginTypes.USER, Plugins.KN_SHOW_ID);
 
-        m_ChangePasswordBtn.IsEnabled = PluginManager.Enabled(PluginTypes.AUTO, Plugins.KN_CHANGE_PASSWORD);
+        if (PluginManager.Enabled(PluginTypes.AUTO, Plugins.KN_CHANGE_PASSWORD))
+        {
+            m_ChangePasswordBtn.IsEnabled = true;
+            s_DialogPassword = new DialogPassword();
+        }
+        else
+        {
+            m_CannotChangePasswordLabel.IsVisible = true;
+            m_CannotChangePasswordLearnLabel.IsVisible = true;
+        }
 
         User user = User.Current;
 
@@ -94,17 +108,19 @@ public partial class AccountPage : Page
         else
             SetLanguageDataFormat();
 
-        Theme[] themes = ThemeManager.GetAllThemes();
+        Theme[] themes = ThemeManager.Themes;
         Language[] languages = LanguageManager.Languages;
 
         m_ThemeList.Items = themes;
         m_LanguageList.Items = languages;
 
-        Theme theme = ThemeManager.GetCurrentTheme();
+        Theme theme = ThemeManager.CurrentTheme;
         if (theme != null)
             m_ThemeList.SelectedIndex = theme.Id;
+        else
+            m_ThemeList.SelectedItem = 0;
 
-        Language language = LanguageManager.GetCurrentLanguage();
+        Language language = LanguageManager.CurrentLanguage;
         if (language != null)
             m_LanguageList.SelectedIndex = language.Id;
 
@@ -115,6 +131,16 @@ public partial class AccountPage : Page
 
     private void InitializeEvents()
     {
+        m_ProfileButton.Click += (sender, e) => SwitchFragment(m_FragProfile);
+        m_SecurityButton.Click += (sender, e) => SwitchFragment(m_FragSecurity);
+        m_PreferencesButton.Click += (sender, e) => SwitchFragment(m_FragPreferences);
+        m_MobileLoginButton.Click += (sender, e) => SwitchFragment(m_FragMobileLogin);
+        m_AboutButton.Click += (sender, e) => SwitchFragment(m_FragAbout);
+
+        m_ChangePasswordBtn.Click += (sender, e) => s_DialogPassword.Show();
+
+        m_CannotChangePasswordLearnLabel.PointerReleased += (sender, e) => ShellHelper.OpenUrl("https://example.com/?linkid=288238");
+
         m_ThemeList.SelectionChanged += (sender, e) =>
         {
             Theme theme = (Theme)m_ThemeList.SelectedItem;
@@ -140,12 +166,6 @@ public partial class AccountPage : Page
             m_ResetButton.IsEnabled = isSelected;
         };
 
-        m_ProfileButton.Click += (sender, e) => SwitchFragment(m_FragProfile);
-        m_SecurityButton.Click += (sender, e) => SwitchFragment(m_FragSecurity);
-        m_PreferencesButton.Click += (sender, e) => SwitchFragment(m_FragPreferences);
-        m_MobileLoginButton.Click += (sender, e) => SwitchFragment(m_FragMobileLogin);
-        m_AboutButton.Click += (sender, e) => SwitchFragment(m_FragAbout);
-
         m_SaveButton.Click += async (sender, e) => await SavePreferencesAsync();
         m_ResetButton.Click += (sender, e) => ResetPreferences();
     }
@@ -165,7 +185,7 @@ public partial class AccountPage : Page
     private void SetLanguageDataFormat()
     {
         DateTimeOffset lastConnection = DateTimeOffset.FromUnixTimeMilliseconds(User.Current.LastConnection).ToLocalTime();
-        CultureInfo language = new CultureInfo(LanguageManager.GetCurrentLanguage().LangCode);
+        CultureInfo language = new CultureInfo(LanguageManager.CurrentLanguage.LangCode);
         m_LastConnection.Text = lastConnection.ToString("F", language);
     }
 
@@ -177,6 +197,9 @@ public partial class AccountPage : Page
         if (User.Current.Theme == m_SelectedTheme && User.Current.Language == m_SelectedLanguage)
             return;
 
+        m_SaveButton.IsEnabled = false;
+        m_ResetButton.IsEnabled = false;
+
         PreferenceRequest request = new PreferenceRequest(m_SelectedLanguage, m_SelectedTheme);
         await ApiService.SetPreferencesAsync(request, (requestStatus, response) =>
         {
@@ -185,9 +208,12 @@ public partial class AccountPage : Page
                 ResetPreferences();
 
                 if (requestStatus == ResponseStatus.EXPIRED)
-                    DialogMessage.Show("$$SessionExpired$$", () => MainWindow.Instance.SetLogonUI());
+                    DialogMessage.Show("$$DialogWarning$$", "$$SessionExpired$$", () => MainWindow.Instance.SetLogonUI());
                 else if (requestStatus != ResponseStatus.SERVICE_UNAVAILABLE)
-                    DialogMessage.Show("$$UnexpectedError$$", null, false);
+                    DialogMessage.Show("$$DialogError$$", "$$UnexpectedError$$", null, false);
+
+                m_SaveButton.IsEnabled = true;
+                m_SaveButton.IsEnabled = true;
 
                 return;
             }
@@ -201,6 +227,8 @@ public partial class AccountPage : Page
             m_SaveButton.IsEnabled = false;
             m_ResetButton.IsEnabled = false;
         });
+
+        m_SaveButton.RestoreContent();
     }
 
     private void ResetPreferences()
@@ -220,8 +248,8 @@ public partial class AccountPage : Page
 
     private bool IsSaveAllowed()
     {
-        bool isThemeSelected = (m_SelectedTheme != null && m_SelectedTheme != User.Current.Theme);
-        bool isLangSelected = (m_SelectedLanguage != null && m_SelectedLanguage != User.Current.Language);
+        bool isThemeSelected = m_SelectedTheme != null && m_SelectedTheme != User.Current.Theme;
+        bool isLangSelected = m_SelectedLanguage != null && m_SelectedLanguage != User.Current.Language;
 
         return isThemeSelected || isLangSelected;
     }
