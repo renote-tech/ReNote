@@ -14,8 +14,7 @@
 # Build ReNote
 
 You will at least need Visual Studio 2022 with .NET desktop development OR install .NET SDK 7.0 or higher directly.
-If you use Visual Studio, you can go ahead and open the solution "ReNote.sln". Alternatively you can follow the guide below:
-Navigate to the `Tools` folder: 4 scripts are available but you'll only need the `build_project` script to build the project. Use either the version for Windows (Batch scripts) or the version for Linux/macOS (Bash scripts).
+If you use Visual Studio, you can go ahead and open the solution `ReNote.sln`. Alternatively navigate to the `Tools` folder and from the command line use either the version for Windows (Batch scripts) or the version for Linux/macOS (Bash scripts) of the `build_project` script.
 
 ### Usage
 ```
