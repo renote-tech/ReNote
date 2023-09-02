@@ -19,7 +19,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server.Database.GUI", "Serv
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server.Tests", "Server.Tests\Server.Tests.csproj", "{99FCB945-E03F-4E52-B09F-B781A8B7DFDB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReNote.CodeProcessor", "ReNote.CodeProcessor\ReNote.CodeProcessor.csproj", "{29AB97C3-EBA4-4BE0-8FAD-1B298E12C8CD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReNote.CodeProcessor", "ReNote.CodeProcessor\ReNote.CodeProcessor.csproj", "{29AB97C3-EBA4-4BE0-8FAD-1B298E12C8CD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
